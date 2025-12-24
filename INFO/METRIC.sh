@@ -22,9 +22,8 @@ source $HOME/.bashrc
 conda activate $CosmoENV
 
 # Initialize the process
-NUMBER=500
-BASE_PATH="/pscratch/sd/y/yhzhang/SOMZCloud/"
-BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/SOMZCloud/"
+BASE_PATH="/pscratch/sd/y/yhzhang/LimberCloud/"
+BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
 
 # Run applications
-python -u "${BASE_PATH}INFO/METRIC.py" --number=$NUMBER --folder=$BASE_FOLDER 
+python -u "${BASE_PATH}INFO/METRIC.py" --folder=$BASE_FOLDER 

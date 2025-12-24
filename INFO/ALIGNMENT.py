@@ -6,12 +6,12 @@ import pyccl
 import argparse
 
 
-def main(path):
+def main(folder):
     '''
     Store the fiducial values of intrinsic alignment
     
     Arguments:
-        path (str): The base path of the datasets
+        folder (str): The base folder of the datasets
     
     Returns:
         duration (float): The duration of the process
@@ -20,10 +20,10 @@ def main(path):
     start = time.time()
     
     # Path
-    info_path = os.path.join(path, 'INFO/')
+    info_folder = os.path.join(folder, 'INFO/')
     
     # Cosmology
-    with open(os.path.join(info_path, 'COSMOLOGY.json'), 'r') as file:
+    with open(os.path.join(info_folder, 'COSMOLOGY.json'), 'r') as file:
         cosmology_info = json.load(file)
     
     cosmology = pyccl.Cosmology(
@@ -61,7 +61,7 @@ def main(path):
         'A': a_grid.tolist(),
     }
     
-    with open(os.path.join(info_path, 'ALIGNMENT.json'), 'w') as file:
+    with open(os.path.join(info_folder, 'ALIGNMENT.json'), 'w') as file:
         json.dump(alignment_info, file, indent=4)
     
     # Duration
@@ -76,10 +76,10 @@ def main(path):
 if __name__ == '__main__':
     # Input
     PARSE = argparse.ArgumentParser(description='Info Alignment')
-    PARSE.add_argument('--path', type=str, required=True, help='The base path of the datasets')
+    PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the datasets')
     
     # Parse
-    PATH = PARSE.parse_args().path
+    FOLDER = PARSE.parse_args().folder
     
     # Output
-    OUTPUT = main(PATH)
+    OUTPUT = main(FOLDER)
