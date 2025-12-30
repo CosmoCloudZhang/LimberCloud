@@ -158,21 +158,21 @@ def coefficient(chi_grid, power_grid, redshift_grid):
         # Element 2
         if n + 1 < grid_size:
             element = element2(chi_grid[n], chi_grid[n + 1], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
-            coefficients[n + 1, n, :] += element
+            coefficients[n, n + 1, :] += element
         # Element 3
         if n + 1 < grid_size:
             for k in range(n + 2, grid_size):
                 element = element3(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
-                coefficients[n, k, :] += element
+                coefficients[k, n, :] += element
         # Element 4
         if n + 1 < grid_size:
             for k in range(n + 2, grid_size):
                 element = element4(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
-                coefficients[n + 1, k, :] += element
+                coefficients[k, n + 1, :] += element
         # Element 5
         if n + 1 < grid_size:
             element = element5(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
-            coefficients[n, n + 1, :] += element
+            coefficients[n + 1, n, :] += element
         # Element 6
         if n + 1 < grid_size:
             element = element6(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
@@ -180,11 +180,11 @@ def coefficient(chi_grid, power_grid, redshift_grid):
         # Element 7
         if n < grid_size:
             element = element7(chi_grid[n], chi_grid[n + 1], chi_grid[grid_size - 1], chi_grid[grid_size], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
-            coefficients[n, grid_size, :] += element
+            coefficients[grid_size, n, :] += element
         # Element 8
         if n + 1 < grid_size:
             element = element8(chi_grid[n], chi_grid[n + 1], chi_grid[grid_size - 1], chi_grid[grid_size], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
-            coefficients[n + 1, grid_size, :] += element
+            coefficients[grid_size, n + 1, :] += element
     return coefficients
 
 # Spectra

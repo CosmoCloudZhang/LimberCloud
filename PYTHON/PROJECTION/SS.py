@@ -1,6 +1,8 @@
+import numba
 import numpy
 
 # Element 1
+@numba.njit(cache=True)
 def element1(chi1, chi2, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     p = 1 - power1 / power2
@@ -24,6 +26,7 @@ def element1(chi1, chi2, power1, power2, redshift1, redshift2):
     return coefficient
 
 # Element 2
+@numba.njit(cache=True)
 def element2(chi1, chi2, chi3, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = chi3 / chi2 - 1
@@ -53,6 +56,7 @@ def element2(chi1, chi2, chi3, power1, power2, redshift1, redshift2):
     return coefficient
 
 # Element 3
+@numba.njit(cache=True)
 def element3(chi1, chi2, chi3, chi4, chi5, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = (chi5 - chi3) / (2 * chi2)
@@ -76,6 +80,7 @@ def element3(chi1, chi2, chi3, chi4, chi5, power1, power2, redshift1, redshift2)
     return coefficient
 
 # Element 4
+@numba.njit(cache=True)
 def element4(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = (chi4 - chi3) / (2 * chi2)
@@ -99,6 +104,7 @@ def element4(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     return coefficient
 
 # Element 5
+@numba.njit(cache=True)
 def element5(chi1, chi2, chi3, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = chi3 / chi2 - 1
@@ -135,6 +141,7 @@ a ** 2 * (1 + b) * numpy.log(1 + b) * (b * ( - 420 * p * z ** 2 + 210 * a * z * 
     return coefficient
 
 # Element 6
+@numba.njit(cache=True)
 def element6(chi1, chi2, chi3, chi4, chi5, chi6, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = chi3 / chi2 - 1
@@ -164,6 +171,7 @@ c * (100 * ( - 9 + p + 2 * z) + z * ( - 25 * z + p * ( - 50 + 9 * z)) - 150 * b 
     return coefficient
 
 # Element 7
+@numba.njit(cache=True)
 def element7(chi1, chi2, chi3, chi4, chi5, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = chi3 / chi2 - 1
@@ -193,6 +201,7 @@ c * (100 * ( - 9 + p + 2 * z) + z * ( - 25 * z + p * ( - 50 + 9 * z)) - 150 * b 
     return coefficient
 
 # Element 8
+@numba.njit(cache=True)
 def element8(chi1, chi2, chi3, chi4, chi5, chi6, chi7, chi8, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = (chi5 - chi3) / (2 * chi2)
@@ -214,6 +223,7 @@ def element8(chi1, chi2, chi3, chi4, chi5, chi6, chi7, chi8, power1, power2, red
     return coefficient
 
 # Element 9
+@numba.njit(cache=True)
 def element9(chi1, chi2, chi3, chi4, chi5, chi6, chi7, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = (chi5 - chi3) / (2 * chi2)
@@ -235,6 +245,7 @@ def element9(chi1, chi2, chi3, chi4, chi5, chi6, chi7, power1, power2, redshift1
     return coefficient
 
 # Element 10
+@numba.njit(cache=True)
 def element10(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     b = (chi4 - chi3) / (2 * chi2)
@@ -253,6 +264,7 @@ def element10(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     return coefficient
 
 # Coefficient
+@numba.njit(cache=True)
 def coefficient(chi_grid, power_grid, redshift_grid):
     grid_size = chi_grid.shape[0] - 1
     ell_size = power_grid.shape[0] - 1
@@ -314,6 +326,6 @@ def coefficient(chi_grid, power_grid, redshift_grid):
     return coefficients
 
 # Spectra
-def spectra(factor, amplitude, chi_grid, power_grid, redshift_grid, phi_a_grid, phi_b_grid):
+def spectra(factor, amplitude, phi_a_grid, phi_b_grid, chi_grid, power_grid, redshift_grid):
     coefficients = coefficient(chi_grid, power_grid, redshift_grid)
     return factor * amplitude * numpy.einsum('ijk,ai,bj->abk', coefficients, phi_a_grid, phi_b_grid, dtype=numpy.float64)
