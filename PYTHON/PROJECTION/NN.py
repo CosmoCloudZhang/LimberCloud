@@ -69,5 +69,13 @@ def coefficient(chi_grid, power_grid):
 
 # Spectra
 def spectra(factor, amplitude, phi_a_grid, phi_b_grid, chi_grid, power_grid):
-    coefficients = coefficient(chi_grid, power_grid)
-    return factor * amplitude * numpy.einsum('ijk,ai,bj->abk', coefficients, phi_a_grid, phi_b_grid, dtype=numpy.float64)
+    bin_size_a = phi_a_grid.shape[0]
+    bin_size_b = phi_b_grid.shape[0]
+    ell_size = power_grid.shape[0] - 1
+    spectrum = numpy.zeros((bin_size_a, bin_size_b, ell_size + 1), dtype=numpy.float64)
+    
+    for a in range(bin_size_a):
+        for b in range(bin_size_b):
+            coefficients = coefficient(chi_grid, amplitude[a, b, :] * power_grid) 
+            spectrum[a, b, :] = factor * numpy.einsum('ijl,i,j->l', coefficients, phi_a_grid[a, :], phi_b_grid[b, :], dtype=numpy.float64)
+    return spectrum
