@@ -44,8 +44,8 @@ def main(folder):
     
     # Redshift
     z1 = 0.0
-    z2 = 3.0
-    grid_size = 300
+    z2 = 3.5
+    grid_size = 350
     z_grid = numpy.linspace(z1, z2, grid_size + 1)
     
     # Galaxy
