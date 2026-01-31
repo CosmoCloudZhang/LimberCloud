@@ -1,18 +1,14 @@
 import os
-import yaml
-import h5py
 import json
 import time
-import numpy
 import argparse
 
 
-def main(number, folder):
+def main(folder):
     '''
     Store the fiducial values of density configuration
     
     Arguments:
-        number (int): The number of the datasets
         folder (str): The base folder of the datasets
     
     Returns:
@@ -23,70 +19,47 @@ def main(number, folder):
     
     # Path
     info_folder = os.path.join(folder, 'INFO/')
-    model_folder = os.path.join(folder, 'MODEL/')
-    dataset_folder = os.path.join(folder, 'DATASET/')
-    summarize_folder = os.path.join(folder, 'SUMMARIZE/')
     
-    # Load
-    with open(os.path.join(dataset_folder, 'CATALOG/OBSERVE.yaml'), 'r') as file:
-        observe = yaml.safe_load(file)
-        observation_list = observe['healpix_pixels']
-        area = observe['sky_area'] / len(observation_list) * len(observation_list) // 2
-    
-    # Definition
-    sigma0 = 0.26
-    density = {'Y1': {}, 'Y10': {}}
-    name_list = ['COPPER', 'GOLD', 'IRON', 'SILVER', 'TITANIUM', 'ZINC']
-    
-    # Loop
-    for tag in density.keys():
-        print('Tag: {}'.format(tag))
-        
-        for name in name_list:
-            print('Name: {}'.format(name))
-            
-            # Density
-            density_lens = []
-            density_source = []
-            
-            for n in range(number):
-                print('Index: {}'.format(n + 1))
-                
-                # Lambda
-                with h5py.File(os.path.join(summarize_folder, '{}/{}/LENS/LENS{}/TRUTH.hdf5'.format(tag, name, n + 1)), 'r') as file:
-                    lambda_lens = numpy.mean(file['value']['lambda'][...], axis=1)
-                    bin_lens_size = file['meta']['bin_size'][...]
-                
-                with h5py.File(os.path.join(summarize_folder, '{}/{}/SOURCE/SOURCE{}/TRUTH.hdf5'.format(tag, name, n + 1)), 'r') as file:
-                    lambda_source = numpy.mean(file['value']['lambda'][...], axis=1)
-                    bin_source_size = file['meta']['bin_size'][...]
-                
-                # Application
-                with h5py.File(os.path.join(dataset_folder, '{}/APPLICATION/DATA{}.hdf5'.format(tag, n + 1)), 'r') as file:
-                    application_sigma = file['morphology']['sigma'][...]
-                
-                # Lens
-                with h5py.File(os.path.join(model_folder, '{}/LENS/LENS{}/TARGET.hdf5'.format(tag, n + 1)), 'r') as file:
-                    target_lens = file['target'][...]
-                
-                value = numpy.zeros(bin_lens_size, dtype=numpy.float32)
-                for m in range(bin_lens_size):
-                    value[m] = numpy.sum(target_lens[m, :]) / area / 3600
-                density_lens.append(value * lambda_lens)
-                
-                # Source
-                with h5py.File(os.path.join(model_folder, '{}/SOURCE/SOURCE{}/TARGET.hdf5'.format(tag, n + 1)), 'r') as file:
-                    target_source = file['target'][...]
-                
-                value = numpy.zeros(bin_source_size, dtype=numpy.float32)
-                for m in range(bin_source_size):
-                    value[m] = numpy.sum(numpy.square(sigma0) / (numpy.square(sigma0) + numpy.square(application_sigma[target_source[m, :]]))) / area / 3600
-                density_source.append(value * lambda_source)
-            
-            # Density
-            density[tag][name] = {}
-            density[tag][name]['LENS'] = numpy.mean(numpy.vstack(density_lens), axis=0).astype(float).tolist()
-            density[tag][name]['SOURCE'] = numpy.mean(numpy.vstack(density_source), axis=0).astype(float).tolist()
+    # Density
+    density = {
+        'Y1': {
+            'LENS': [
+                0.08720538020133972,
+                0.09592237323522568,
+                0.13990487158298492,
+                0.1811719387769699,
+                0.16735374927520752
+            ],
+            'SOURCE': [
+                2.089827060699463,
+                2.2984490394592285,
+                2.1046831607818604,
+                1.900587797164917,
+                1.8386759757995605
+            ]
+        },
+        'Y10': {
+            'LENS': [
+                0.04866538941860199,
+                0.03815827891230583,
+                0.045559294521808624,
+                0.05072904750704765,
+                0.06561077386140823,
+                0.07414277642965317,
+                0.08920416235923767,
+                0.09422051906585693,
+                0.10330963134765625,
+                0.0956401526927948
+            ],
+            'SOURCE': [
+                5.742310047149658,
+                5.716140270233154,
+                5.32042932510376,
+                4.828889846801758,
+                4.577329158782959
+            ]
+        }
+    }
     
     # Save
     with open(os.path.join(info_folder, 'DENSITY.json'), 'w') as file:
@@ -104,12 +77,10 @@ def main(number, folder):
 if __name__ == '__main__':
     # Input
     PARSE = argparse.ArgumentParser(description='Info density')
-    PARSE.add_argument('--number', type=int, required=True, help='The number of the datasets')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the datasets')
     
     # Parse
-    NUMBER = PARSE.parse_args().number
     FOLDER = PARSE.parse_args().folder
     
     # Output
-    OUTPUT = main(NUMBER, FOLDER)
+    OUTPUT = main(FOLDER)
