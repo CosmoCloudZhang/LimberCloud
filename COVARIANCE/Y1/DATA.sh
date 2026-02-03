@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A m1727
-#SBATCH --nodes=4
+#SBATCH --nodes=1
 #SBATCH -q regular
 #SBATCH --time=04:00:00
 #SBATCH --mail-type=END
@@ -35,5 +35,4 @@ BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
 
 # Run applications
 python -u "${BASE_PATH}COVARIANCE/${TAG}/DATA.py" --tag=$TAG --folder=$BASE_FOLDER &&
-srun -u -N 1 -n 1 -c $SLURM_CPUS_PER_TASK python /global/homes/y/yhzhang/opt/OneCovariance/covariance.py "${BASE_FOLDER}/COVARIANCE/${TAG}/CONFIG.ini" &&
-done
+python /global/homes/y/yhzhang/opt/OneCovariance/covariance.py "${BASE_FOLDER}/COVARIANCE/${TAG}/CONFIG.ini"
