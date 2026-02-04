@@ -44,7 +44,4 @@ Notebooks in `PYTHON/` and `JAX/` are organized by task and survey configuration
 - Jupyter (for notebooks)
 - `pyccl`, `numpy`, `scipy`, `astropy`
 <<<<<<< HEAD
-- JAX (optional, for `JAX/`)
-=======
 - JAX
->>>>>>> 2f64a66d491903cf2f31f9ba3ec5378c3a864b7c
