@@ -1,4 +1,4 @@
-# Cosmology Calculations and Angular Power Spectra Coefficients
+# LimberCloud-Cosmology Calculations and Angular Power Spectra Coefficients
 
 ## Overview
 

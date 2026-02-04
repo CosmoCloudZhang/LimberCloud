@@ -1,4 +1,4 @@
-# Configuration and Fiducial Values for Cosmological Parameters
+# LimberCloud-Configuration and Fiducial Values for Cosmological Parameters
 
 This folder contains various Python scripts that store the fiducial values for key cosmological parameters used in the computation of angular power spectra in weak gravitational lensing and large-scale structure. These scripts are part of a larger framework for cosmological simulations that involve different models and parameters for density, galaxy biases, alignment, and more.
 

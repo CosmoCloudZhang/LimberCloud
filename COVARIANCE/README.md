@@ -1,4 +1,4 @@
-# Covariance Matrix Calculation for Angular Power Spectra
+# LimberCloud-Covariance Matrix Calculation for Angular Power Spectra
 
 ## Overview
 
