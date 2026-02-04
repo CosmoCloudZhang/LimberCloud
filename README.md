@@ -1,51 +1,41 @@
-# LimberCloud: A Framework for Cosmological Power Spectra Calculations
+# Python Code for Cosmological Analysis
 
-## Overview
-
-**LimberCloud** is a fully analytic framework designed for the **fast and scalable computation** of **angular power spectra** in cosmology. The framework utilizes **weak gravitational lensing** and **large-scale structure** (LSS) data to calculate covariance matrices for angular power spectra. The code performs various mathematical and statistical analyses, including power spectrum generation, kernel calculations, error modeling, and projections that are essential for weak lensing surveys and cosmological simulations.
-
-This repository consists of Python scripts, Jupyter notebooks, and configuration files that work together to compute, store, and analyze the fiducial cosmological parameters required for power spectra analysis.
+This folder contains Python scripts and Jupyter notebooks used for cosmological analysis, particularly focused on the computation and modeling of angular power spectra, weak gravitational lensing, and large-scale structure. The files here calculate key parameters such as kernel functions, power spectra, error models, and projections that are vital for cosmological surveys.
 
 ## Folder Structure
 
-1. **`PYTHON/`**:
-   - This folder contains the core computational scripts and Jupyter notebooks used for various mathematical calculations and projections.
-   - **`POWER/`**: Contains notebooks related to **power spectrum** computations.
-   - **`CELL/`**, **`ERROR/`**, **`KERNEL/`**, **`PROJECTION/`**: These folders contain scripts related to **error modeling**, **cosmological kernels**, and **projection techniques** used for weak lensing and large-scale structure analysis.
-   - **`README.md`**: Provides an overview of the **PYTHON** folder.
+1. **POWER**:
+   - **`POWER.ipynb`**: A Jupyter notebook dedicated to the computation of power spectra. It includes steps for the calculation and visualization of angular power spectra.
 
-2. **`COVARIANCE/`**:
-   - Contains subdirectories **`Y1`** and **`Y10`**, which store the computed **covariance matrices** for different datasets and configurations.
-   - The matrices are stored in **ASCII** format, ready for analysis.
-   - **`README.md`**: Describes the covariance matrices for angular power spectra.
+2. **CELL**:
+   - **`Y1`**, **`Y10`**: These directories contain specific configurations for different datasets (e.g., Y1 and Y10 refer to different redshift bin configurations or survey datasets).
+   
+3. **ERROR**:
+   - **`Y1`**, **`Y10`**: These directories contain error modeling information for the corresponding datasets. They are used for evaluating the uncertainties and biases in the cosmological model calculations.
 
-3. **`MATH/`**:
-   - Includes scripts and notebooks for **mathematical operations** such as integration and coefficient calculations for the angular power spectra.
-   - **`NN/`**, **`NS/`**, **`SS/`**: These subdirectories contain notebooks for **numerical integration** and **coefficient calculation**.
-   - **`README.md`**: Overview of the mathematical operations in the **MATH** folder.
+4. **KERNEL**:
+   - **`Y1`**, **`Y10`**: Directories related to the kernel functions used in weak lensing and power spectrum analysis for the different datasets. These files help compute the kernels necessary for transforming different data fields.
 
-4. **`INFO/`**:
-   - Contains **configuration** and **parameter files** necessary for the cosmological calculations.
-   - Files include scripts like **`COSMOLOGY.py`**, **`ALIGNMENT.py`**, **`MAGNIFICATION.py`**, and more, which define and store cosmological parameters, biases, and other relevant data.
-   - **`README.md`**: Provides an explanation of the input parameter files for cosmological analysis.
-
+5. **PROJECTION**:
+   - **`NN.py`**, **`NS.py`**, **`SN.py`**, **`SS.py`**, **`__init__.py`**: These Python files are used for different projection techniques used in weak lensing and large-scale structure analysis. They likely contain the projection models and the calculations needed for transforming the data from one form to another.
+   
 ## Purpose
 
-The **LimberCloud** framework is used for:
-- **Cosmological parameter modeling**: Including Hubble constant, dark energy, and dark matter densities.
-- **Angular power spectra calculation**: Using weak gravitational lensing and large-scale structure data.
-- **Covariance matrix generation**: To assess the correlation between different redshift bins and other cosmological effects.
-- **Error modeling**: To quantify uncertainties in the angular power spectrum calculations.
-- **Projection techniques**: Used to transform and model cosmological data from one form to another.
+The code in this folder is part of an analytical framework designed for the following purposes:
+- **Computation of angular power spectra**: Using weak gravitational lensing and large-scale structure data.
+- **Error modeling**: To evaluate the uncertainties in the cosmological calculations.
+- **Projection techniques**: To model various transformations and projections required in cosmology.
 
-## Usage
+## Dependencies
 
-### Running the Code
+- **Python 3.x**: Ensure you are using Python 3.x for compatibility with the scripts.
+- **Jupyter**: For running the `POWER.ipynb` notebook.
+- **pyccl**: Cosmology library for power spectrum calculations.
+- **numpy**: For numerical operations.
+- **scipy**: For scientific computations, including integration and optimization.
+- **astropy**: For handling cosmological units and data structures.
 
-Each folder and script in the repository can be used independently for specific tasks such as cosmological parameter calculations, power spectrum modeling, or error assessments.
+### Installation of dependencies:
 
-1. **Running a Python Script**:
-   To run any of the Python scripts, use the following command:
-
-   ```bash
-   python <script_name.py> --folder <path_to_base_folder>
+```bash
+pip install pyccl numpy scipy astropy
