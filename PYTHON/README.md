@@ -1,4 +1,4 @@
-# Python Code for Cosmological Analysis
+# LimberCloud-Python Code for Cosmological Analysis
 
 This folder contains Python scripts and Jupyter notebooks used for cosmological analysis, particularly focused on the computation and modeling of angular power spectra, weak gravitational lensing, and large-scale structure. The files here calculate key parameters such as kernel functions, power spectra, error models, and projections that are vital for cosmological surveys.
 
