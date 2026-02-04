@@ -1,38 +1,53 @@
-# Covariance Matrix Calculation for Angular Power Spectra
+# Covariance Inputs for Angular Power Spectra
 
-## Overview
+## Scientific Scope
 
-This program provides a fully analytic framework for the fast and scalable computation of angular power spectra in cosmology, focusing on **weak gravitational lensing** and **large-scale structure** (LSS). It calculates the covariance matrix necessary for angular power spectra by modeling various cosmological phenomena such as source redshift bins, lens redshift bins, alignment, galaxy biases, and magnification effects. The framework leverages the **pyccl** library to handle the cosmological calculations efficiently.
+This directory builds the inputs needed by covariance estimators for tomographic
+angular power spectra in weak-lensing and large-scale-structure analyses. The
+core script (`Y1/DATA.py` and `Y10/DATA.py`) converts survey-specific inputs into
+redshift-distribution tables, tracer bias tables, and the baseline angular power
+spectra \(C_\ell\) for three observable pairs:
 
-## Purpose
+- shear–shear (kappa–kappa)
+- galaxy–shear (g–kappa)
+- galaxy–galaxy (g–g)
 
-This code is designed to:
-- Calculate and store covariance matrix data for angular power spectra.
-- Use weak lensing and large-scale structure data to compute cross-correlations between different tomographic bins.
-- Generate ASCII files for covariance matrix calculations, including redshift, alignment, galaxy, and magnification information.
+All power spectra are computed with `pyccl` in a fiducial cosmology and written
+as ASCII tables for downstream covariance calculations (e.g., OneCovariance).
 
-## Directory Structure
+## Data Products
 
-- **DATA/**: Contains the source and lens data used for power spectrum calculations.
+For a given `tag`, the pipeline writes to `COVARIANCE/<tag>/`:
 
-## Code Description
+- `SOURCE.ascii`: normalized source redshift distributions \(n_i(z)\)
+- `LENS.ascii`: normalized lens redshift distributions \(n_i(z)\)
+- `ALIGNMENT.ascii`: intrinsic-alignment amplitude \(A_i(z)\)
+- `GALAXY.ascii`: galaxy bias \(b_i(z)\)
+- `MAGNIFICATION.ascii`: magnification bias \(m_i(z)\)
+- `Cell_kappakappa.ascii`: shear–shear \(C_\ell\)
+- `Cell_gkappa.ascii`: galaxy–shear \(C_\ell\)
+- `Cell_gg.ascii`: galaxy–galaxy \(C_\ell\)
 
-The main function of this framework is `main(tag, folder)`:
-1. **Inputs**:
-    - `tag`: The configuration tag used to locate specific datasets.
-    - `folder`: The base folder that contains the `DATA` and `INFO` directories.
-  
-2. **Outputs**:
-    - It generates covariance matrix data stored in the `COVARIANCE` directory. The output includes the source, lens, alignment, galaxy, and magnification data for each redshift bin.
+## Method Summary
 
-3. **Workflow**:
-    - **Data Loading**: The program loads data files (source bins, lens bins, cosmology parameters) and processes them for power spectrum calculations.
-    - **Power Spectrum Calculation**: It computes the weak lensing angular power spectrum using the pyccl library, and handles various biases and redshift-dependent effects.
-    - **Covariance Matrix**: The program computes and stores the covariance matrix for angular power spectra, saved as ASCII files for further analysis.
+- Loads source/lens tomographic bins from `DATA/<tag>/` and interpolates them
+  onto a 351-point redshift grid (uniform in \(z\)), then renormalizes each bin.
+- Loads alignment, galaxy-bias, and magnification-bias models from `INFO/`.
+- Builds a `pyccl.Cosmology` instance and computes \(C_\ell\) on a geometric
+  multipole grid (\(\ell=20\)–2000, 101 points) using the Limber approximation
+  with spline integration.
 
 ## Usage
 
-To run the program, execute the following command in your terminal:
+Run the generator for a specific tag:
 
 ```bash
-python <path_to_script> --tag <config_tag> --folder <base_folder>
+python /path/to/COVARIANCE/<tag>/DATA.py --tag <tag> --folder <base_folder>
+```
+
+`<base_folder>` must contain `DATA/`, `INFO/`, and `COVARIANCE/`.
+
+## Notes
+
+- `Y1/DATA.sh` and `Y10/DATA.sh` are Slurm job scripts that run the generator
+  and then call OneCovariance with a tag-specific configuration file.
