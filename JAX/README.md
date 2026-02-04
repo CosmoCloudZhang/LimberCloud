@@ -1,48 +1,41 @@
-# JAX-Accelerated Projections and Analysis Notebooks
+# Python Code for Cosmological Analysis
 
-This folder contains JAX-based projection kernels and analysis notebooks used to compute and validate angular power spectra and related error budgets for weak-lensing and galaxy-clustering observables. The code emphasizes fast, vectorized evaluation of line-of-sight integrals and includes CPU/GPU benchmarking workflows.
+This folder contains Python scripts and Jupyter notebooks used for cosmological analysis, particularly focused on the computation and modeling of angular power spectra, weak gravitational lensing, and large-scale structure. The files here calculate key parameters such as kernel functions, power spectra, error models, and projections that are vital for cosmological surveys.
 
-## Contents
+## Folder Structure
 
-### Projection kernels (`PROJECTION/`)
+1. **POWER**:
+   - **`POWER.ipynb`**: A Jupyter notebook dedicated to the computation of power spectra. It includes steps for the calculation and visualization of angular power spectra.
 
-- `NN.py`, `NS.py`, `SN.py`, `SS.py` implement JAX-jitted kernels for line-of-sight projections of matter power spectra on comoving distance grids.
-- Each module defines:
-  - Closed-form kernel elements for piecewise integration (multiple `element*` functions).
-  - A `coefficient(...)` routine that assembles tomographic coefficient tensors using `jax.vmap` and `jax.lax.fori_loop`.
-  - A `function(...)` interface that contracts kernel coefficients with tomographic basis functions via `einsum`.
+2. **CELL**:
+   - **`Y1`**, **`Y10`**: These directories contain specific configurations for different datasets (e.g., Y1 and Y10 refer to different redshift bin configurations or survey datasets).
+   
+3. **ERROR**:
+   - **`Y1`**, **`Y10`**: These directories contain error modeling information for the corresponding datasets. They are used for evaluating the uncertainties and biases in the cosmological model calculations.
 
-These kernels provide the core building blocks for number-counts and shear projections and are designed for efficient batching over multipoles and redshift bins.
+4. **KERNEL**:
+   - **`Y1`**, **`Y10`**: Directories related to the kernel functions used in weak lensing and power spectrum analysis for the different datasets. These files help compute the kernels necessary for transforming different data fields.
 
-### Angular power spectra (`CELL/`)
+5. **PROJECTION**:
+   - **`NN.py`**, **`NS.py`**, **`SN.py`**, **`SS.py`**, **`__init__.py`**: These Python files are used for different projection techniques used in weak lensing and large-scale structure analysis. They likely contain the projection models and the calculations needed for transforming the data from one form to another.
+   
+## Purpose
 
-Notebooks under `CELL/Y1` and `CELL/Y10` compute tomographic angular power spectra for:
-
-- `EE.ipynb`: shear–shear (`κ–κ`) spectra
-- `TE.ipynb`: galaxy–shear (`g–κ`) spectra
-- `TT.ipynb`: galaxy–galaxy (`g–g`) spectra
-
-They load fiducial inputs from `DATA/` and `INFO/`, build redshift and comoving-distance grids, evaluate matter power spectra with `pyccl`, and construct tomographic `C_ell` terms (including intrinsic-alignment contributions where applicable).
-
-### Error propagation (`ERROR/`)
-
-Notebooks under `ERROR/Y1` and `ERROR/Y10` read precomputed spectra and covariance inputs to evaluate error propagation and diagnostic comparisons (e.g., CCL-based versus data-driven spectra). These notebooks work on the same tomographic grids and multipole ranges used for the power-spectrum calculations.
-
-### CPU/GPU benchmarks (`CPU/`, `GPU/`)
-
-Benchmark notebooks under `CPU/Y1`, `CPU/Y10`, `GPU/Y1`, and `GPU/Y10` use JAX implementations (`SSjax`, `NSjax`, `NNjax`) to evaluate projection kernels and compare performance across devices:
-
-- `SINGLE.ipynb`, `DOUBLE.ipynb`, `TRIPLE.ipynb` represent different workload configurations.
-- The CPU notebooks set JAX environment flags for multi-threading, while GPU notebooks query CUDA devices and run the same kernels on accelerators.
+The code in this folder is part of an analytical framework designed for the following purposes:
+- **Computation of angular power spectra**: Using weak gravitational lensing and large-scale structure data.
+- **Error modeling**: To evaluate the uncertainties in the cosmological calculations.
+- **Projection techniques**: To model various transformations and projections required in cosmology.
 
 ## Dependencies
 
-- `jax`, `jaxlib`
-- `pyccl`
-- `numpy`, `scipy`
-- `h5py` (for calibration inputs in benchmark notebooks)
-- `matplotlib` (plotting in notebooks)
+- **Python 3.x**: Ensure you are using Python 3.x for compatibility with the scripts.
+- **Jupyter**: For running the `POWER.ipynb` notebook.
+- **pyccl**: Cosmology library for power spectrum calculations.
+- **numpy**: For numerical operations.
+- **scipy**: For scientific computations, including integration and optimization.
+- **astropy**: For handling cosmological units and data structures.
 
-## Usage Notes
+### Installation of dependencies:
 
-These notebooks are research workflows that assume existing datasets under `DATA/`, `INFO/`, and external calibration folders (see paths defined in the notebook cells). Update the paths to match your environment before executing.
+```bash
+pip install pyccl numpy scipy astropy
