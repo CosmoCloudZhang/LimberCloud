@@ -1,41 +1,46 @@
-# Python Code for Cosmological Analysis
+# LimberCloud: Tensorised Angular Power Spectra
 
-This folder contains Python scripts and Jupyter notebooks used for cosmological analysis, particularly focused on the computation and modeling of angular power spectra, weak gravitational lensing, and large-scale structure. The files here calculate key parameters such as kernel functions, power spectra, error models, and projections that are vital for cosmological surveys.
+## Overview
 
-## Folder Structure
+**LimberCloud** is a tensorised analytic framework for **fast, scalable computation of angular power spectra** and their **covariance matrices** in weak lensing and large-scale structure analyses. The project:
 
-1. **POWER**:
-   - **`POWER.ipynb`**: A Jupyter notebook dedicated to the computation of power spectra. It includes steps for the calculation and visualization of angular power spectra.
+- Derives and validates analytic expressions and coefficient tables in `MATH/`.
+- Implements a reference pipeline in `PYTHON/` to compute kernels, power spectra, and C_ell, and to quantify absolute/relative errors.
+- Generates covariance inputs in `COVARIANCE/` using fiducial cosmology and astrophysical parameters from `INFO/`.
+- Provides a JAX implementation in `JAX/` to validate parity with the Python baseline and benchmark CPU/GPU performance.
 
-2. **CELL**:
-   - **`Y1`**, **`Y10`**: These directories contain specific configurations for different datasets (e.g., Y1 and Y10 refer to different redshift bin configurations or survey datasets).
-   
-3. **ERROR**:
-   - **`Y1`**, **`Y10`**: These directories contain error modeling information for the corresponding datasets. They are used for evaluating the uncertainties and biases in the cosmological model calculations.
+The repository combines scripts and notebooks that document the derivations, implement the numerical pipeline, and validate precision across implementations.
 
-4. **KERNEL**:
-   - **`Y1`**, **`Y10`**: Directories related to the kernel functions used in weak lensing and power spectrum analysis for the different datasets. These files help compute the kernels necessary for transforming different data fields.
+## Repository Layout
 
-5. **PROJECTION**:
-   - **`NN.py`**, **`NS.py`**, **`SN.py`**, **`SS.py`**, **`__init__.py`**: These Python files are used for different projection techniques used in weak lensing and large-scale structure analysis. They likely contain the projection models and the calculations needed for transforming the data from one form to another.
-   
-## Purpose
+- `MATH/`: Analytic derivations and coefficient generation for tensorised expressions.
+- `INFO/`: Fiducial cosmology, survey, and astrophysical parameter definitions.
+- `COVARIANCE/`: Precomputed covariance inputs for different survey configurations (e.g., `Y1`, `Y10`).
+- `PYTHON/`: Reference implementation for kernels, power spectra, C_ell, and error analysis.
+- `JAX/`: JAX implementation used for parity checks and performance benchmarking.
 
-The code in this folder is part of an analytical framework designed for the following purposes:
-- **Computation of angular power spectra**: Using weak gravitational lensing and large-scale structure data.
-- **Error modeling**: To evaluate the uncertainties in the cosmological calculations.
-- **Projection techniques**: To model various transformations and projections required in cosmology.
+## Scientific Workflow
+
+1. **Derivation and coefficient generation** (`MATH/`).
+2. **Parameter definition** (`INFO/`).
+3. **Covariance inputs** (`COVARIANCE/`).
+4. **Reference computations and validation** (`PYTHON/`).
+5. **Accelerated implementation and benchmarking** (`JAX/`).
+
+## Getting Started
+
+Most scripts accept a base folder via `--folder`. For example:
+
+```bash
+python INFO/COSMOLOGY.py --folder /path/to/LimberCloud
+python COVARIANCE/Y1/DATA.py --folder /path/to/LimberCloud
+```
+
+Notebooks in `PYTHON/` and `JAX/` are organized by task and survey configuration (`Y1`, `Y10`).
 
 ## Dependencies
 
-- **Python 3.x**: Ensure you are using Python 3.x for compatibility with the scripts.
-- **Jupyter**: For running the `POWER.ipynb` notebook.
-- **pyccl**: Cosmology library for power spectrum calculations.
-- **numpy**: For numerical operations.
-- **scipy**: For scientific computations, including integration and optimization.
-- **astropy**: For handling cosmological units and data structures.
-
-### Installation of dependencies:
-
-```bash
-pip install pyccl numpy scipy astropy
+- Python 3.x
+- Jupyter (for notebooks)
+- `pyccl`, `numpy`, `scipy`, `astropy`
+- JAX
