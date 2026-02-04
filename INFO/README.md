@@ -19,7 +19,7 @@ These values are stored in **JSON** format and are used throughout the cosmologi
 1. **ALIGNMENT.py**
    - Stores intrinsic alignment parameters for weak lensing and large-scale structure.
    - It loads cosmology parameters, computes alignment information, and stores it in the `INFO` directory.
-
+   
 2. **COSMOLOGY.py**
    - Contains fiducial cosmology parameters such as `Hubble constant (H)`, `dark energy density (Omega_DE)`, `dark matter density (Omega_CDM)`, etc.
    - These parameters are used in cosmological calculations like power spectrum generation and other simulation processes.
@@ -38,14 +38,13 @@ These values are stored in **JSON** format and are used throughout the cosmologi
 6. **SURVEY.py**
    - Computes fiducial values related to survey areas and their corresponding sky fractions, which are important for simulating the observed universe from different survey configurations.
 
-## File Structure
+## Shell Scripts for Execution
 
-- **INFO/**: This directory stores the configuration files in `JSON` format. Each script reads from and writes to this folder.
-- **Output**: Each script stores its results as a JSON file (e.g., `ALIGNMENT.json`, `COSMOLOGY.json`, etc.) in the `INFO` folder.
+In addition to Python scripts, shell scripts are provided for job submission on the cluster to calculate these parameters efficiently using the SLURM scheduler. Each shell script handles the execution of the corresponding Python script in parallel with the necessary computational resources:
 
-## Usage
-
-To run any of the scripts in this folder, use the following command:
-
-```bash
-python <script_name.py> --folder <path_to_base_folder>
+1. **ALIGNMENT.sh**
+   - Submits a job to the cluster to run `ALIGNMENT.py` and calculate the fiducial values for alignment parameters.
+   
+   Example command inside the script:
+   ```bash
+   python -u "${BASE_PATH}INFO/ALIGNMENT.py" --folder=$BASE_FOLDER
