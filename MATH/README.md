@@ -1,52 +1,39 @@
-# LimberCloud-Cosmology Calculations and Angular Power Spectra Coefficients
+# LimberCloud Analytical Coefficient Library
 
-## Overview
+This folder contains symbolic and semi-analytic coefficient tables used in the line-of-sight projection kernels for angular power spectra. The coefficients are stored as plain-text expressions (`Coefficients-B*.txt`) and are mirrored in notebooks (`.ipynb`, `.nb`) for derivations and validation.
 
-This folder contains Python scripts designed to perform **cosmological calculations** and compute **angular power spectra** coefficients for weak gravitational lensing and large-scale structure analysis. The scripts are used for calculating and storing fiducial values of cosmological parameters (such as `Hubble constant`, `dark energy parameters`, `matter density`, etc.), redshift distributions, and various biases that affect the angular power spectra computations.
+The coefficients are organized by kernel type:
 
-## Folder Structure
+- **NN**: number-counts × number-counts
+- **NS**: number-counts × shear
+- **SS**: shear × shear
 
-1. **MATH/**:
-   - Contains scripts and notebooks for the **mathematical computations** related to angular power spectra, including the calculation of integrals, coefficients, and power spectra.
-   - **NN/**: Directory containing notebooks and Python scripts related to numerical methods and coefficient calculations for angular power spectra.
-   - **NS/**: Directory containing scripts for non-standard cosmological parameter sets, including alternative models or configurations.
-   - **SS/**: Directory for supplementary computations that focus on specific studies and models related to cosmological data analysis.
+These expressions appear in the JAX projection kernels and related numerical pipelines, where they are evaluated on comoving-distance and multipole grids.
 
-### **NN/**:
-- **Coefficients-B1.ipynb**: Jupyter notebook for computing coefficients for angular power spectra based on cosmological models.
-- **Coefficients-B2.ipynb**: Jupyter notebook for another set of coefficient calculations, tailored to a different angular power spectrum scenario.
-- **Coefficients-B3.ipynb**: Further calculations for a different set of coefficients used for angular power spectrum analysis.
+## Contents by Subfolder
 
-### **NS/**:
-This directory houses configurations for non-standard models and special cases. These scripts may involve alternative assumptions, configurations, or new techniques not covered in the `NN` folder. Specific details will be addressed within each script.
+### `NN/`
 
-### **SS/**:
-Contains supplementary scripts designed for specialized analysis or data post-processing. The code here includes additional steps or refinements needed to handle specific datasets or scenarios within the cosmological framework.
+- Coefficient sets `B1`–`B3` in `Coefficients-B*.txt`
+- Jupyter notebooks (`.ipynb`) and Mathematica notebooks (`.nb`) with derivations
+- `MATH.py`: formats `Coefficients-B1.txt` into NumPy-ready syntax (e.g., `Log` → `numpy.log`, `^` → `**`)
 
-## Purpose
+### `NS/`
 
-The scripts in this folder perform the following operations:
-- **Computation of Coefficients**: The notebooks and scripts calculate coefficients for angular power spectra related to weak lensing and large-scale structure.
-- **Integration**: The scripts handle the numerical integration required for the calculation of angular power spectra.
-- **Power Spectrum Calculation**: The framework computes the power spectrum by integrating over the redshift bins and cosmological parameters.
-- **Cosmological Parameters**: The files read cosmological parameters (e.g., from `COSMOLOGY.json`), and use them in the calculations.
+- Coefficient sets `B1`–`B8` in `Coefficients-B*.txt`
+- Derivation notebooks (`.ipynb`, `.nb`)
+- `MATH.py`: same formatting utility for the `NS` coefficient files
 
-### Key Operations:
-- **Cosmological Parameter Initialization**: The code reads from configuration files like `COSMOLOGY.json` to initialize parameters such as Hubble constant, dark energy density, and matter density.
-- **Redshift Grid**: Redshift grids are generated, and corresponding scale factors and comoving distances are computed.
-- **Coefficient Calculation**: The core calculations involve determining coefficients that relate to the angular power spectrum, including integral evaluations and adjustments based on redshift and cosmological parameters.
+### `SS/`
 
-## Key Functions
+- Coefficient sets `B1`–`B10` in `Coefficients-B*.txt`
+- Derivation notebooks (`.ipynb`, `.nb`)
+- `MATH.py`: same formatting utility for the `SS` coefficient files
 
-### 1. **integral_I1(chi1, chi2, power1, power2, redshift1, redshift2)**:
-   This function computes the integral required for the covariance matrix calculation. The formula is dependent on the comoving distances (`chi1`, `chi2`) and the power spectra (`power1`, `power2`).
+## File Conventions
 
-### 2. **coefficient_J1(chi1, chi2, power1, power2, redshift1, redshift2)**:
-   This function computes the coefficient for the angular power spectrum using the provided cosmological parameters. It is used to calculate the relationship between comoving distance and power spectra for weak lensing analysis.
+The `Coefficients-B*.txt` files encode analytic expressions for integral kernels (e.g., `I1`, `J1`) in terms of compact variables such as `a`, `p`, and `z`. These expressions are intended to be imported and evaluated by downstream code rather than executed as standalone scripts.
 
-## Usage
+## Usage Notes
 
-To run the scripts and generate the desired outputs, use the following command:
-
-```bash
-python <script_name.py> --folder <path_to_base_folder>
+If you update the symbolic expressions, run the corresponding `MATH.py` to normalize the syntax before integrating the coefficients into numerical code paths.
