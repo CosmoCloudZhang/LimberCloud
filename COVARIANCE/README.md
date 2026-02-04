@@ -1,53 +1,59 @@
-# Covariance Inputs for Angular Power Spectra
+# Angular Power Spectra Inputs for Covariance Analysis
+
+## Overview
+
+This module prepares the redshift-dependent inputs and angular power spectra needed for covariance analyses of weak-lensing and galaxy-clustering observables. It constructs normalized source and lens distributions, alignment, galaxy-bias, and magnification-bias tables, and computes the tomographic angular power spectra using **pyccl**.
+
+The implementation lives in `COVARIANCE/Y1/DATA.py` and `COVARIANCE/Y10/DATA.py`, which are identical in logic and are typically run with different configuration tags.
 
 ## Scientific Scope
 
-This directory builds the inputs needed by covariance estimators for tomographic
-angular power spectra in weak-lensing and large-scale-structure analyses. The
-core script (`Y1/DATA.py` and `Y10/DATA.py`) converts survey-specific inputs into
-redshift-distribution tables, tracer bias tables, and the baseline angular power
-spectra \(C_\ell\) for three observable pairs:
+- **Source (shear) and lens (number counts) redshift distributions** are interpolated onto a fixed grid and normalized.
+- **Intrinsic alignment, galaxy bias, and magnification bias** are read from `INFO/*.json` and tabulated versus redshift.
+- **Angular power spectra** are computed for:
+  - **κ–κ** (cosmic shear, `Cell_kappakappa`)
+  - **g–κ** (galaxy–shear, `Cell_gkappa`)
+  - **g–g** (galaxy clustering, `Cell_gg`)
 
-- shear–shear (kappa–kappa)
-- galaxy–shear (g–kappa)
-- galaxy–galaxy (g–g)
+The spectra are evaluated on a logarithmic multipole grid and saved in a flattened tomographic format suitable for downstream covariance assembly.
 
-All power spectra are computed with `pyccl` in a fiducial cosmology and written
-as ASCII tables for downstream covariance calculations (e.g., OneCovariance).
+## Inputs
 
-## Data Products
+The scripts expect the following structure under the base `folder`:
 
-For a given `tag`, the pipeline writes to `COVARIANCE/<tag>/`:
+- `DATA/<tag>/lsst_source_bins.npy`
+- `DATA/<tag>/lsst_lens_bins.npy`
+- `INFO/COSMOLOGY.json`
+- `INFO/ALIGNMENT.json`
+- `INFO/GALAXY.json`
+- `INFO/MAGNIFICATION.json`
 
-- `SOURCE.ascii`: normalized source redshift distributions \(n_i(z)\)
-- `LENS.ascii`: normalized lens redshift distributions \(n_i(z)\)
-- `ALIGNMENT.ascii`: intrinsic-alignment amplitude \(A_i(z)\)
-- `GALAXY.ascii`: galaxy bias \(b_i(z)\)
-- `MAGNIFICATION.ascii`: magnification bias \(m_i(z)\)
-- `Cell_kappakappa.ascii`: shear–shear \(C_\ell\)
-- `Cell_gkappa.ascii`: galaxy–shear \(C_\ell\)
-- `Cell_gg.ascii`: galaxy–galaxy \(C_\ell\)
+## Outputs
 
-## Method Summary
+Files are written to `COVARIANCE/<tag>/`:
 
-- Loads source/lens tomographic bins from `DATA/<tag>/` and interpolates them
-  onto a 351-point redshift grid (uniform in \(z\)), then renormalizes each bin.
-- Loads alignment, galaxy-bias, and magnification-bias models from `INFO/`.
-- Builds a `pyccl.Cosmology` instance and computes \(C_\ell\) on a geometric
-  multipole grid (\(\ell=20\)–2000, 101 points) using the Limber approximation
-  with spline integration.
+- `SOURCE.ascii`: normalized source n(z) for each shear bin
+- `LENS.ascii`: normalized lens n(z) for each clustering bin
+- `ALIGNMENT.ascii`: intrinsic-alignment amplitude A(z) per source bin
+- `GALAXY.ascii`: galaxy-bias b(z) per lens bin
+- `MAGNIFICATION.ascii`: magnification-bias m(z) per lens bin
+- `Cell_kappakappa.ascii`: shear–shear angular power spectra
+- `Cell_gkappa.ascii`: galaxy–shear angular power spectra
+- `Cell_gg.ascii`: galaxy–galaxy angular power spectra
+
+Each `Cell_*.ascii` file stores `ell`, `tomo_i`, `tomo_j`, and the corresponding spectrum value.
+
+## Numerical Configuration
+
+- Redshift grids: 351 points per distribution (`grid_size = 350`)
+- Multipoles: `ell` from 20 to 2000 (`geomspace`, 101 points)
+- Power spectrum: `pyccl` with Halofit (`mead2020_feedback`) and CAMB transfer function
+- Tracers: `WeakLensingTracer` and `NumberCountsTracer` with IA, bias, and magnification terms
 
 ## Usage
 
-Run the generator for a specific tag:
-
 ```bash
-python /path/to/COVARIANCE/<tag>/DATA.py --tag <tag> --folder <base_folder>
+python /path/to/COVARIANCE/Y1/DATA.py --tag <config_tag> --folder <base_folder>
 ```
 
-`<base_folder>` must contain `DATA/`, `INFO/`, and `COVARIANCE/`.
-
-## Notes
-
-- `Y1/DATA.sh` and `Y10/DATA.sh` are Slurm job scripts that run the generator
-  and then call OneCovariance with a tag-specific configuration file.
+Use `Y10/DATA.py` analogously if your configuration uses that subfolder.

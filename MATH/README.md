@@ -1,4 +1,4 @@
-# Cosmology Calculations and Angular Power Spectra Coefficients
+# LimberCloud-Cosmology Calculations and Angular Power Spectra Coefficients
 
 ## Overview
 
@@ -9,9 +9,19 @@ This folder contains Python scripts designed to perform **cosmological calculati
 1. **MATH/**:
    - Contains scripts and notebooks for the **mathematical computations** related to angular power spectra, including the calculation of integrals, coefficients, and power spectra.
    - **NN/**: Directory containing notebooks and Python scripts related to numerical methods and coefficient calculations for angular power spectra.
-   - **Coefficients-B1.ipynb**: Jupyter notebook for computing coefficients for angular power spectra.
-   - **Coefficients-B2.ipynb**: Jupyter notebook for another set of coefficient calculations.
-   - **Coefficients-B3.ipynb**: Further calculations for a different coefficient set.
+   - **NS/**: Directory containing scripts for non-standard cosmological parameter sets, including alternative models or configurations.
+   - **SS/**: Directory for supplementary computations that focus on specific studies and models related to cosmological data analysis.
+
+### **NN/**:
+- **Coefficients-B1.ipynb**: Jupyter notebook for computing coefficients for angular power spectra based on cosmological models.
+- **Coefficients-B2.ipynb**: Jupyter notebook for another set of coefficient calculations, tailored to a different angular power spectrum scenario.
+- **Coefficients-B3.ipynb**: Further calculations for a different set of coefficients used for angular power spectrum analysis.
+
+### **NS/**:
+This directory houses configurations for non-standard models and special cases. These scripts may involve alternative assumptions, configurations, or new techniques not covered in the `NN` folder. Specific details will be addressed within each script.
+
+### **SS/**:
+Contains supplementary scripts designed for specialized analysis or data post-processing. The code here includes additional steps or refinements needed to handle specific datasets or scenarios within the cosmological framework.
 
 ## Purpose
 

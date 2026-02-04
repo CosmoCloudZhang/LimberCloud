@@ -1,51 +1,35 @@
-# Configuration and Fiducial Values for Cosmological Parameters
+# LimberCloud Fiducial Configuration Inputs
 
-This folder contains various Python scripts that store the fiducial values for key cosmological parameters used in the computation of angular power spectra in weak gravitational lensing and large-scale structure. These scripts are part of a larger framework for cosmological simulations that involve different models and parameters for density, galaxy biases, alignment, and more.
+This folder defines the fiducial inputs used throughout the LimberCloud pipeline. Each script writes a self-contained JSON file under `INFO/` that encodes baseline cosmology, redshift-bin densities, and bias models for weak-lensing and galaxy-clustering analyses.
 
-## Purpose
+## Scope and Outputs
 
-The scripts in this folder compute and store the following information:
-- **ALIGNMENT.py**: Fiducial values of intrinsic alignment parameters.
-- **COSMOLOGY.py**: Fiducial values for cosmological parameters, including dark energy, dark matter, and other key cosmological constants.
-- **DENSITY.py**: Fiducial values of density configuration for different redshift bins.
-- **GALAXY.py**: Fiducial values for galaxy bias, which accounts for the difference between galaxy distributions and matter distributions.
-- **MAGNIFICATION.py**: Fiducial values for magnification bias.
-- **SURVEY.py**: Fiducial values for survey area and fraction, used for survey configuration.
+The scripts generate the following JSON products:
 
-These values are stored in **JSON** format and are used throughout the cosmological simulations for consistency in input parameters.
+- `COSMOLOGY.json`: fiducial cosmological parameters (e.g., `H`, `Omega_*`, `A_s`, `n_s`, `w0`, `wa`).
+- `ALIGNMENT.json`: intrinsic-alignment amplitude as a function of redshift, computed with `pyccl` growth and density.
+- `DENSITY.json`: number-density normalizations for lens/source bins in `Y1` and `Y10`.
+- `GALAXY.json`: linear galaxy-bias model per redshift, derived from growth factors.
+- `MAGNIFICATION.json`: magnification-bias coefficients per lens bin for `Y1` and `Y10`.
+- `SURVEY.json`: survey area and sky fraction for each tag.
 
-## Scripts Overview
+All files are written under `INFO/` and are intended to be consumed by downstream modules (e.g., power spectrum and covariance builders).
 
-1. **ALIGNMENT.py**
-   - Stores intrinsic alignment parameters for weak lensing and large-scale structure.
-   - It loads cosmology parameters, computes alignment information, and stores it in the `INFO` directory.
+## Script Details
 
-2. **COSMOLOGY.py**
-   - Contains fiducial cosmology parameters such as `Hubble constant (H)`, `dark energy density (Omega_DE)`, `dark matter density (Omega_CDM)`, etc.
-   - These parameters are used in cosmological calculations like power spectrum generation and other simulation processes.
-
-3. **DENSITY.py**
-   - Stores the fiducial density configuration for different redshift bins (`Y1`, `Y10`), including source and lens densities.
-   - This is key to modeling the matter distribution and how it affects gravitational lensing.
-
-4. **GALAXY.py**
-   - Computes galaxy bias, which is used to model how galaxies trace the underlying matter distribution.
-   - The script computes this for different redshift bins and saves the information for later use.
-
-5. **MAGNIFICATION.py**
-   - Stores the fiducial values for magnification bias, a crucial aspect of weak lensing that affects galaxy counts and their distribution.
-
-6. **SURVEY.py**
-   - Computes fiducial values related to survey areas and their corresponding sky fractions, which are important for simulating the observed universe from different survey configurations.
-
-## File Structure
-
-- **INFO/**: This directory stores the configuration files in `JSON` format. Each script reads from and writes to this folder.
-- **Output**: Each script stores its results as a JSON file (e.g., `ALIGNMENT.json`, `COSMOLOGY.json`, etc.) in the `INFO` folder.
+- `COSMOLOGY.py`: defines the fiducial cosmology and writes `COSMOLOGY.json`.
+- `ALIGNMENT.py`: loads `COSMOLOGY.json`, computes alignment amplitude on a redshift grid, and writes `ALIGNMENT.json`.
+- `GALAXY.py`: loads `COSMOLOGY.json`, computes growth-factor–scaled galaxy bias for `Y1` and `Y10`, and writes `GALAXY.json`.
+- `DENSITY.py`: stores lens/source number-density normalizations for the configured tomographic bins in `DENSITY.json`.
+- `MAGNIFICATION.py`: stores fiducial magnification-bias coefficients in `MAGNIFICATION.json`.
+- `SURVEY.py`: sets survey areas and computes sky fractions in `SURVEY.json`.
 
 ## Usage
 
-To run any of the scripts in this folder, use the following command:
+Each script is a CLI that accepts `--folder` as the dataset base path:
 
 ```bash
-python <script_name.py> --folder <path_to_base_folder>
+python /path/to/INFO/COSMOLOGY.py --folder <base_folder>
+```
+
+Shell wrappers (`*.sh`) mirror these commands for batch execution on SLURM-enabled systems.
