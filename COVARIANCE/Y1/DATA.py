@@ -56,7 +56,7 @@ def main(tag, folder):
     lens = numpy.load(os.path.join(data_folder, '{}/lsst_lens_bins.npy'.format(tag)), allow_pickle=True).item()
     lens_bin_size = len(lens['bins'])
     lens_redshift = lens['redshift_range']
-
+    
     # Define the redshift grid
     grid_size = 350
     z1 = lens_redshift.min()
