@@ -8,13 +8,13 @@
 #SBATCH -o LOG/%x_%j.out
 #SBATCH --cpus-per-task=256
 #SBATCH --ntasks-per-node=1
-#SBATCH -J COVARIANCE_Y10_DATA
+#SBATCH -J COVARIANCE_Y10_MATRIX
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
 # Load modules
 module load conda
+module load cray-mpich
 module load PrgEnv-gnu
-module load cray-mpich/8.1.30
 module load cray-hdf5-parallel
 
 # Activate the conda environment
@@ -34,5 +34,5 @@ BASE_PATH="/pscratch/sd/y/yhzhang/LimberCloud/"
 BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
 
 # Run applications
-python -u "${BASE_PATH}COVARIANCE/${TAG}/DATA.py" --tag=$TAG --folder=$BASE_FOLDER &&
+python -u "${BASE_PATH}COVARIANCE/${TAG}/MATRIX.py" --tag=$TAG --folder=$BASE_FOLDER &&
 srun -u -N 1 -n 1 -c $SLURM_CPUS_PER_TASK python /global/homes/y/yhzhang/opt/OneCovariance/covariance.py "${BASE_FOLDER}/COVARIANCE/${TAG}/CONFIG.ini"
