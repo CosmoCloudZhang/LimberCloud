@@ -5,139 +5,110 @@ from jax import config
 import jax.numpy as jnp
 config.update("jax_enable_x64", True)
 
-
+# Element 1
 @jax.jit
 def element1(chi1, chi2, power1, power2):
-    a = 1.0 - chi1 / chi2          
-    y = 1.0 - power1 / power2      
-    #if a == 1:
+    a = 1 - chi1 / chi2
+    p = 1 - power1 / power2
+    
     def true_branch(_):
-        return jnp.full_like(power2, 1 / 12)
-    #else:
+        return jnp.full_like(p, 1 / 12)
     def false_branch(_):
-        formula = ((a * (2 * ( - 2 + a) * a + 6 * y - a * (3 + a) * y)) / (2 * ( - 1 + a)) + (2 * a - 3 * y) * jnp.log(1 - a)) / a**3
+        formula = ((a * (2 * ( - 2 + a) * a + 6 * p - a * (3 + a) * p)) / (2 * ( - 1 + a)) + (2 * a - 3 * p) * jnp.log(1 - a)) / a ** 3
         return formula
-    formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    coefficient = power2 * formula / chi2   
-    return coefficient
+    formula = lax.condition(a == 1.0, true_branch, false_branch, operand=None)
+    
+    element = power2 * formula / chi2
+    return element
 
-
+# Element 2
 @jax.jit
 def element2(chi1, chi2, power1, power2):
-    a = 1.0 - chi1 / chi2          
-    y = 1.0 - power1 / power2      
-    #if a == 1:
+    a = 1 - chi1 / chi2
+    p = 1 - power1 / power2
+    
     def true_branch(_):
-        return jnp.full_like(power2, 1 / 12)
-    #else:
+        return jnp.full_like(p, 1 / 12)
     def false_branch(_):
-        formula = (( - a) * ( - 6 * y + a * (4 + y)) + 2 * (a**2 + 3 * y - 2 * a * (1 + y)) * jnp.log(1 - a)) / (2 * a**3)
+        formula = (( - a) * ( - 6 * p + a * (4 + p)) + 2 * (a ** 2 + 3 * p - 2 * a * (1 + p)) * jnp.log(1 - a)) / (2 * a ** 3)
         return formula
-    formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    coefficient = power2 * formula / chi2   
-    return coefficient
+    formula = lax.condition(a == 1.0, true_branch, false_branch, operand=None)
+    
+    element = power2 * formula / chi2
+    return element
 
-
+# Element 3
 @jax.jit
 def element3(chi1, chi2, power1, power2):
-    a = 1.0 - chi1 / chi2          
-    y = 1.0 - power1 / power2      
-    #if a == 1:
+    a = 1 - chi1 / chi2
+    p = 1 - power1 / power2
+    
     def true_branch(_):
-        return jnp.full_like(power2, 1 / 4)
-    #else:
+        return jnp.full_like(p, 1 / 4)
     def false_branch(_):
-        formula =  ((1 / 2) * a * ( - 6 * y + a * (4 - 2 * a + 5 * y)) - ( - 1 + a) * ( - 3 * y + a * (2 + y)) * jnp.log(1 - a)) / a**3
+        formula = ((1 / 2) * a * ( - 6 * p + a * (4 - 2 * a + 5 * p)) - ( - 1 + a) * ( - 3 * p + a * (2 + p)) * jnp.log(1 - a)) / a ** 3
         return formula
-    formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    coefficient = power2 * formula / chi2  
-    return coefficient
+    formula = lax.condition(a == 1.0, true_branch, false_branch, operand=None)
+    
+    element = power2 * formula / chi2
+    return element
 
-
+# Element
 @jax.jit
-def element(n, i, j, chi_grid, power_grid, redshift_grid):
-    
+def element(n, i, j, chi_grid, power_grid):
     grid_size = chi_grid.shape[0] - 1
-    zeros_vec = jnp.zeros_like(power_grid[:, 0])  
+    zeros_vector = jnp.zeros_like(power_grid[:, 0])
     
-    operand = (n, i, j, chi_grid, power_grid)
+    condition0 = ((i < n) & (n < grid_size)) | ((j < n) & (n < grid_size))
+    condition1 = (n == i) & (n == j) & (n < grid_size)
+    condition2 = ( ((n == i) & (n + 1 == j)) | ((n + 1 == i) & (n == j)) ) & (n < grid_size)
+    condition3 = (n + 1 == i) & (n + 1 == j) & (n + 1 < grid_size)
     
-    cond1 = ((i < n) & (n < grid_size)) | ((j < n) & (n < grid_size))
-    cond2 = (n == i) & (n == j) & (n < grid_size)
-    cond3 = ( ((n == i) & (n + 1 == j) & (n + 1 < grid_size)) | ((n + 1 == i) & (n == j) & (n + 1 < grid_size)) )
-    cond4 = (n + 1 == i) & (n + 1 == j) & (n + 1 < grid_size)
-    
-    def zeros_fn(_):
-        return zeros_vec
-    
-    def e1_fn(op):
-        n_, i_, j_, chi, pw = op
-        return element1(chi[n_], chi[n_ + 1], pw[:, n_], pw[:, n_ + 1])
-    
-    def e2_fn(op):
-        n_, i_, j_, chi, pw = op
-        return element2(chi[n_], chi[n_ + 1], pw[:, n_], pw[:, n_ + 1])
-    
-    def e3_fn(op):
-        n_, i_, j_, chi, pw = op
-        return element3(chi[n_], chi[n_ + 1], pw[:, n_], pw[:, n_ + 1])
-    
-    out = lax.cond(
-        cond1, zeros_fn,                                    
-        lambda op: lax.cond(
-            cond2, e1_fn,                                   
-            lambda op2: lax.cond(
-                cond3, e2_fn,                               
-                lambda op3: lax.cond(
-                    cond4, e3_fn,                           
-                    zeros_fn,                                
-                    op3
-                ),
-                op2
-            ),
-            op
-        ),
-        operand
+    branch_index = jnp.select(
+        [condition0, condition1, condition2, condition3],
+        [0, 1, 2, 3],
+        default=0
     )
-    return out
+    
+    def return_zeros(_):
+        return zeros_vector
+    
+    def compute_element1(_):
+        return element1(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1])
+    
+    def compute_element2(_):
+        return element2(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1])
+    
+    def compute_element3(_):
+        return element3(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1])
+    
+    branches = [return_zeros, compute_element1, compute_element2, compute_element3]
+    return lax.switch(branch_index, branches, None)
 
-
+# Coefficient
 @jax.jit
-def coefficient(chi_grid, power_grid, redshift_grid):
+def coefficient(chi_grid, power_grid):
     grid_size = chi_grid.shape[0] - 1
-    ell_size  = power_grid.shape[0] - 1
+    ell_size = power_grid.shape[0] - 1
     
-    coeff0 = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1), dtype=power_grid.dtype)
-    ij = jnp.arange(grid_size + 1, dtype=jnp.int32)
-    index_i, index_j = jnp.meshgrid(ij, ij, indexing='ij')   
-    # for n in range(grid_size):
-    def all_e_for_n(n):
-        # for i in range(n, grid_size + 1):
-        def e_for_i(i):
-            # for j in range(n, grid_size + 1):
-            def e_for_j(j):
-                return element(n, i, j, chi_grid, power_grid, redshift_grid)  
-            return vmap(e_for_j, in_axes=(0,))(ij)  
-        e_ij = vmap(e_for_i, in_axes=(0,))(ij)      
-        mask = (index_i >= n) & (index_j >= n)                       
-        return jnp.where(mask[..., None], e_ij, 0)
+    coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1), dtype=power_grid.dtype)
+    indices = jnp.arange(grid_size + 1, dtype=jnp.int32)
     
-    def body_n(n, coeff):
-        return coeff + all_e_for_n(n)
-    coefficients = lax.fori_loop(0, grid_size, body_n, coeff0)
-    return coefficients
+    def compute_elements_for_n(n):
+        def compute_row(i):
+            def compute_entry(j):
+                return element(n, i, j, chi_grid, power_grid)
+            return vmap(compute_entry, in_axes=(0,))(indices)
+        return vmap(compute_row, in_axes=(0,))(indices)
+    
+    def accumulate_step(n, accumulated):
+        return accumulated + compute_elements_for_n(n)
+    
+    return lax.fori_loop(0, grid_size, accumulate_step, coefficients)
 
-
+# Spectra
 @jax.jit
-def function(amplitude, phi_grid1, phi_grid2, chi_grid, power_grid, redshift_grid):
-    amplitude    = jnp.asarray(amplitude)
-    phi_grid1    = jnp.asarray(phi_grid1)      
-    phi_grid2    = jnp.asarray(phi_grid2)      
-    chi_grid     = jnp.asarray(chi_grid)
-    power_grid   = jnp.asarray(power_grid)
-    redshift_grid= jnp.asarray(redshift_grid)
-    
-    coeff = coefficient(chi_grid, power_grid, redshift_grid)   
-    #for m1,m2,i,j in range()
-    functions = amplitude * jnp.einsum('mi,nj,ijl->mnl', phi_grid1, phi_grid2, coeff)
-    return functions
+def spectra(factor, phi_a_grid, phi_b_grid, chi_grid, power_grid):
+    coefficients = coefficient(chi_grid, power_grid)
+    spectrum = factor * jnp.einsum('mi,nj,ijl->mnl', phi_a_grid, phi_b_grid, coefficients)
+    return spectrum
