@@ -6,8 +6,6 @@ import pyccl
 import scipy
 import numpy
 import argparse
-from itertools import product
-
 
 def main(tag, path, label, folder):
     '''
@@ -28,12 +26,15 @@ def main(tag, path, label, folder):
     
     # Path
     sys.path.insert(0, os.path.join(path, 'PYTHON'))
+    from PROJECTION import SS, SN, NS, NN
+    
+    # Folder
     data_folder = os.path.join(folder, 'DATA/', tag)
     info_folder = os.path.join(folder, 'INFO/')
     
     python_folder = os.path.join(folder, 'PYTHON/')
-    os.makedirs(os.path.join(python_folder, 'CCL/'), exist_ok = True)
-    os.makedirs(os.path.join(python_folder, 'CCL/', tag), exist_ok = True)
+    os.makedirs(os.path.join(python_folder, 'CPU/'), exist_ok = True)
+    os.makedirs(os.path.join(python_folder, 'CPU/', tag), exist_ok = True)
     
     # Grid
     z1 = 0.0
@@ -85,7 +86,6 @@ def main(tag, path, label, folder):
     ell2 = 2000
     ell_size = 20
     ell_grid = numpy.geomspace(ell1, ell2, ell_size + 1)
-    ell_data = numpy.sqrt(ell_grid[1:] * (ell_grid[:-1]))
     
     # Number
     count1 = 10
@@ -100,16 +100,16 @@ def main(tag, path, label, folder):
         begin = time.time()
         for _ in range(count):
             cosmology = pyccl.Cosmology(
-                h=numpy.random.uniform(cosmology_info['H'] * 0.9, cosmology_info['H'] * 1.1),
-                w0=numpy.random.uniform(cosmology_info['W0'] * 0.9, cosmology_info['W0'] * 1.1),
-                wa=numpy.random.uniform(cosmology_info['WA'] * 0.9, cosmology_info['WA'] * 1.1), 
-                n_s=numpy.random.uniform(cosmology_info['NS'] * 0.9, cosmology_info['NS'] * 1.1), 
-                A_s=numpy.random.uniform(cosmology_info['AS'] * 0.9, cosmology_info['AS'] * 1.1),
-                m_nu=numpy.random.uniform(cosmology_info['M_NU'] * 0.9, cosmology_info['M_NU'] * 1.1),  
-                Neff=numpy.random.uniform(cosmology_info['N_EFF'] * 0.9, cosmology_info['N_EFF'] * 1.1),
-                Omega_b=numpy.random.uniform(cosmology_info['OMEGA_B'] * 0.9, cosmology_info['OMEGA_B'] * 1.1), 
-                Omega_k=numpy.random.uniform(cosmology_info['OMEGA_K'] * 0.9, cosmology_info['OMEGA_K'] * 1.1), 
-                Omega_c=numpy.random.uniform(cosmology_info['OMEGA_CDM'] * 0.9, cosmology_info['OMEGA_CDM'] * 1.1), 
+                h=numpy.random.uniform(cosmology_info['H'] * 0.95, cosmology_info['H'] * 1.05),
+                w0=numpy.random.uniform(cosmology_info['W0'] * 0.95, cosmology_info['W0'] * 1.05),
+                wa=numpy.random.uniform(cosmology_info['WA'] * 0.95, cosmology_info['WA'] * 1.05), 
+                n_s=numpy.random.uniform(cosmology_info['NS'] * 0.95, cosmology_info['NS'] * 1.05), 
+                A_s=numpy.random.uniform(cosmology_info['AS'] * 0.95, cosmology_info['AS'] * 1.05),
+                m_nu=numpy.random.uniform(cosmology_info['M_NU'] * 0.95, cosmology_info['M_NU'] * 1.05),  
+                Neff=numpy.random.uniform(cosmology_info['N_EFF'] * 0.95, cosmology_info['N_EFF'] * 1.05),
+                Omega_b=numpy.random.uniform(cosmology_info['OMEGA_B'] * 0.95, cosmology_info['OMEGA_B'] * 1.05), 
+                Omega_k=numpy.random.uniform(cosmology_info['OMEGA_K'] * 0.95, cosmology_info['OMEGA_K'] * 1.05), 
+                Omega_c=numpy.random.uniform(cosmology_info['OMEGA_CDM'] * 0.95, cosmology_info['OMEGA_CDM'] * 1.05), 
                 mass_split='single', matter_power_spectrum='halofit', transfer_function='boltzmann_camb',
                 extra_parameters={'camb': {'kmax': 50, 'lmax': 5000, 'halofit_version': 'mead2020_feedback', 'HMCode_logT_AGN': 7.8}}
             )
@@ -120,29 +120,178 @@ def main(tag, path, label, folder):
             pyccl.gsl_params['INTEGRATION_GAUSS_KRONROD_POINTS'] = 100
             pyccl.gsl_params['INTEGRATION_LIMBER_GAUSS_KRONROD_POINTS'] = 100
             
-            c_ccl_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size))
-            for (bin_index1, bin_index2) in product(range(source_bin_size), range(source_bin_size)):
-                tracer1 = pyccl.tracers.WeakLensingTracer(cosmo=cosmology, dndz=[z_grid, source_psi_grid[bin_index1, :]], has_shear=True, ia_bias=[z_grid, alignment_bias], use_A_ia=False, n_samples=grid_size + 1)
-                tracer2 = pyccl.tracers.WeakLensingTracer(cosmo=cosmology, dndz=[z_grid, source_psi_grid[bin_index2, :]], has_shear=True, ia_bias=[z_grid, alignment_bias], use_A_ia=False, n_samples=grid_size + 1)
-                c_ccl_ee[bin_index1, bin_index2, :] = pyccl.cells.angular_cl(cosmo=cosmology, tracer1=tracer1, tracer2=tracer2, ell=ell_data, p_of_k_a='delta_matter:delta_matter', l_limber=-1, limber_max_error=0.001, limber_integration_method='spline', p_of_k_a_lin='delta_matter:delta_matter', return_meta=False)
+            # Phi
+            a_grid = 1 / (1 + z_grid)
+            chi_grid = pyccl.background.comoving_radial_distance(cosmo=cosmology, a=a_grid)
+            lens_phi_grid = lens_psi_grid * cosmology.h_over_h0(a=a_grid) * cosmology_info['H'] * 100000 / scipy.constants.c
+            source_phi_grid = source_psi_grid * cosmology.h_over_h0(a=a_grid) * cosmology_info['H'] * 100000 / scipy.constants.c
             
-            c_ccl_te = numpy.zeros((lens_bin_size, source_bin_size, ell_size))
-            for (bin_index1, bin_index2) in product(range(lens_bin_size), range(source_bin_size)):
-                tracer1 = pyccl.tracers.NumberCountsTracer(cosmo=cosmology, dndz=[z_grid, lens_psi_grid[bin_index1, :]], bias=[z_grid, galaxy_bias], mag_bias=[z_grid, magnification_bias[bin_index1] * numpy.ones(grid_size + 1)], has_rsd=False, n_samples=grid_size + 1)
-                tracer2 = pyccl.tracers.WeakLensingTracer(cosmo=cosmology, dndz=[z_grid, source_psi_grid[bin_index2, :]], has_shear=True, ia_bias=[z_grid, alignment_bias], use_A_ia=False, n_samples=grid_size + 1)
-                c_ccl_te[bin_index1, bin_index2, :] = pyccl.cells.angular_cl(cosmo=cosmology, tracer1=tracer1, tracer2=tracer2, ell=ell_data, p_of_k_a='delta_matter:delta_matter', l_limber=-1, limber_max_error=0.001, limber_integration_method='spline', p_of_k_a_lin='delta_matter:delta_matter', return_meta=False)
+            chi_mesh, ell_mesh = numpy.meshgrid(chi_grid, ell_grid)
+            scale_data = numpy.nan_to_num(numpy.divide(ell_mesh + 1/2, chi_mesh, out=numpy.zeros((ell_size + 1, grid_size + 1)) + numpy.inf, where=chi_mesh > 0))
             
-            c_ccl_tt = numpy.zeros((lens_bin_size, lens_bin_size, ell_size))
-            for (bin_index1, bin_index2) in product(range(lens_bin_size), range(lens_bin_size)):
-                tracer1 = pyccl.tracers.NumberCountsTracer(cosmo=cosmology, dndz=[z_grid, lens_psi_grid[bin_index1, :]], bias=[z_grid, galaxy_bias], mag_bias=[z_grid, magnification_bias[bin_index1] * numpy.ones(grid_size + 1)], has_rsd=False, n_samples=grid_size + 1)
-                tracer2 = pyccl.tracers.NumberCountsTracer(cosmo=cosmology, dndz=[z_grid, lens_psi_grid[bin_index2, :]], bias=[z_grid, galaxy_bias], mag_bias=[z_grid, magnification_bias[bin_index2] * numpy.ones(grid_size + 1)], has_rsd=False, n_samples=grid_size + 1)
-                c_ccl_tt[bin_index1, bin_index2, :] = pyccl.cells.angular_cl(cosmo=cosmology, tracer1=tracer1, tracer2=tracer2, ell=ell_data, p_of_k_a='delta_matter:delta_matter', l_limber=-1, limber_max_error=0.001, limber_integration_method='spline', p_of_k_a_lin='delta_matter:delta_matter', return_meta=False)
+            # Power
+            power_data = numpy.zeros((ell_size + 1, grid_size + 1))
+            for grid_index in range(grid_size + 1):
+                power_data[:, grid_index] = pyccl.power.nonlin_matter_power(cosmo=cosmology, k=scale_data[:, grid_index], a=a_grid[grid_index])
+            
+            # Cell EE
+            c_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
+            
+            # Factor
+            factor_ss = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+            factor_si = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+            factor_is = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+            factor_ii = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+            
+            # Amplitude
+            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
+            amplitude_ss = amplitude ** 2 
+            amplitude_si = amplitude * alignment_bias
+            amplitude_is = alignment_bias * amplitude
+            amplitude_ii = alignment_bias ** 2
+            
+            c_data_ee += SS.spectra(
+                factor=numpy.array(factor_ss, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_ss, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_ee += SN.spectra(
+                factor=numpy.array(factor_si, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_si, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_ee += NS.spectra(
+                factor=numpy.array(factor_is, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_is, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_ee += NN.spectra(
+                factor=numpy.array(factor_ii, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_ii, dtype=numpy.float64)
+            )
+            
+            # Cell TE
+            c_data_te = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
+            
+            # Factor
+            factor_ms = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+            factor_mi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+            factor_gs = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
+            factor_gi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
+            
+            # Amplitude
+            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
+            amplitude_ms = amplitude ** 2
+            amplitude_mi = amplitude * alignment_bias
+            amplitude_gs = galaxy_bias * amplitude
+            amplitude_gi = galaxy_bias * alignment_bias
+            
+            c_data_te += SS.spectra(
+                factor=numpy.array(factor_ms, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_ms, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_te += SN.spectra(
+                factor=numpy.array(factor_mi, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_mi, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_te += NS.spectra(
+                factor=numpy.array(factor_gs, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_gs, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_te += NN.spectra(
+                factor=numpy.array(factor_gi, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_gi, dtype=numpy.float64)
+            )
+            
+            # Cell
+            c_data_tt = numpy.zeros((lens_bin_size, lens_bin_size, ell_size + 1))
+            
+            # Factor
+            factor_mm = ell_grid ** 2 * (ell_grid + 1) ** 2 / (ell_grid + 1 / 2) ** 4
+            factor_mg = ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+            factor_gm = ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+            factor_gg = numpy.ones(ell_size + 1)
+            
+            # Amplitude
+            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
+            amplitude_mm = amplitude ** 2
+            amplitude_mg = amplitude * galaxy_bias
+            amplitude_gm = galaxy_bias * amplitude
+            amplitude_gg = galaxy_bias ** 2
+            
+            c_data_tt += SS.spectra(
+                factor=numpy.array(factor_mm, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64), 
+                phi_b_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_mm, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_tt += SN.spectra(
+                factor=numpy.array(factor_mg, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64), 
+                phi_b_grid=numpy.array(lens_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_mg, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_tt += NS.spectra(
+                factor=numpy.array(factor_gm, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_gm, dtype=numpy.float64), 
+                redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
+            )
+            
+            c_data_tt += NN.spectra(
+                factor=numpy.array(factor_gg, dtype=numpy.float64), 
+                phi_a_grid=numpy.array(lens_phi_grid, dtype=numpy.float64), 
+                phi_b_grid=numpy.array(lens_phi_grid, dtype=numpy.float64),
+                chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
+                power_grid=numpy.array(power_data * amplitude_gg, dtype=numpy.float64)
+            )
         
         stop = time.time()
         time_list[index] = (stop - begin) / 60
     
     # Save
-    numpy.savetxt(os.path.join(python_folder, 'CCL/', tag, 'T_{}.txt'.format(label)), time_list)
+    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}.txt'.format(label)), time_list)
     
     # Duration
     end = time.time()

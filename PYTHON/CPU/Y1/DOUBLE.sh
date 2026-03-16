@@ -8,7 +8,7 @@
 #SBATCH -o LOG/%x_%j.out
 #SBATCH --cpus-per-task=256
 #SBATCH --ntasks-per-node=1
-#SBATCH -J PYTHON_CCL_Y1_DOUBLE
+#SBATCH -J PYTHON_CPU_Y1_DOUBLE
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
 # Load modules
@@ -35,4 +35,4 @@ BASE_PATH="/pscratch/sd/y/yhzhang/LimberCloud/"
 BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
 
 # Run applications
-python -u "${BASE_PATH}PYTHON/CCL/${TAG}/${LABEL}.py" --tag=$TAG --path=$BASE_PATH --label=$LABEL --folder=$BASE_FOLDER
+python -u "${BASE_PATH}PYTHON/CPU/${TAG}/${LABEL}.py" --tag=$TAG --path=$BASE_PATH --label=$LABEL --folder=$BASE_FOLDER

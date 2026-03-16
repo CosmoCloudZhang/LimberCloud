@@ -29,7 +29,7 @@ export OMP_PROC_BIND=spread
 export OMP_PLACES=threads
 
 # Initialize the process
-TAG="Y1"
+TAG="Y10"
 LABEL="TRIPLE"
 BASE_PATH="/pscratch/sd/y/yhzhang/LimberCloud/"
 BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
