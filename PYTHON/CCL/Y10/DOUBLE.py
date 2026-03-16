@@ -35,23 +35,31 @@ def main(tag, path, label, folder):
     os.makedirs(os.path.join(python_folder, 'CCL/'), exist_ok = True)
     os.makedirs(os.path.join(python_folder, 'CCL/', tag), exist_ok = True)
     
+    # Grid
+    z1 = 0.0
+    z2 = 3.5
+    grid_size = 350
+    z_grid = numpy.linspace(z1, z2, grid_size + 1)
+    
     # Lens
     lens = numpy.load(os.path.join(data_folder, 'lsst_lens_bins.npy'), allow_pickle=True).item()
-    
-    # Size
-    grid_size = 350
-    lens_bin_size = len(lens['bins'])
     lens_redshift = lens['redshift_range']
-    
-    # Grid
-    z1 = lens_redshift.min()
-    z2 = lens_redshift.max()
-    z_grid = numpy.linspace(z1, z2, grid_size + 1)
+    lens_bin_size = len(lens['bins'])
     
     lens_psi_grid = numpy.zeros((lens_bin_size, grid_size + 1))
     for bin_index in range(lens_bin_size):
         lens_psi_grid[bin_index, :] = numpy.interp(x=z_grid, xp=lens_redshift, fp=lens['bins'][bin_index])
     lens_psi_grid = lens_psi_grid / scipy.integrate.trapezoid(x=z_grid, y=lens_psi_grid, axis=1)[:, numpy.newaxis]
+    
+    # Source
+    source = numpy.load(os.path.join(data_folder, 'lsst_source_bins.npy'), allow_pickle=True).item()
+    source_redshift = source['redshift_range']
+    source_bin_size = len(source['bins'])
+    
+    source_psi_grid = numpy.zeros((source_bin_size, grid_size + 1))
+    for bin_index in range(source_bin_size):
+        source_psi_grid[bin_index, :] = numpy.interp(x=z_grid, xp=source_redshift, fp=source['bins'][bin_index])
+    source_psi_grid = source_psi_grid / scipy.integrate.trapezoid(x=z_grid, y=source_psi_grid, axis=1)[:, numpy.newaxis]
     
     # Galaxy
     with open(os.path.join(info_folder, 'GALAXY.json'), 'r') as file:
@@ -62,24 +70,6 @@ def main(tag, path, label, folder):
     with open(os.path.join(info_folder, 'MAGNIFICATION.json'), 'r') as file:
         magnification_info = json.load(file)
     magnification_bias = 5 * numpy.array(magnification_info[tag]) - 2
-    
-    # Source
-    source = numpy.load(os.path.join(data_folder, 'lsst_source_bins.npy'), allow_pickle=True).item()
-    
-    # Size
-    grid_size = 350
-    source_bin_size = len(source['bins'])
-    source_redshift = source['redshift_range']
-    
-    # Grid
-    z1 = source_redshift.min()
-    z2 = source_redshift.max()
-    z_grid = numpy.linspace(z1, z2, grid_size + 1)
-    
-    source_psi_grid = numpy.zeros((source_bin_size, grid_size + 1))
-    for bin_index in range(source_bin_size):
-        source_psi_grid[bin_index, :] = numpy.interp(x=z_grid, xp=source_redshift, fp=source['bins'][bin_index])
-    source_psi_grid = source_psi_grid / scipy.integrate.trapezoid(x=z_grid, y=source_psi_grid, axis=1)[:, numpy.newaxis]
     
     # Alignment
     with open(os.path.join(info_folder, 'ALIGNMENT.json'), 'r') as file:

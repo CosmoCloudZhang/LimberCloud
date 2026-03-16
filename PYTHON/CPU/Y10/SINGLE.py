@@ -35,18 +35,16 @@ def main(tag, path, label, folder):
     os.makedirs(os.path.join(python_folder, 'CCL/'), exist_ok = True)
     os.makedirs(os.path.join(python_folder, 'CCL/', tag), exist_ok = True)
     
-    # Load in Data
-    source = numpy.load(os.path.join(data_folder, 'lsst_source_bins.npy'), allow_pickle=True).item()
-    
-    # Size
-    grid_size = 350
-    source_bin_size = len(source['bins'])
-    source_redshift = source['redshift_range']
-    
     # Grid
-    z1 = source_redshift.min()
-    z2 = source_redshift.max()
+    z1 = 0.0
+    z2 = 3.5
+    grid_size = 350
     z_grid = numpy.linspace(z1, z2, grid_size + 1)
+    
+    # Source
+    source = numpy.load(os.path.join(data_folder, 'lsst_source_bins.npy'), allow_pickle=True).item()
+    source_redshift = source['redshift_range']
+    source_bin_size = len(source['bins'])
     
     source_psi_grid = numpy.zeros((source_bin_size, grid_size + 1))
     for bin_index in range(source_bin_size):
