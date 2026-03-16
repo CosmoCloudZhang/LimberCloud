@@ -213,7 +213,7 @@ def main(tag, path, label, folder):
             )
             
             # Cell TE
-            c_data_te = jnp.zeros((source_bin_size, source_bin_size, ell_size + 1))
+            c_data_te = jnp.zeros((lens_bin_size, source_bin_size, ell_size + 1))
             
             c_data_te = c_data_te + SS.spectra(
                 factor=numpy.array(factor_ms, dtype=numpy.float64), 
