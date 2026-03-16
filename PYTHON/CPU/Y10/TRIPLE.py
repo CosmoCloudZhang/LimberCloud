@@ -87,6 +87,40 @@ def main(tag, path, label, folder):
     ell_size = 20
     ell_grid = numpy.geomspace(ell1, ell2, ell_size + 1)
     
+    # Factor
+    factor_ss = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    factor_si = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    factor_is = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    factor_ii = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    
+    factor_ms = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+    factor_mi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+    factor_gs = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
+    factor_gi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
+    
+    factor_mm = ell_grid ** 2 * (ell_grid + 1) ** 2 / (ell_grid + 1 / 2) ** 4
+    factor_mg = ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+    factor_gm = ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
+    factor_gg = numpy.ones(ell_size + 1)
+    
+    # Amplitude
+    amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
+    
+    amplitude_ss = amplitude ** 2 
+    amplitude_si = amplitude * alignment_bias
+    amplitude_is = alignment_bias * amplitude
+    amplitude_ii = alignment_bias ** 2
+    
+    amplitude_ms = amplitude ** 2
+    amplitude_mi = amplitude * alignment_bias
+    amplitude_gs = galaxy_bias * amplitude
+    amplitude_gi = galaxy_bias * alignment_bias
+    
+    amplitude_mm = amplitude ** 2
+    amplitude_mg = amplitude * galaxy_bias
+    amplitude_gm = galaxy_bias * amplitude
+    amplitude_gg = galaxy_bias ** 2
+    
     # Number
     count1 = 10
     count2 = 100
@@ -137,19 +171,6 @@ def main(tag, path, label, folder):
             # Cell EE
             c_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
             
-            # Factor
-            factor_ss = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            factor_si = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            factor_is = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            factor_ii = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            
-            # Amplitude
-            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
-            amplitude_ss = amplitude ** 2 
-            amplitude_si = amplitude * alignment_bias
-            amplitude_is = alignment_bias * amplitude
-            amplitude_ii = alignment_bias ** 2
-            
             c_data_ee += SS.spectra(
                 factor=numpy.array(factor_ss, dtype=numpy.float64), 
                 phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
@@ -188,19 +209,6 @@ def main(tag, path, label, folder):
             # Cell TE
             c_data_te = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
             
-            # Factor
-            factor_ms = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
-            factor_mi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
-            factor_gs = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
-            factor_gi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
-            
-            # Amplitude
-            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
-            amplitude_ms = amplitude ** 2
-            amplitude_mi = amplitude * alignment_bias
-            amplitude_gs = galaxy_bias * amplitude
-            amplitude_gi = galaxy_bias * alignment_bias
-            
             c_data_te += SS.spectra(
                 factor=numpy.array(factor_ms, dtype=numpy.float64), 
                 phi_a_grid=numpy.array(lens_phi_grid * magnification_bias[:, numpy.newaxis], dtype=numpy.float64), 
@@ -238,19 +246,6 @@ def main(tag, path, label, folder):
             
             # Cell
             c_data_tt = numpy.zeros((lens_bin_size, lens_bin_size, ell_size + 1))
-            
-            # Factor
-            factor_mm = ell_grid ** 2 * (ell_grid + 1) ** 2 / (ell_grid + 1 / 2) ** 4
-            factor_mg = ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
-            factor_gm = ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
-            factor_gg = numpy.ones(ell_size + 1)
-            
-            # Amplitude
-            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
-            amplitude_mm = amplitude ** 2
-            amplitude_mg = amplitude * galaxy_bias
-            amplitude_gm = galaxy_bias * amplitude
-            amplitude_gg = galaxy_bias ** 2
             
             c_data_tt += SS.spectra(
                 factor=numpy.array(factor_mm, dtype=numpy.float64), 

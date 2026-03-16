@@ -67,6 +67,20 @@ def main(tag, path, label, folder):
     ell_size = 20
     ell_grid = numpy.geomspace(ell1, ell2, ell_size + 1)
     
+    # Factor
+    factor_ss = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    factor_si = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    factor_is = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    factor_ii = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
+    
+    # Amplitude
+    amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
+    
+    amplitude_ss = amplitude ** 2 
+    amplitude_si = amplitude * alignment_bias
+    amplitude_is = alignment_bias * amplitude
+    amplitude_ii = alignment_bias ** 2
+    
     # Number
     count1 = 10
     count2 = 100
@@ -115,19 +129,6 @@ def main(tag, path, label, folder):
             
             # Cell EE
             c_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
-            
-            # Factor
-            factor_ss = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            factor_si = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            factor_is = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            factor_ii = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-            
-            # Amplitude
-            amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
-            amplitude_ss = amplitude ** 2 
-            amplitude_si = amplitude * alignment_bias
-            amplitude_is = alignment_bias * amplitude
-            amplitude_ii = alignment_bias ** 2
             
             c_data_ee += SS.spectra(
                 factor=numpy.array(factor_ss, dtype=numpy.float64), 
