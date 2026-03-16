@@ -143,7 +143,7 @@ def element8(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     return element
 
 # Coefficient
-@numba.njit(cache=True)
+@numba.njit(cache=True, parallel=True)
 def coefficient(chi_grid, power_grid, redshift_grid):
     grid_size = chi_grid.shape[0] - 1
     ell_size = power_grid.shape[0] - 1
@@ -161,12 +161,12 @@ def coefficient(chi_grid, power_grid, redshift_grid):
             coefficients[n, n + 1, :] += element
         # Element 3
         if n + 1 < grid_size:
-            for k in range(n + 2, grid_size):
+            for k in numba.prange(n + 2, grid_size):
                 element = element3(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
                 coefficients[k, n, :] += element
         # Element 4
         if n + 1 < grid_size:
-            for k in range(n + 2, grid_size):
+            for k in numba.prange(n + 2, grid_size):
                 element = element4(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:,n], power_grid[:,n + 1], redshift_grid[n], redshift_grid[n + 1])
                 coefficients[k, n + 1, :] += element
         # Element 5

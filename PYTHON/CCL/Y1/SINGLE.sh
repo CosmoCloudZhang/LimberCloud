@@ -22,11 +22,16 @@ source $HOME/.bashrc
 conda activate $CosmoENV
 
 # Set environment
-export NUMEXPR_MAX_THREADS=$SLURM_CPUS_PER_TASK
-export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
-export HDF5_USE_FILE_LOCKING=FALSE
-export OMP_PROC_BIND=spread
+export MKL_NUM_THREADS=1
+export NUMEXPR_MAX_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+
+export OMP_NUM_THREADS=1
 export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+export NUMBA_NUM_THREADS=1
+export NUMBA_THREADING_LAYER=omp
 
 # Initialize the process
 TAG="Y1"

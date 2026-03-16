@@ -106,12 +106,12 @@ def main(tag, path, label, folder):
             source_phi_grid = source_psi_grid * cosmology.h_over_h0(a=a_grid) * cosmology_info['H'] * 100000 / scipy.constants.c
             
             chi_mesh, ell_mesh = numpy.meshgrid(chi_grid, ell_grid)
-            scale_data = numpy.nan_to_num(numpy.divide(ell_mesh + 1/2, chi_mesh, out=numpy.zeros((ell_size + 1, grid_size + 1)) + numpy.inf, where=chi_mesh > 0))
+            scale_grid = numpy.nan_to_num(numpy.divide(ell_mesh + 1/2, chi_mesh, out=numpy.zeros((ell_size + 1, grid_size + 1)) + numpy.inf, where=chi_mesh > 0))
             
             # Power
-            power_data = numpy.zeros((ell_size + 1, grid_size + 1))
+            power_grid = numpy.zeros((ell_size + 1, grid_size + 1))
             for grid_index in range(grid_size + 1):
-                power_data[:, grid_index] = pyccl.power.nonlin_matter_power(cosmo=cosmology, k=scale_data[:, grid_index], a=a_grid[grid_index])
+                power_grid[:,grid_index] = pyccl.power.nonlin_matter_power(cosmo=cosmology, k=scale_grid[:,grid_index], a=a_grid[grid_index])
             
             # Cell EE
             c_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
@@ -134,7 +134,7 @@ def main(tag, path, label, folder):
                 phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
                 phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
                 chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-                power_grid=numpy.array(power_data * amplitude_ss, dtype=numpy.float64), 
+                power_grid=numpy.array(power_grid * amplitude_ss, dtype=numpy.float64), 
                 redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
             )
             
@@ -143,7 +143,7 @@ def main(tag, path, label, folder):
                 phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
                 phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
                 chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-                power_grid=numpy.array(power_data * amplitude_si, dtype=numpy.float64), 
+                power_grid=numpy.array(power_grid * amplitude_si, dtype=numpy.float64), 
                 redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
             )
             
@@ -152,7 +152,7 @@ def main(tag, path, label, folder):
                 phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
                 phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
                 chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-                power_grid=numpy.array(power_data * amplitude_is, dtype=numpy.float64), 
+                power_grid=numpy.array(power_grid * amplitude_is, dtype=numpy.float64), 
                 redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
             )
             
@@ -161,7 +161,7 @@ def main(tag, path, label, folder):
                 phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
                 phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
                 chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-                power_grid=numpy.array(power_data * amplitude_ii, dtype=numpy.float64)
+                power_grid=numpy.array(power_grid * amplitude_ii, dtype=numpy.float64)
             )
         
         stop = time.time()
