@@ -287,99 +287,68 @@ def element10(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
-# Element
-@jax.jit
-def element(n, i, j, chi_grid, power_grid, redshift_grid):
-    grid_size = chi_grid.shape[0] - 1
-    zeros_vector = jnp.zeros_like(power_grid[:, 0])
-    
-    condition0  = ((i < n) & (n < grid_size)) | ((j < n) & (n < grid_size))
-    condition1  = ((n == i) & (i < grid_size)) & ((n == j) & (j < grid_size))
-    condition2  = ( ((n == i) & (n + 1 == j) & (n + 2 < chi_grid.shape[0])) | ((n + 1 == i) & (n == j) & (n + 2 < chi_grid.shape[0])) )
-    condition3  = ((n == i) & (n + 1 < j) & (j < grid_size))
-    condition4  = ((n + 1 < i) & (i < grid_size) & (n == j))
-    condition5  = ( ((n == i) & (j == grid_size)) | ((i == grid_size) & (n == j)) ) & (n < grid_size)
-    condition6  = ((n + 1 == i) & (i < grid_size)) & ((n + 1 == j) & (j < grid_size)) & (n + 2 < chi_grid.shape[0])
-    condition7  = ((n + 1 == i) & (i < grid_size)) & (n + 1 < j) & (j < grid_size) & (n + 2 < chi_grid.shape[0])
-    condition8  = (n + 1 < i) & (i < grid_size) & ((n + 1 == j) & (j < grid_size)) & (n + 2 < chi_grid.shape[0])
-    condition9  = ( ((n + 1 == i) & (j == grid_size)) | ((i == grid_size) & (n + 1 == j)) ) & (n + 2 < chi_grid.shape[0])
-    condition10 = (n + 1 < i) & (i < grid_size) & (n + 1 < j) & (j < grid_size)
-    condition11 = (n + 1 < i) & (i < grid_size) & (j == grid_size)
-    condition12 = (i == grid_size) & (n + 1 < j) & (j < grid_size)
-    condition13 = (n < grid_size) & (i == grid_size) & (j == grid_size)
-    
-    branch_index = jnp.select(
-        [condition0, condition1, condition2, condition3, condition4, condition5, condition6, condition7, condition8, condition9, condition10, condition11, condition12, condition13],
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-        default=0
-    )
-    
-    def return_zeros(_):
-        return zeros_vector
-    
-    def compute_element1(_):
-        return element1(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element2(_):
-        return element2(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element3_at_j(_):
-        return element3(chi_grid[n], chi_grid[n + 1], chi_grid[j - 1], chi_grid[j], chi_grid[j + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element3_at_i(_):
-        return element3(chi_grid[n], chi_grid[n + 1], chi_grid[i - 1], chi_grid[i], chi_grid[i + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element4(_):
-        return element4(chi_grid[n], chi_grid[n + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element5(_):
-        return element5(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element6_at_j(_):
-        return element6(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], chi_grid[j - 1], chi_grid[j], chi_grid[j + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element6_at_i(_):
-        return element6(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], chi_grid[i - 1], chi_grid[i], chi_grid[i + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element7(_):
-        return element7(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element8(_):
-        return element8(chi_grid[n], chi_grid[n + 1], chi_grid[i - 1], chi_grid[i], chi_grid[i + 1], chi_grid[j - 1], chi_grid[j], chi_grid[j + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element9_at_i(_):
-        return element9(chi_grid[n], chi_grid[n + 1], chi_grid[i - 1], chi_grid[i], chi_grid[i + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element9_at_j(_):
-        return element9(chi_grid[n], chi_grid[n + 1], chi_grid[j - 1], chi_grid[j], chi_grid[j + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    def compute_element10(_):
-        return element10(chi_grid[n], chi_grid[n + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
-    
-    branches = [return_zeros, compute_element1, compute_element2, compute_element3_at_j,
-                compute_element3_at_i, compute_element4, compute_element5, compute_element6_at_j,
-                compute_element6_at_i, compute_element7, compute_element8, compute_element9_at_i,
-                compute_element9_at_j, compute_element10]
-    return lax.switch(branch_index, branches, None)
-
 # Coefficient
 @jax.jit
 def coefficient(chi_grid, power_grid, redshift_grid):
     grid_size = chi_grid.shape[0] - 1
     ell_size = power_grid.shape[0] - 1
-    
     coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1), dtype=power_grid.dtype)
-    indices = jnp.arange(grid_size + 1, dtype=jnp.int32)
     
-    def compute_elements_for_n(n):
-        def compute_row(i):
-            def compute_entry(j):
-                return element(n, i, j, chi_grid, power_grid, redshift_grid)
-            return vmap(compute_entry, in_axes=(0,))(indices)
-        return vmap(compute_row, in_axes=(0,))(indices)
-    
-    def accumulate_step(n, accumulated):
-        return accumulated + compute_elements_for_n(n)
+    k_indices = jnp.arange(grid_size + 1, dtype=jnp.int32)
+    def accumulate_step(n, coefficients):
+        valid = (n + 1 < grid_size)
+        
+        value1 = element1(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        coefficients = coefficients.at[n, n, :].add(value1)
+        
+        value2 = element2(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        coefficients = coefficients.at[n, n + 1, :].add(jnp.where(valid, value2, jnp.zeros_like(value2)))
+        coefficients = coefficients.at[n + 1, n, :].add(jnp.where(valid, value2, jnp.zeros_like(value2)))
+        
+        def compute_value3(k):
+            return element3(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        value3_all = vmap(compute_value3)(k_indices)
+        value3_mask = (k_indices >= n + 2) & (k_indices < grid_size)
+        coefficients = coefficients.at[n, :, :].add(jnp.where(value3_mask[:, None], value3_all, 0.0))
+        coefficients = coefficients.at[:, n, :].add(jnp.where(value3_mask[:, None], value3_all, 0.0))
+        
+        value4 = element4(chi_grid[n], chi_grid[n + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        coefficients = coefficients.at[n, grid_size, :].add(value4)
+        coefficients = coefficients.at[grid_size, n, :].add(value4)
+        
+        value5 = element5(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        coefficients = coefficients.at[n + 1, n + 1, :].add(jnp.where(valid, value5, jnp.zeros_like(value5)))
+        
+        def compute_element6(k):
+            return element6(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2],chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        value6_all = vmap(compute_element6)(k_indices)
+        value6_mask = (k_indices >= n + 2) & (k_indices < grid_size) & valid
+        coefficients = coefficients.at[n + 1, :, :].add(jnp.where(value6_mask[:, None], value6_all, 0.0))
+        coefficients = coefficients.at[:, n + 1, :].add(jnp.where(value6_mask[:, None], value6_all, 0.0))
+        
+        value7 = element7(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        coefficients = coefficients.at[n + 1, grid_size, :].add(jnp.where(valid, value7, jnp.zeros_like(value7)))
+        coefficients = coefficients.at[grid_size, n + 1, :].add(jnp.where(valid, value7, jnp.zeros_like(value7)))
+        
+        def compute_element8_row(i):
+            def compute_element8_entry(j):
+                return element8(chi_grid[n], chi_grid[n + 1], chi_grid[i - 1], chi_grid[i], chi_grid[i + 1], chi_grid[j - 1], chi_grid[j], chi_grid[j + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+            return vmap(compute_element8_entry)(k_indices)
+        value8_all = vmap(compute_element8_row)(k_indices)
+        value8_mask = ((k_indices[:, None] >= n + 2) & (k_indices[:, None] < grid_size) & (k_indices[None, :] >= n + 2) & (k_indices[None, :] < grid_size))
+        coefficients = coefficients + jnp.where(value8_mask[:, :, None], value8_all, 0.0)
+        
+        def compute_element9(k):
+            return element9(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        value9_all = vmap(compute_element9)(k_indices)
+        value9_mask = (k_indices >= n + 2) & (k_indices < grid_size)
+        coefficients = coefficients.at[:, grid_size, :].add(jnp.where(value9_mask[:, None], value9_all, 0.0))
+        coefficients = coefficients.at[grid_size, :, :].add(jnp.where(value9_mask[:, None], value9_all, 0.0))
+        
+        value10 = element10(chi_grid[n], chi_grid[n + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
+        coefficients = coefficients.at[grid_size, grid_size, :].add(value10)
+        
+        return coefficients
     
     return lax.fori_loop(0, grid_size, accumulate_step, coefficients)
 
