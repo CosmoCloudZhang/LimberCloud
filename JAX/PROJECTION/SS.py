@@ -292,7 +292,7 @@ def element10(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
 def coefficient(chi_grid, power_grid, redshift_grid):
     grid_size = chi_grid.shape[0] - 1
     ell_size = power_grid.shape[0] - 1
-    coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1), dtype=power_grid.dtype)
+    coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1))
     
     k_indices = jnp.arange(grid_size + 1, dtype=jnp.int32)
     def accumulate_step(n, coefficients):
@@ -356,5 +356,4 @@ def coefficient(chi_grid, power_grid, redshift_grid):
 @jax.jit
 def spectra(factor, phi_a_grid, phi_b_grid, chi_grid, power_grid, redshift_grid):
     coefficients = coefficient(chi_grid, power_grid, redshift_grid)
-    spectrum = factor * jnp.einsum('mi,nj,ijl->mnl', phi_a_grid, phi_b_grid, coefficients)
-    return spectrum
+    return factor * jnp.einsum('mi,nj,ijl->mnl', phi_a_grid, phi_b_grid, coefficients)

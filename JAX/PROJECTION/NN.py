@@ -57,7 +57,7 @@ def element3(chi1, chi2, power1, power2):
 def coefficient(chi_grid, power_grid):
     grid_size = chi_grid.shape[0] - 1
     ell_size = power_grid.shape[0] - 1
-    coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1), dtype=power_grid.dtype)
+    coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1))
     
     def accumulate_step(n, coefficients):
         value1 = element1(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1])
@@ -79,5 +79,4 @@ def coefficient(chi_grid, power_grid):
 @jax.jit
 def spectra(factor, phi_a_grid, phi_b_grid, chi_grid, power_grid):
     coefficients = coefficient(chi_grid, power_grid)
-    spectrum = factor * jnp.einsum('mi,nj,ijl->mnl', phi_a_grid, phi_b_grid, coefficients)
-    return spectrum
+    return factor * jnp.einsum('mi,nj,ijl->mnl', phi_a_grid, phi_b_grid, coefficients, dtype=jnp.float64)
