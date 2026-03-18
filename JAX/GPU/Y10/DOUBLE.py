@@ -39,8 +39,8 @@ def main(tag, path, label, folder, number):
     info_folder = os.path.join(folder, 'INFO/')
     
     jax_folder = os.path.join(folder, 'JAX/')
-    os.makedirs(os.path.join(jax_folder, 'CPU/'), exist_ok=True)
-    os.makedirs(os.path.join(jax_folder, 'CPU/', tag), exist_ok=True)
+    os.makedirs(os.path.join(jax_folder, 'GPU/'), exist_ok=True)
+    os.makedirs(os.path.join(jax_folder, 'GPU/', tag), exist_ok=True)
     
     # Grid
     z1 = 0.0
@@ -314,10 +314,10 @@ def main(tag, path, label, folder, number):
             time_list[count_index] = duration_projection + duration_cosmology + duration_coefficient
     
     # Save
-    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
-    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
-    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
-    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
+    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
+    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
+    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
+    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
     
     # Duration
     end = time.time()

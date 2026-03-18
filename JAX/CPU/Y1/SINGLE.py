@@ -217,7 +217,6 @@ def main(tag, path, label, folder, number):
             time_projection_list[count_index] = duration_projection
             time_coefficient_list[count_index] = duration_coefficient
             time_list[count_index] = duration_projection + duration_cosmology + duration_coefficient
-            print(time_cosmology_list[count_index], time_projection_list[count_index], time_coefficient_list[count_index])
     
     # Save
     numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
