@@ -39,8 +39,8 @@ def main(tag, path, label, folder, number):
     info_folder = os.path.join(folder, 'INFO/')
     
     jax_folder = os.path.join(folder, 'JAX/')
-    os.makedirs(os.path.join(jax_folder, 'GPU/'), exist_ok=True)
-    os.makedirs(os.path.join(jax_folder, 'GPU/', tag), exist_ok=True)
+    os.makedirs(os.path.join(jax_folder, 'CPU/'), exist_ok=True)
+    os.makedirs(os.path.join(jax_folder, 'CPU/', tag), exist_ok=True)
     
     # Grid
     z1 = 0.0
@@ -127,10 +127,12 @@ def main(tag, path, label, folder, number):
     time_list = numpy.zeros(count_size)
     time_cosmology_list = numpy.zeros(count_size)
     time_projection_list = numpy.zeros(count_size)
+    time_coefficient_list = numpy.zeros(count_size)
     
     # Loop
-    cosmology_duration = 0.0
-    projection_duration = 0.0
+    duration_cosmology = 0.0
+    duration_projection = 0.0
+    duration_coefficient = 0.0
     for index in range(count_list.max()):
         t0 = time.time()
         cosmology = pyccl.Cosmology(
@@ -167,6 +169,9 @@ def main(tag, path, label, folder, number):
         power_grid = numpy.zeros((ell_size + 1, grid_size + 1))
         for grid_index in range(grid_size + 1):
             power_grid[:,grid_index] = pyccl.power.nonlin_matter_power(cosmo=cosmology, k=scale_grid[:,grid_index], a=a_grid[grid_index])
+        
+        t1 = time.time()
+        duration_cosmology += (t1 - t0)
         
         # Coefficient TE
         c_ms = SS.coefficient(
@@ -226,8 +231,8 @@ def main(tag, path, label, folder, number):
         c_gm.block_until_ready()
         c_gg.block_until_ready()
         
-        t1 = time.time()
-        cosmology_duration += (t1 - t0)
+        t2 = time.time()
+        duration_coefficient += (t2 - t1)
         
         # Cell TE
         cell_data_ms = TENSOR.spectra(
@@ -297,20 +302,22 @@ def main(tag, path, label, folder, number):
         cell_data_gm.block_until_ready()
         cell_data_gg.block_until_ready()
         
-        t2 = time.time()
-        projection_duration += (t2 - t1)
+        t3 = time.time()
+        duration_projection += (t3 - t2)
         
         if (index + 1) % count_step == 0:
             count_index = int((index + 1) // count_step) - 1
             
-            time_cosmology_list[count_index] = cosmology_duration
-            time_projection_list[count_index] = projection_duration
-            time_list[count_index] = projection_duration + cosmology_duration
+            time_cosmology_list[count_index] = duration_cosmology
+            time_projection_list[count_index] = duration_projection
+            time_coefficient_list[count_index] = duration_coefficient
+            time_list[count_index] = duration_projection + duration_cosmology + duration_coefficient
     
     # Save
-    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
-    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
-    numpy.savetxt(os.path.join(jax_folder, 'GPU/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
+    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
+    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
+    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
+    numpy.savetxt(os.path.join(jax_folder, 'CPU/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
     
     # Duration
     end = time.time()
