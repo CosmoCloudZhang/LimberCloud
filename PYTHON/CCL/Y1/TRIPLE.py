@@ -18,7 +18,7 @@ def main(tag, path, label, folder, number):
         path (str): The path of the project scripts
         label (str): The label of the configuration
         folder (str): The base folder of the dataset
-        number (int): The number of the threads for parallel computation
+        number (int): The number of cores for parallel computation
     
     Returns:
         duration (float): The duration of the process
@@ -92,7 +92,7 @@ def main(tag, path, label, folder, number):
     count1 = 100
     count2 = 1000
     count_size = 10
-    count_step = (count2 - count1) / count_size
+    count_step = int((count2 - count1) // (count_size - 1))
     count_list = numpy.linspace(count1, count2, count_size, dtype = 'int32')
     
     # Time
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     PARSE.add_argument('--path', type=str, required=True, help='The path of the project scripts')
     PARSE.add_argument('--label', type=str, required=True, help='The label of the configuration')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the dataset')
-    PARSE.add_argument('--number', type=int, required=True, help='The number of the threads for parallel computation')
+    PARSE.add_argument('--number', type=int, required=True, help='The number of cores for parallel computation')
     # Parse
     TAG = PARSE.parse_args().tag
     PATH = PARSE.parse_args().path

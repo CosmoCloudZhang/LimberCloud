@@ -11,6 +11,25 @@
 #SBATCH -J PYTHON_CCL_Y10_DOUBLE
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
+# Load modules
+module load conda
+module load cray-mpich
+module load PrgEnv-gnu
+module load cray-hdf5-parallel
+
+# Activate the conda environment
+source $HOME/.bashrc
+conda activate $CosmoENV
+
+# Set environment
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+export MKL_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export NUMEXPR_MAX_THREADS=$SLURM_CPUS_PER_TASK
+export OPENBLAS_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
 # Initialize the process
 TAG="Y10"
 LABEL="DOUBLE"
