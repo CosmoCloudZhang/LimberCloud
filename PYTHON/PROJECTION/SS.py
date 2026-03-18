@@ -327,13 +327,5 @@ def coefficient(chi_grid, power_grid, redshift_grid):
 
 # Spectra
 def spectra(factor, phi_a_grid, phi_b_grid, chi_grid, power_grid, redshift_grid):
-    bin_size_a = phi_a_grid.shape[0]
-    bin_size_b = phi_b_grid.shape[0]
-    ell_size = power_grid.shape[0] - 1
-    spectrum = numpy.zeros((bin_size_a, bin_size_b, ell_size + 1), dtype=numpy.float64)
-    
     coefficients = coefficient(chi_grid, power_grid, redshift_grid)
-    for a in range(bin_size_a):
-        for b in range(bin_size_b):
-            spectrum[a, b, :] = factor * numpy.einsum('ijl,i,j->l', coefficients, phi_a_grid[a, :], phi_b_grid[b, :], dtype=numpy.float64)
-    return spectrum
+    return factor * numpy.einsum('mi,nj,ijl->mnl', phi_a_grid, phi_b_grid, coefficients, dtype=numpy.float64)

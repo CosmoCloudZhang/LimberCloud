@@ -3,4 +3,4 @@ from . import SN
 from . import NS
 from . import NN
 
-__all__ = ['SS', 'SN', 'NS', 'NN']
+__all__ = ['NN', 'NS', 'SN', 'SS']
