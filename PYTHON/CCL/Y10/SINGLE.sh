@@ -22,7 +22,8 @@ source $HOME/.bashrc
 conda activate $CosmoENV
 
 # Set environment
-export OMP_PLACES=threads
+export OMP_PLACES=cores
+export SLURM_CPU_BIND=cores
 export OMP_PROC_BIND=spread
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
