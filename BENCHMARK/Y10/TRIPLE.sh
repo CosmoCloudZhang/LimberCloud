@@ -8,7 +8,7 @@
 #SBATCH -o LOG/%x_%j.out
 #SBATCH --cpus-per-task=128
 #SBATCH --ntasks-per-node=1
-#SBATCH -J BENCHMARK_Y1_TRIPLE
+#SBATCH -J BENCHMARK_Y10_TRIPLE
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
 # Load modules
@@ -31,7 +31,7 @@ export NUMEXPR_MAX_THREADS=$SLURM_CPUS_PER_TASK
 export OPENBLAS_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 # Initialize the process
-TAG="Y1"
+TAG="Y10"
 LABEL="TRIPLE"
 BASE_PATH="/pscratch/sd/y/yhzhang/LimberCloud/"
 BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
