@@ -9,7 +9,7 @@ import argparse
 
 def main(tag, path, label, folder, number):
     '''
-    Calculate the angular power spectra under the triple configuration
+    Calculate the angular power spectra under the double configuration
     
     Arguments:
         tag (str): The tag of the configuration
@@ -34,8 +34,8 @@ def main(tag, path, label, folder, number):
     info_folder = os.path.join(folder, 'INFO/')
     
     python_folder = os.path.join(folder, 'PYTHON/')
-    os.makedirs(os.path.join(python_folder, 'CPU/'), exist_ok = True)
-    os.makedirs(os.path.join(python_folder, 'CPU/', tag), exist_ok = True)
+    os.makedirs(os.path.join(python_folder, 'NUMBA/'), exist_ok = True)
+    os.makedirs(os.path.join(python_folder, 'NUMBA/', tag), exist_ok = True)
     
     # Grid
     z1 = 0.0
@@ -89,11 +89,6 @@ def main(tag, path, label, folder, number):
     ell_grid = numpy.geomspace(ell1, ell2, ell_size + 1)
     
     # Factor
-    factor_ss = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-    factor_si = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-    factor_is = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-    factor_ii = (1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))
-    
     factor_ms = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
     factor_mi = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1))) * ell_grid * (ell_grid + 1) / (ell_grid + 1 / 2) ** 2
     factor_gs = numpy.sqrt((1 + 3 / (2 * ell_grid + 1)) * (1 + 1 / (2 * ell_grid + 1)) * (1 - 1 / (2 * ell_grid + 1)) * (1 - 3 / (2 * ell_grid + 1)))
@@ -106,12 +101,6 @@ def main(tag, path, label, folder, number):
     
     # Amplitude
     amplitude = 3 / 2 * cosmology_info['OMEGA_M'] * (cosmology_info['H'] * 100000 / scipy.constants.c) ** 2
-    
-    amplitude_ss = amplitude ** 2 
-    amplitude_si = amplitude * alignment_bias
-    amplitude_is = alignment_bias * amplitude
-    amplitude_ii = alignment_bias ** 2
-    
     amplitude_ms = amplitude ** 2
     amplitude_mi = amplitude * alignment_bias
     amplitude_gs = galaxy_bias * amplitude
@@ -178,30 +167,6 @@ def main(tag, path, label, folder, number):
         t1 = time.time()
         duration_cosmology += (t1 - t0)
         
-        # Coefficients EE
-        c_ss = SS.coefficient(
-            chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-            power_grid=numpy.array(power_grid * amplitude_ss, dtype=numpy.float64),
-            redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
-        )
-        
-        c_si = SN.coefficient(
-            chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-            power_grid=numpy.array(power_grid * amplitude_si, dtype=numpy.float64), 
-            redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
-        )
-        
-        c_is = NS.coefficient(
-            chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-            power_grid=numpy.array(power_grid * amplitude_is, dtype=numpy.float64), 
-            redshift_grid=numpy.array(z_grid, dtype=numpy.float64)
-        )
-        
-        c_ii = NN.coefficient(
-            chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
-            power_grid=numpy.array(power_grid * amplitude_ii, dtype=numpy.float64)
-        )
-        
         # Coefficient TE
         c_ms = SS.coefficient(
             chi_grid=numpy.array(chi_grid, dtype=numpy.float64), 
@@ -252,37 +217,6 @@ def main(tag, path, label, folder, number):
         
         t2 = time.time()
         duration_coefficient += (t2 - t1)
-        
-        # Cell EE
-        cell_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
-        
-        cell_data_ee += TENSOR.spectra(
-            factor=numpy.array(factor_ss, dtype=numpy.float64), 
-            phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
-            phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
-            coefficients=c_ss
-        )
-        
-        cell_data_ee += TENSOR.spectra(
-            factor=numpy.array(factor_si, dtype=numpy.float64), 
-            phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
-            phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
-            coefficients=c_si
-        )
-        
-        cell_data_ee += TENSOR.spectra(
-            factor=numpy.array(factor_is, dtype=numpy.float64), 
-            phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
-            phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
-            coefficients=c_is
-        )
-        
-        cell_data_ee += TENSOR.spectra(
-            factor=numpy.array(factor_ii, dtype=numpy.float64), 
-            phi_a_grid=numpy.array(source_phi_grid, dtype=numpy.float64), 
-            phi_b_grid=numpy.array(source_phi_grid, dtype=numpy.float64),
-            coefficients=c_ii
-        )
         
         # Cell TE
         cell_data_te = numpy.zeros((lens_bin_size, source_bin_size, ell_size + 1))
@@ -358,10 +292,10 @@ def main(tag, path, label, folder, number):
             time_list[count_index] = duration_projection + duration_cosmology + duration_coefficient
     
     # Save
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
     
     # Duration
     end = time.time()
@@ -374,7 +308,7 @@ def main(tag, path, label, folder, number):
 
 if __name__ == '__main__':
     # Input
-    PARSE = argparse.ArgumentParser(description='Triple')
+    PARSE = argparse.ArgumentParser(description='Double')
     PARSE.add_argument('--tag', type=str, required=True, help='The tag of the configuration')
     PARSE.add_argument('--path', type=str, required=True, help='The path of the project scripts')
     PARSE.add_argument('--label', type=str, required=True, help='The label of the configuration')

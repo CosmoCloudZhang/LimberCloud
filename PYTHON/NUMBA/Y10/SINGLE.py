@@ -34,8 +34,8 @@ def main(tag, path, label, folder, number):
     info_folder = os.path.join(folder, 'INFO/')
     
     python_folder = os.path.join(folder, 'PYTHON/')
-    os.makedirs(os.path.join(python_folder, 'CPU/'), exist_ok = True)
-    os.makedirs(os.path.join(python_folder, 'CPU/', tag), exist_ok = True)
+    os.makedirs(os.path.join(python_folder, 'NUMBA/'), exist_ok = True)
+    os.makedirs(os.path.join(python_folder, 'NUMBA/', tag), exist_ok = True)
     
     # Grid
     z1 = 0.0
@@ -164,7 +164,7 @@ def main(tag, path, label, folder, number):
         t2 = time.time()
         duration_coefficient += (t2 - t1)
         
-        cell_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
+        cell_data_ee = numpy.zeros((ell_size + 1, ell_size + 1, ell_size + 1))
         
         cell_data_ee += TENSOR.spectra(
             factor=numpy.array(factor_ss, dtype=numpy.float64), 
@@ -205,10 +205,10 @@ def main(tag, path, label, folder, number):
             time_list[count_index] = duration_projection + duration_cosmology + duration_coefficient
     
     # Save
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
-    numpy.savetxt(os.path.join(python_folder, 'CPU/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}.txt'.format(label, number)), time_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}_COSMOLOGY.txt'.format(label, number)), time_cosmology_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}_PROJECTION.txt'.format(label, number)), time_projection_list)
+    numpy.savetxt(os.path.join(python_folder, 'NUMBA/', tag, 'T_{}_{}_COEFFICIENT.txt'.format(label, number)), time_coefficient_list)
     
     # Duration
     end = time.time()

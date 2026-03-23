@@ -8,7 +8,7 @@
 #SBATCH -o LOG/%x_%j.out
 #SBATCH --cpus-per-task=128
 #SBATCH --ntasks-per-node=1
-#SBATCH -J PYTHON_CPU_Y10_TRIPLE
+#SBATCH -J PYTHON_NUMBA_Y1_TRIPLE
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
 # Load modules
@@ -35,10 +35,10 @@ export NUMBA_THREADING_LAYER=omp
 export NUMBA_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 # Initialize the process
-TAG="Y10"
+TAG="Y1"
 LABEL="TRIPLE"
 BASE_PATH="/pscratch/sd/y/yhzhang/LimberCloud/"
 BASE_FOLDER="/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud/"
 
 # Run applications
-srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${BASE_PATH}PYTHON/CPU/${TAG}/${LABEL}.py" --tag=$TAG --path=$BASE_PATH --label=$LABEL --folder=$BASE_FOLDER --number=$SLURM_CPUS_PER_TASK
+srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${BASE_PATH}PYTHON/NUMBA/${TAG}/${LABEL}.py" --tag=$TAG --path=$BASE_PATH --label=$LABEL --folder=$BASE_FOLDER --number=$SLURM_CPUS_PER_TASK
