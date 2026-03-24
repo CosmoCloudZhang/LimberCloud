@@ -164,7 +164,7 @@ def main(tag, path, label, folder, number):
         t2 = time.time()
         duration_coefficient += (t2 - t1)
         
-        cell_data_ee = numpy.zeros((ell_size + 1, ell_size + 1, ell_size + 1))
+        cell_data_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
         
         cell_data_ee += TENSOR.spectra(
             factor=numpy.array(factor_ss, dtype=numpy.float64), 
