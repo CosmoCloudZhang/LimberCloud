@@ -9,7 +9,7 @@ def plot_panel(rows, plot, x_values, description, show_legend=False):
         description (str): The annotation text of the panel
     '''
     for label, y_values, color, marker in rows:
-        plot.loglog(x_values, y_values, linestyle='-', linewidth=2.0, markersize=9, markeredgewidth=1.0, markeredgecolor='black', color=color, marker=marker, label=label)
+        plot.loglog(x_values, y_values, linestyle='-', linewidth=2.0, markersize=9, markeredgewidth=1.0, markeredgecolor='black', color=color, marker=marker, label=label, rasterized=True)
     
     plot.set_xscale('log')
     plot.set_yscale('log')
@@ -19,5 +19,5 @@ def plot_panel(rows, plot, x_values, description, show_legend=False):
     
     plot.grid(True, which='both', alpha=0.50)
     if show_legend:
-        plot.legend(loc='lower right', fontsize=25)
+        plot.legend(loc='lower right', fontsize=20)
     plot.text(0.02, 0.98, description, fontsize=25, verticalalignment='top', transform=plot.transAxes)

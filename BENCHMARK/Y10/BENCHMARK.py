@@ -41,10 +41,10 @@ def main(tag, path, label, folder, number):
     count_list = numpy.linspace(count1, count2, count_size, dtype=numpy.float64)
     
     # Label
-    label_ccl = r'$\mathrm{CCL}$'
-    label_jax_gpu = r'$\mathrm{JAX-GPU}$'
-    label_jax_cpu = r'$\mathrm{JAX-CPU}$'
-    label_numba_cpu = r'$\mathrm{Numba-CPU}$'
+    label_ccl = r'$\mathtt{CCL}$'
+    label_jax_gpu = r'$\mathtt{JAX-GPU}$'
+    label_jax_cpu = r'$\mathtt{JAX-CPU}$'
+    label_numba_cpu = r'$\mathtt{Numba-CPU}$'
     
     # Color
     color_ccl = 'darkblue'
@@ -109,7 +109,7 @@ def main(tag, path, label, folder, number):
         plot[index].tick_params(axis='x', which='both', labelbottom=False)
     figure.subplots_adjust(hspace=0.0)
     
-    figure.savefig(os.path.join(plot_folder, 'BENCHMARK', tag, 'BENCHMARK_{}_{}.pdf'.format(label, number)), bbox_inches='tight')
+    figure.savefig(os.path.join(plot_folder, 'BENCHMARK', tag, 'BENCHMARK_{}_{}.pdf'.format(label, number)), bbox_inches='tight', dpi=512)
     pyplot.close(figure)
     
     # Duration
