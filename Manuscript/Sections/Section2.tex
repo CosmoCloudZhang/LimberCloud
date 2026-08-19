@@ -1,0 +1,140 @@
+The standard \(3\times2\,\mathrm{pt}\) framework combines three complementary two-point statistics constructed from foreground lens galaxies, for which precise distance estimates are available, and background source galaxies with robust shape measurements. These include: (i) the auto-correlation of observed galaxy ellipticities \((\boldsymbol{\epsilon\epsilon})\), commonly referred to as cosmic shear; (ii) the angular auto-correlation of the lens-galaxy positions \((\boldsymbol{\theta\theta})\), hereafter galaxy clustering; and (iii) the cross-correlation between lens positions and source ellipticities \((\boldsymbol{\theta\epsilon})\), known as galaxy--galaxy lensing.
+
+Each observable receives cosmological contributions from weak gravitational lensing, denoted \(\gamma\), and from the large-scale structure traced by galaxies, denoted \(\mathrm{g}\). In addition, astrophysical systematics contribute to the measured correlations, most notably intrinsic alignments of galaxy shapes, \(\mathrm{I}\), and cosmic magnification, \(\mu\). The present analysis neglects redshift-space distortions (RSD) and does not model CMB secondary anisotropies---including CMB lensing, the thermal and kinetic Sunyaev--Zel'dovich effects, and the Integrated Sachs--Wolfe (ISW) effect---although these follow the same projected-kernel formalism and can be incorporated straightforwardly in future work.
+
+Under the Limber approximation, the angular power spectrum between any two projected tracers \((u, v)\), defined in tomographic redshift bins \((a, b)\), can be written as
+\begin{equation} \label{eq:2.1}
+    C_{uv}^{ab} (\ell) = A_{uv} (\ell) \int_{0}^{\chi_{\mathrm H}} \mathrm{d}\chi \; \frac{W_u^{a}(\chi) \, W_v^{b}(\chi)}{f_K^{2}(\chi)} P_{uv} \! \left[k = \frac{\ell + 1/2}{f_K(\chi)}, z(\chi)\right],
+\end{equation}
+where the comoving transverse distance \(f_K(\chi)\) is defined as
+\begin{equation} \label{eq:2.2}
+    f_K(\chi) =
+    \begin{cases}
+        K^{-1/2}
+        \sin \! \left(K^{1/2} \, \chi\right), & K > 0,
+        \\[6pt] \chi, & K = 0,
+        \\[6pt] |K|^{-1/2} \sinh \! \left(|K|^{1/2} \, \chi\right), & K < 0,
+    \end{cases}
+\end{equation}
+with \(K \equiv \Omega_K H_0^2 / c^2\) denoting the spatial curvature. This distance enters both the geometric lensing kernel and the mapping between angular multipole \(\ell\) and the three-dimensional wavenumber \(k\).
+
+The prefactor \(A_{uv}(\ell)\) is a multipole-dependent correction that accounts for the spin of the projected fields; it arises from the exact angular power spectrum expression and reduces to unity only for scalar--scalar correlations. Its explicit form for each tracer pair is given in Table~\ref{tab:1}. The quantity \(P_{uv}(k, z)\) is the corresponding three-dimensional power spectrum, while \(W_u^{a}(\chi)\) and \(W_v^{b}(\chi)\) are the radial projection kernels associated with tracers \(u\) and \(v\) respectively, whose functional forms---either the number-density kernel \(W_\phi\) or the lensing convergence kernel \(W_\kappa\)---are specified for each tracer pair in Table~\ref{tab:1}.
+
+In this work, we adopt a unified treatment of all tracer kernels. All tracer-specific physics---galaxy bias, intrinsic-alignment amplitudes, and magnification response---is absorbed entirely into multiplicative prefactors within the three-dimensional power spectrum \(P_{uv}(k, z)\). As a result, all projected observables are constructed from the same pair of kernel functions, corresponding to galaxy number density and gravitational lensing convergence. This formulation is compact, fully general, and readily extensible to additional tracers or physical effects.
+
+The clustering, or galaxy number-density, kernel is given directly by the tomographic redshift distribution of the tracer population,
+\begin{equation} \label{eq:2.3}
+    W_\phi^{a}(\chi) \equiv \phi^{a}(\chi) = \phi^{a}(z)\, \frac{H(z)}{c},
+\end{equation}
+where \(\phi^{a}(z)\) denotes the tomographic redshift distribution of galaxies in bin \(a\), and the equality follows from \(\mathrm{d}\chi = c\,\mathrm{d}z / H(z)\). This kernel specifies the radial distribution of galaxies in bin \(a\) and determines how they trace the underlying matter field along the line of sight.
+
+The kernel associated with weak gravitational lensing convergence is
+\begin{equation} \label{eq:2.4}
+    W_\kappa^{a}(\chi) = \frac{3\,\Omega_{\mathrm m} H_0^2}{2 c^2} \, \frac{f_K(\chi)}{a(\chi)} \int_{\chi}^{\chi_{\mathrm H}} \mathrm{d}\chi'\; \phi^{a}(\chi') \, \frac{f_K(\chi' - \chi)}{f_K(\chi')}.
+\end{equation}
+This lensing kernel quantifies the efficiency with which matter at comoving distance \(\chi\) lenses background galaxies, encapsulating both the geometric lensing strength and its dependence on the cosmic expansion history.
+
+The observed galaxy ellipticity field, \(\epsilon\), receives contributions from gravitational shear, \(\gamma\), and from intrinsic alignments, \(\mathrm{I}\). Cosmic shear---the auto-correlation of observed ellipticities---therefore probes the integrated tidal field along the line of sight. The tomographic shape--shape power spectra decompose as
+\begin{equation} \label{eq:2.5}
+    C_{\epsilon\epsilon}^{ab}(\ell) = C_{\gamma\gamma}^{ab}(\ell) + C_{\gamma\mathrm{I}}^{ab}(\ell) + C_{\mathrm{I}\gamma}^{ab}(\ell) + C_{\mathrm{II}}^{ab}(\ell),
+\end{equation}
+where the indices \(a\) and \(b\) label the tomographic source bins.
+
+Galaxy--galaxy lensing probes the correlation between the projected number density of foreground lens galaxies and the shapes of background source galaxies, providing a direct link between the galaxy distribution and the underlying matter field. The observed position--shape correlations receive contributions from gravitational lensing, intrinsic alignments, and cosmic magnification of the foreground sample. The tomographic number--shape angular power spectra therefore decompose as
+\begin{equation} \label{eq:2.6}
+    C_{\theta\epsilon}^{ab}(\ell) = C_{\mathrm{g}\gamma}^{ab}(\ell) + C_{\mathrm{g}\mathrm{I}}^{ab}(\ell) + C_{\mu\gamma}^{ab}(\ell) + C_{\mu\mathrm{I}}^{ab}(\ell),
+\end{equation}
+where \(a\) labels the lens bin and \(b\) the source bin.
+
+Galaxy clustering probes the projected spatial distribution of foreground lens galaxies and traces the underlying large-scale structure. In addition to intrinsic clustering driven by matter fluctuations, the observed galaxy number density is affected by lensing magnification, which modifies the apparent density through flux and size biases. The observed tomographic position--position angular power spectra therefore decompose as
+\begin{equation} \label{eq:2.7}
+    C_{\theta\theta}^{ab}(\ell) = C_{\mathrm{g}\mathrm{g}}^{ab}(\ell) + C_{\mathrm{g}\mu}^{ab}(\ell) + C_{\mu\mathrm{g}}^{ab}(\ell) + C_{\mu\mu}^{ab}(\ell),
+\end{equation}
+where \(a\) and \(b\) both label lens bins.
+
+Table~\ref{tab:1} summarises the prefactor, kernel combination, and three-dimensional power spectrum for each of the twelve contributions. All individual angular power spectra are obtained by evaluating Equation~\ref{eq:2.1} with the entries specified in the corresponding row.
+
+We model three classes of astrophysical effects through bias prefactors in the three-dimensional power spectra: galaxy bias \(b_\mathrm{g}(k,z)\), intrinsic-alignment bias \(b_\mathrm{I}(k,z)\), and the magnification response \(b_\mu(z)\). The galaxy and intrinsic-alignment biases are allowed to depend on both scale and redshift, while the magnification response is determined solely by the slope of the galaxy number counts and is therefore taken to be scale independent.
+
+\begin{table*}[!htbp]
+\centering
+\caption{Summary of the \(3\times2\,\mathrm{pt}\) angular power spectra considered in this work. All observables are computed under the Limber approximation using a unified pair of radial kernels: the number-density kernel \(W_\phi\) and the lensing convergence kernel \(W_\kappa\). Multipole-dependent prefactors \(A_{uv}(\ell)\) account for the spin of the projected fields.}
+\label{tab:1}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{c c c c c}
+\hline\hline
+Observable
+& Contribution
+& \(A_{uv}(\ell)\)
+& Projected kernels
+& 3D power spectrum
+\\
+\hline
+\(C_{\epsilon\epsilon}^{ab}\)
+& \(\gamma\gamma\)
+& \(\dfrac{(\ell+2)!}{(\ell-2)!}\,\dfrac{1}{(\ell+1/2)^4}\)
+& \(W_\kappa^a \, W_\kappa^b\)
+& \(P_{\delta\delta}\)
+\\
+& \(\gamma\mathrm{I}\)
+& \(\dfrac{(\ell+2)!}{(\ell-2)!}\,\dfrac{1}{(\ell+1/2)^4}\)
+& \(W_\kappa^a \, W_\phi^b\)
+& \(b_\mathrm{I}(k,z)\,P_{\delta\delta}\)
+\\
+& \(\mathrm{I}\gamma\)
+& \(\dfrac{(\ell+2)!}{(\ell-2)!}\,\dfrac{1}{(\ell+1/2)^4}\)
+& \(W_\phi^a \, W_\kappa^b\)
+& \(b_\mathrm{I}(k,z)\,P_{\delta\delta}\)
+\\
+& \(\mathrm{II}\)
+& \(\dfrac{(\ell+2)!}{(\ell-2)!}\,\dfrac{1}{(\ell+1/2)^4}\)
+& \(W_\phi^a \, W_\phi^b\)
+& \(b_\mathrm{I}^2(k,z)\,P_{\delta\delta}\)
+\\
+\hline
+\(C_{\theta\epsilon}^{ab}\)
+& \(\mathrm{g}\gamma\)
+& \(\sqrt{\dfrac{(\ell+2)!}{(\ell-2)!}}\,\dfrac{1}{(\ell+1/2)^2}\)
+& \(W_\phi^a \, W_\kappa^b\)
+& \(b_\mathrm{g}(k,z)\,P_{\delta\delta}\)
+\\
+& \(\mathrm{g}\mathrm{I}\)
+& \(\sqrt{\dfrac{(\ell+2)!}{(\ell-2)!}}\,\dfrac{1}{(\ell+1/2)^2}\)
+& \(W_\phi^a \, W_\phi^b\)
+& \(b_\mathrm{g}(k,z)\,b_\mathrm{I}(k,z)\,P_{\delta\delta}\)
+\\
+& \(\mu\gamma\)
+& \(\sqrt{\dfrac{(\ell+2)!}{(\ell-2)!}}\,\dfrac{\ell(\ell+1)}{(\ell+1/2)^4}\)
+& \(W_\kappa^a \, W_\kappa^b\)
+& \(b_\mu(z)\,P_{\delta\delta}\)
+\\
+& \(\mu\mathrm{I}\)
+& \(\sqrt{\dfrac{(\ell+2)!}{(\ell-2)!}}\,\dfrac{\ell(\ell+1)}{(\ell+1/2)^4}\)
+& \(W_\kappa^a \, W_\phi^b\)
+& \(b_\mu(z)\,b_\mathrm{I}(k,z)\,P_{\delta\delta}\)
+\\
+\hline
+\(C_{\theta\theta}^{ab}\)
+& \(\mathrm{g}\mathrm{g}\)
+& \(1\)
+& \(W_\phi^a \, W_\phi^b\)
+& \(b_\mathrm{g}^2(k,z)\,P_{\delta\delta}\)
+\\
+& \(\mathrm{g}\mu\)
+& \(\dfrac{\ell(\ell+1)}{(\ell+1/2)^2}\)
+& \(W_\phi^a \, W_\kappa^b\)
+& \(b_\mathrm{g}(k,z)\,b_\mu(z)\,P_{\delta\delta}\)
+\\
+& \(\mu\mathrm{g}\)
+& \(\dfrac{\ell(\ell+1)}{(\ell+1/2)^2}\)
+& \(W_\kappa^a \, W_\phi^b\)
+& \(b_\mathrm{g}(k,z)\,b_\mu(z)\,P_{\delta\delta}\)
+\\
+& \(\mu\mu\)
+& \(\dfrac{\ell^2(\ell+1)^2}{(\ell+1/2)^4}\)
+& \(W_\kappa^a \, W_\kappa^b\)
+& \(b_\mu^2(z)\,P_{\delta\delta}\)
+\\
+\hline\hline
+\end{tabular}
+\end{table*}
