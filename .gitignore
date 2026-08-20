@@ -1,11 +1,28 @@
-# LOG
+# Operating-system metadata
+.DS_Store
+**/.DS_Store
+
+# Runtime output (legacy and canonical layouts)
 LOG/
+PLOT/
+logs/
+plots/
+results/
 *.out
 *.log
 
-# PLOT
-PLOT/
-*.pdf
+# LaTeX build products. Publication figures under manuscript/figures are tracked.
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.bcf
+manuscript/*.blg
+manuscript/*.fdb_latexmk
+manuscript/*.fls
+manuscript/*.out
+manuscript/*.run.xml
+manuscript/*.synctex.gz
+manuscript/*.toc
+manuscript/main.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -85,7 +102,7 @@ docs/_build/
 target/
 
 # Jupyter Notebook
-.ipynb_checkpoints
+.ipynb_checkpoints/
 
 # IPython
 profile_default/

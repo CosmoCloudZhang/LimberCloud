@@ -1,0 +1,67 @@
+[power]
+target = "POWER.pdf"
+producer = "notebooks/matter_power/Matter_Power_Interpolation.ipynb"
+
+[kappa_y1]
+target = "KAPPA_Y1.pdf"
+producer = "notebooks/kernels/Y1/Lensing_Kernel_Kappa.ipynb"
+
+[kappa_y10]
+target = "KAPPA_Y10.pdf"
+producer = "notebooks/kernels/Y10/Lensing_Kernel_Kappa.ipynb"
+
+[phi_y1]
+target = "PHI_Y1.pdf"
+producer = "notebooks/kernels/Y1/Radial_Distribution_Phi.ipynb"
+
+[phi_y10]
+target = "PHI_Y10.pdf"
+producer = "notebooks/kernels/Y10/Radial_Distribution_Phi.ipynb"
+
+[psi_y1]
+target = "PSI_Y1.pdf"
+producer = "notebooks/kernels/Y1/Redshift_Distribution_Psi.ipynb"
+
+[psi_y10]
+target = "PSI_Y10.pdf"
+producer = "notebooks/kernels/Y10/Redshift_Distribution_Psi.ipynb"
+
+[error_ee_y1]
+target = "ERROR_EE_Y1.pdf"
+producer = "notebooks/error_analysis/Y1/EE_Error_Analysis.ipynb"
+
+[error_ee_y10]
+target = "ERROR_EE_Y10.pdf"
+producer = "notebooks/error_analysis/Y10/EE_Error_Analysis.ipynb"
+
+[error_te_y1]
+target = "ERROR_TE_Y1.pdf"
+producer = "notebooks/error_analysis/Y1/TE_Error_Analysis.ipynb"
+
+[error_te_y10]
+target = "ERROR_TE_Y10.pdf"
+producer = "notebooks/error_analysis/Y10/TE_Error_Analysis.ipynb"
+
+[error_tt_y1]
+target = "ERROR_TT_Y1.pdf"
+producer = "notebooks/error_analysis/Y1/TT_Error_Analysis.ipynb"
+
+[error_tt_y10]
+target = "ERROR_TT_Y10.pdf"
+producer = "notebooks/error_analysis/Y10/TT_Error_Analysis.ipynb"
+
+[benchmark_single_y1]
+target = "benchmark_Single_Y1.pdf"
+producer = "experiments/benchmarks/Y1/benchmark.py"
+
+[benchmark_single_y10]
+target = "benchmark_Single_Y10.pdf"
+producer = "experiments/benchmarks/Y10/benchmark.py"
+
+[benchmark_triple_y1]
+target = "benchmark_Triple_Y1.pdf"
+producer = "experiments/benchmarks/Y1/benchmark.py"
+
+[benchmark_triple_y10]
+target = "benchmark_Triple_Y10.pdf"
+producer = "experiments/benchmarks/Y10/benchmark.py"
