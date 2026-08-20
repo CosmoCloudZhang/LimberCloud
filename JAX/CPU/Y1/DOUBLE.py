@@ -1,12 +1,14 @@
+import argparse
+import json
+import logging
 import os
 import sys
-import json
 import time
+
+import numpy
 import pyccl
 import scipy
-import numpy
-import logging
-import argparse
+
 logging.getLogger("jax._src.xla_bridge").setLevel(logging.CRITICAL)
 
 import jax  # noqa: E402
