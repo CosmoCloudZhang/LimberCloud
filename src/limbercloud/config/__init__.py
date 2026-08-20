@@ -1,5 +1,5 @@
 """Validated LimberCloud configuration values."""
 
-from .experiments import Configuration, RuntimeLayout
+from .experiments import Configuration
 
-__all__ = ["Configuration", "RuntimeLayout"]
+__all__ = ["Configuration"]

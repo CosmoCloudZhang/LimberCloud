@@ -13,6 +13,9 @@ authors = [
 ]
 
 [project.optional-dependencies]
+dev = [
+    "ruff>=0.16,<0.17",
+]
 science = [
     "astropy",
     "jax",
@@ -25,3 +28,10 @@ science = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+target-version = "py39"
+extend-include = ["*.ipynb"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP032", "W291", "W293"]

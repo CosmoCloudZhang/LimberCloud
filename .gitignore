@@ -2,9 +2,7 @@
 .DS_Store
 **/.DS_Store
 
-# Runtime output (legacy and canonical layouts)
-LOG/
-PLOT/
+# Runtime output
 logs/
 plots/
 results/

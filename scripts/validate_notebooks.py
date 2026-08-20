@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Validate notebook JSON and reject obsolete path setup in code cells."""
+"""Validate notebook naming, runtime setup, JSON, and Python syntax."""
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from pathlib import Path
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK_ROOT = REPOSITORY_ROOT / "notebooks"
@@ -14,6 +14,7 @@ FORBIDDEN_CODE_TOKENS = (
     "/pscratch/",
     "/global/cfs/",
     "sys.path.insert",
+    "from PROJECTION import",
     "COSMOLOGY.json",
     "SURVEY.json",
     "DENSITY.json",
@@ -41,14 +42,25 @@ def main() -> int:
             failures.append(f"{notebook_path}: invalid JSON: {error}")
             continue
 
-        code = "\n".join(
-            "".join(cell.get("source", []))
+        code_cells = [
+            cell
             for cell in notebook.get("cells", [])
             if cell.get("cell_type") == "code"
-        )
+        ]
+        code = "\n".join("".join(cell.get("source", [])) for cell in code_cells)
         for token in FORBIDDEN_CODE_TOKENS:
             if token in code:
                 failures.append(f"{notebook_path}: obsolete code token {token!r}")
+
+        for cell_number, cell in enumerate(code_cells, start=1):
+            source = "".join(cell.get("source", []))
+            try:
+                ast.parse(source)
+            except SyntaxError as error:
+                failures.append(
+                    f"{notebook_path}: code cell {cell_number}: "
+                    f"{error.msg} at line {error.lineno}"
+                )
 
         if "ProjectPaths.from_root" not in code:
             failures.append(f"{notebook_path}: missing ProjectPaths runtime setup")

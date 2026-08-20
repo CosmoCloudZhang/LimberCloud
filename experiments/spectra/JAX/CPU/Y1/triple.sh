@@ -41,7 +41,6 @@ LABEL="Triple"
 REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
-export LIMBERCLOUD_LAYOUT="${LIMBERCLOUD_LAYOUT:-legacy}"
 
 # Run applications
 srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${REPO_ROOT}/experiments/spectra/JAX/CPU/${TAG}/${LABEL,,}.py" --tag="${TAG}" --path="${REPO_ROOT}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"

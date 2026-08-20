@@ -35,7 +35,6 @@ TAG="Y10"
 REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
-export LIMBERCLOUD_LAYOUT="${LIMBERCLOUD_LAYOUT:-legacy}"
 
 # Run applications
 LABEL="Single"

@@ -33,14 +33,9 @@ TAG="Y1"
 REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
-export LIMBERCLOUD_LAYOUT="${LIMBERCLOUD_LAYOUT:-legacy}"
 ONECOVARIANCE_SCRIPT="${ONECOVARIANCE_SCRIPT:?Set ONECOVARIANCE_SCRIPT to covariance.py}"
 
-if [ "${LIMBERCLOUD_LAYOUT}" = "canonical" ]; then
-    COVARIANCE_CONFIG="${RUNTIME_ROOT}/results/covariance/${TAG}/CONFIG.ini"
-else
-    COVARIANCE_CONFIG="${RUNTIME_ROOT}/COVARIANCE/${TAG}/CONFIG.ini"
-fi
+COVARIANCE_CONFIG="${RUNTIME_ROOT}/results/covariance/${TAG}/CONFIG.ini"
 
 # Run applications
 python -u "${REPO_ROOT}/experiments/covariance/${TAG}/matrix.py" --tag="${TAG}" --folder="${RUNTIME_ROOT}" &&

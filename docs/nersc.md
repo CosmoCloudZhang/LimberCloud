@@ -6,14 +6,13 @@ Clone or update the repository on Perlmutter, activate the scientific Conda
 environment, and install the checkout in editable mode:
 
 ```bash
-python3 -m pip install -e .
+python3 -m pip install -e '.[dev]'
 ```
 
 Define the external runtime root before submitting jobs:
 
 ```bash
 export LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
-export LIMBERCLOUD_LAYOUT=legacy
 export ONECOVARIANCE_SCRIPT=/path/to/OneCovariance/covariance.py
 ```
 
@@ -51,9 +50,9 @@ The final two depend on the generated cosmology configuration.
 3. Submit one Numba Y1 Single smoke job.
 4. Submit one JAX CPU Y1 Single smoke job.
 5. Submit one JAX GPU Y1 Single smoke job.
-6. Compare inputs and timing-file shapes with the legacy layout.
+6. Confirm the generated filenames follow the `Time_Single_*` contract.
 7. Submit the full experiment matrix using the backend `run_all.sh` files.
 8. Run covariance and notebook validation.
 
-Keep `LIMBERCLOUD_LAYOUT=legacy` until the canonical input migration and these
-smoke checks have completed on Perlmutter.
+All jobs use the canonical runtime tree documented in
+[runtime-tree.md](runtime-tree.md). Verify that tree before submitting jobs.

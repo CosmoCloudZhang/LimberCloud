@@ -2,7 +2,6 @@
 
 import unittest
 
-
 try:
     import jax  # noqa: F401
     import numba  # noqa: F401

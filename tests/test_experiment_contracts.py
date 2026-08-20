@@ -5,7 +5,6 @@ from pathlib import Path
 
 from limbercloud import Configuration
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -28,10 +27,6 @@ class ExperimentContractTests(unittest.TestCase):
         self.assertEqual(
             [configuration.value for configuration in Configuration],
             ["Single", "Double", "Triple"],
-        )
-        self.assertEqual(
-            [configuration.legacy_value for configuration in Configuration],
-            ["SINGLE", "DOUBLE", "TRIPLE"],
         )
 
     def test_complete_experiment_matrix_exists(self):

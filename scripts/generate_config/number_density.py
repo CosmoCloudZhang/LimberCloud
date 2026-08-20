@@ -1,6 +1,6 @@
+import argparse
 import json
 import time
-import argparse
 
 from limbercloud import ProjectPaths
 
@@ -8,20 +8,20 @@ from limbercloud import ProjectPaths
 def main(folder):
     '''
     Store the fiducial values of density configuration
-    
+
     Arguments:
         folder (str): The base folder of the datasets
-    
+
     Returns:
         duration (float): The duration of the process
     '''
     # Start
     start = time.time()
-    
+
     # Path
     paths = ProjectPaths.from_root(folder)
     paths.config.mkdir(parents=True, exist_ok=True)
-    
+
     # Density
     density = {
         'Y1': {
@@ -62,17 +62,17 @@ def main(folder):
             ]
         }
     }
-    
+
     # Save
     with paths.config_file('number_density').open('w') as file:
         json.dump(density, file, indent=4)
-    
+
     # Duration
     end = time.time()
     duration = (end - start) / 60
-    
+
     # Return
-    print('Time: {:.2f} minutes'.format(duration))
+    print(f'Time: {duration:.2f} minutes')
     return duration
 
 
@@ -80,9 +80,9 @@ if __name__ == '__main__':
     # Input
     PARSE = argparse.ArgumentParser(description='Info density')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the datasets')
-    
+
     # Parse
     FOLDER = PARSE.parse_args().folder
-    
+
     # Output
     OUTPUT = main(FOLDER)

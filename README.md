@@ -8,7 +8,7 @@ power spectra for weak gravitational lensing and large-scale structure.
 ```text
 src/limbercloud/       Reusable Numba/JAX projection code and runtime paths
 experiments/           CCL, Numba, JAX, covariance, and benchmark entry points
-scripts/               Configuration generators and migration utilities
+scripts/               Configuration generators, validators, and NERSC helpers
 notebooks/             Derivation, spectrum, error, kernel, and power notebooks
 manuscript/            Journal manuscript and tracked publication figures
 tests/                 Fast path, experiment-contract, and backend checks
@@ -37,7 +37,7 @@ python3 -m pip install -e .
 For a development environment managed with pip:
 
 ```bash
-python3 -m pip install -e '.[science]'
+python3 -m pip install -e '.[science,dev]'
 ```
 
 NERSC environments should continue to use the collaboration's validated CCL,
@@ -53,20 +53,9 @@ Set the external root before running scripts or notebooks:
 export LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
 ```
 
-The current transition default reads and writes the historical uppercase layout:
-
-```bash
-export LIMBERCLOUD_LAYOUT=legacy
-```
-
-After verified migration, use the canonical lowercase layout:
-
-```bash
-export LIMBERCLOUD_LAYOUT=canonical
-```
-
-See [docs/runtime-layout.md](docs/runtime-layout.md) for the complete mapping and
-the non-destructive migration utility.
+All inputs and outputs use one canonical runtime tree. See
+[docs/runtime-tree.md](docs/runtime-tree.md) for its directory, configuration,
+and timing-file contracts.
 
 ## Verification
 
@@ -77,9 +66,9 @@ make check
 ```
 
 This checks the package and experiment contracts, cross-backend projection
-values when the optional scientific dependencies are available, shell syntax,
-and notebook JSON/path setup. Full CCL/JAX/GPU and covariance validation remains
-a Perlmutter workflow.
+values when the optional scientific dependencies are available, Python and
+notebook lint, shell syntax, and notebook JSON/path setup. Full CCL/JAX/GPU and
+covariance validation remains a Perlmutter workflow.
 
 ## Experiments
 
@@ -90,17 +79,16 @@ The complete backend matrix is retained under `experiments/spectra/`:
 - JAX CPU: Y1/Y10 × Single/Double/Triple
 - JAX GPU: Y1/Y10 × Single/Double/Triple
 
-Slurm launchers require `LIMBERCLOUD_RUNTIME_ROOT`; they derive the Git checkout
-path automatically and default to the legacy runtime layout. See
-[docs/nersc.md](docs/nersc.md) before switching production jobs to the canonical
-layout.
+Slurm launchers require `LIMBERCLOUD_RUNTIME_ROOT` and derive the Git checkout
+path automatically. See [docs/nersc.md](docs/nersc.md) before running the
+production matrix.
 
 ## Notebooks and manuscript
 
 Notebooks read the runtime root from the environment and use the installed
 package for path resolution. Their stored outputs have been preserved, but the
 scientific notebooks should be re-executed on Perlmutter after the canonical
-input migration.
+runtime tree has been populated.
 
 The manuscript lives under `manuscript/`. Publication figure PDFs are tracked;
 LaTeX auxiliary files and `main.pdf` are ignored. See

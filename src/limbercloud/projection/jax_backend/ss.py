@@ -1,8 +1,7 @@
 import jax
-from jax import lax
-from jax import vmap
-from jax import config
 import jax.numpy as jnp
+from jax import config, lax, vmap
+
 config.update("jax_enable_x64", True)
 
 # Element 1
@@ -11,7 +10,7 @@ def element1(chi1, chi2, power1, power2, redshift1, redshift2):
     a = 1 - chi1 / chi2
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (14952 + z * ( - 20184 + 7087 * z)) / 177811200)
     def false_branch(_):
@@ -27,7 +26,7 @@ def element1(chi1, chi2, power1, power2, redshift1, redshift2):
 ( - 2 * a * (1 + 3 * a + 6 * a ** 2) + p + a * (3 + 2 * a * (3 + 5 * a)) * p) * z ** 2) * jnp.log(1 - a)))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -38,7 +37,7 @@ def element2(chi1, chi2, chi3, power1, power2, redshift1, redshift2):
     b = chi3 / chi2 - 1
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (b * (6642 + z * ( - 6669 + 1867 * z) + 18 * b * (294 + z * ( - 308 + 89 * z))) - 45 * (1 + b) * (112 + z * ( - 104 + 27 * z)) * jnp.log(1 + b)) / (6350400 * b))
     def false_branch(_):
@@ -59,7 +58,7 @@ def element2(chi1, chi2, chi3, power1, power2, redshift1, redshift2):
 30 * a ** 6 * (4 * p * (21 + 5 * z * ( - 7 + 3 * z)) - 7 * (15 + 2 * z * ( - 12 + 5 * z))) - 7 * a ** 5 * ( - 2200 + 18 * (175 - 68 * z) * z + p * (1575 + 8 * z * ( - 306 + 125 * z)))) * jnp.log(1 + b)))))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -71,7 +70,7 @@ def element3(chi1, chi2, chi3, chi4, chi5, power1, power2, redshift1, redshift2)
     c = chi3 * jnp.log(chi4 / chi3) / (chi4 - chi3) - chi5 * jnp.log(chi5 / chi4) / (chi5 - chi4)
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (5 * c * (112 + z * ( - 104 + 27 * z)) + 4 * b * (294 + z * ( - 308 + 89 * z))) / 705600)
     def false_branch(_):
@@ -85,7 +84,7 @@ def element3(chi1, chi2, chi3, chi4, chi5, power1, power2, redshift1, redshift2)
 (5 * a * (1 + a * (2 + 3 * a)) * b - 2 * ( - 1 + a) * a * (1 + 3 * a + 6 * a ** 2) * c - (3 * (1 + a * (2 + a * (3 + 4 * a))) * b + c + a * (2 + a * (3 + 2 * (2 - 5 * a) * a)) * c) * p) * z ** 2) * jnp.log(1 - a)))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -97,7 +96,7 @@ def element4(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     c = chi3 * jnp.log(chi4 / chi3) / (chi4 - chi3) - 1
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (5 * c * (112 + z * ( - 104 + 27 * z)) + 4 * b * (294 + z * ( - 308 + 89 * z))) / 705600)
     def false_branch(_):
@@ -111,7 +110,7 @@ def element4(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
 (5 * a * (1 + a * (2 + 3 * a)) * b - 2 * ( - 1 + a) * a * (1 + 3 * a + 6 * a ** 2) * c - (3 * (1 + a * (2 + a * (3 + 4 * a))) * b + c + a * (2 + a * (3 + 2 * (2 - 5 * a) * a)) * c) * p) * z ** 2) * jnp.log(1 - a)))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -122,7 +121,7 @@ def element5(chi1, chi2, chi3, power1, power2, redshift1, redshift2):
     b = chi3 / chi2 - 1
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (1 / (10080 * b ** 2)) * (b ** 2 * (1785 + z * ( - 562 + 79 * z) + 42 * b ** 2 * (15 + ( - 6 + z) * z) + 6 * b * (350 + z * ( - 124 + 19 * z))) -
 8 * b * (1 + b) * (432 + z * ( - 129 + 17 * z) + 12 * b * (21 + ( - 7 + z) * z)) * jnp.log(1 + b) + 60 * (1 + b) ** 2 * (28 + ( - 8 + z) * z) * jnp.log(1 + b) ** 2))
@@ -150,7 +149,7 @@ a ** 2 * (1 + b) * jnp.log(1 + b) * (b * ( - 420 * p * z ** 2 + 210 * a * z * (4
 (5 * ( - 4 + 3 * p) + 2 * a * (15 - 12 * p + a * ( - 6 + 5 * p))) * z ** 2) * jnp.log(1 + b))))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -163,7 +162,7 @@ def element6(chi1, chi2, chi3, chi4, chi5, chi6, power1, power2, redshift1, reds
     d = chi4 * jnp.log(chi5 / chi4) / (chi5 - chi4) - chi6 * jnp.log(chi6 / chi5) / (chi6 - chi5)
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (1 / (5040 * b)) * (b * (2 * d * (432 + z * ( - 129 + 17 * z) + 12 * b * (21 + ( - 7 + z) * z)) + 3 * c * (350 + z * ( - 124 + 19 * z) + 14 * b * (15 + ( - 6 + z) * z))) -
 6 * (1 + b) * (5 * d * (28 + ( - 8 + z) * z) + 8 * c * (21 + ( - 7 + z) * z)) * jnp.log(1 + b)))
@@ -182,7 +181,7 @@ c * (100 * ( - 9 + p + 2 * z) + z * ( - 25 * z + p * ( - 50 + 9 * z)) - 150 * b 
 5 * p * (6 + z * ( - 8 + 3 * z)))) * jnp.log(1 + b)))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -195,7 +194,7 @@ def element7(chi1, chi2, chi3, chi4, chi5, power1, power2, redshift1, redshift2)
     d = chi4 * jnp.log(chi5 / chi4) / (chi5 - chi4) - 1
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (1 / (5040 * b)) * (b * (2 * d * (432 + z * ( - 129 + 17 * z) + 12 * b * (21 + ( - 7 + z) * z)) + 3 * c * (350 + z * ( - 124 + 19 * z) + 14 * b * (15 + ( - 6 + z) * z))) -
 6 * (1 + b) * (5 * d * (28 + ( - 8 + z) * z) + 8 * c * (21 + ( - 7 + z) * z)) * jnp.log(1 + b)))
@@ -214,7 +213,7 @@ c * (100 * ( - 9 + p + 2 * z) + z * ( - 25 * z + p * ( - 50 + 9 * z)) - 150 * b 
 5 * p * (6 + z * ( - 8 + 3 * z)))) * jnp.log(1 + b)))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -228,7 +227,7 @@ def element8(chi1, chi2, chi3, chi4, chi5, chi6, chi7, chi8, power1, power2, red
     e = chi6 * jnp.log(chi7 / chi6) / (chi7 - chi6) - chi8 * jnp.log(chi8 / chi7) / (chi8 - chi7)
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (1 / 840) * (5 * c * e * (28 + ( - 8 + z) * z) + 8 * c * d * (21 + ( - 7 + z) * z) + 8 * b * e * (21 + ( - 7 + z) * z) + 14 * b * d * (15 + ( - 6 + z) * z)))
     def false_branch(_):
@@ -238,7 +237,7 @@ def element8(chi1, chi2, chi3, chi4, chi5, chi6, chi7, chi8, power1, power2, red
 5 * p * (6 + z * ( - 8 + 3 * z)))))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -252,7 +251,7 @@ def element9(chi1, chi2, chi3, chi4, chi5, chi6, chi7, power1, power2, redshift1
     e = chi6 * jnp.log(chi7 / chi6) / (chi7 - chi6) - 1
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (1 / 840) * (5 * c * e * (28 + ( - 8 + z) * z) + 8 * c * d * (21 + ( - 7 + z) * z) + 8 * b * e * (21 + ( - 7 + z) * z) + 14 * b * d * (15 + ( - 6 + z) * z)))
     def false_branch(_):
@@ -262,7 +261,7 @@ def element9(chi1, chi2, chi3, chi4, chi5, chi6, chi7, power1, power2, redshift1
 5 * p * (6 + z * ( - 8 + 3 * z)))))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -274,7 +273,7 @@ def element10(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
     c = chi3 * jnp.log(chi4 / chi3) / (chi4 - chi3) - 1
     p = 1 - power1 / power2
     z = 1 - (1 + redshift1) / (1 + redshift2)
-    
+
     def true_branch(_):
         return jnp.full_like(p, (1 / 840) * (5 * c ** 2 * (28 + ( - 8 + z) * z) + 16 * b * c * (21 + ( - 7 + z) * z) + 14 * b ** 2 * (15 + ( - 6 + z) * z)))
     def false_branch(_):
@@ -283,7 +282,7 @@ def element10(chi1, chi2, chi3, chi4, power1, power2, redshift1, redshift2):
 5 * p * (6 + z * ( - 8 + 3 * z))) - 5 * b ** 2 * ( - 4 * (3 + ( - 3 + z) * z) + p * (6 + z * ( - 8 + 3 * z))))
         return formula
     formula = lax.cond(a == 1.0, true_branch, false_branch, operand=None)
-    
+
     coefficient = chi2 ** 3 * power2 * (1 + redshift2) ** 2 * formula
     return coefficient
 
@@ -293,43 +292,43 @@ def coefficient(chi_grid, power_grid, redshift_grid):
     grid_size = chi_grid.shape[0] - 1
     ell_size = power_grid.shape[0] - 1
     coefficients = jnp.zeros((grid_size + 1, grid_size + 1, ell_size + 1))
-    
+
     k_indices = jnp.arange(grid_size + 1, dtype=jnp.int32)
     def accumulate_step(n, coefficients):
         valid = (n + 1 < grid_size)
-        
+
         value1 = element1(chi_grid[n], chi_grid[n + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         coefficients = coefficients.at[n, n, :].add(value1)
-        
+
         value2 = element2(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         coefficients = coefficients.at[n, n + 1, :].add(jnp.where(valid, value2, jnp.zeros_like(value2)))
         coefficients = coefficients.at[n + 1, n, :].add(jnp.where(valid, value2, jnp.zeros_like(value2)))
-        
+
         def compute_value3(k):
             return element3(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         value3_all = vmap(compute_value3)(k_indices)
         value3_mask = (k_indices >= n + 2) & (k_indices < grid_size)
         coefficients = coefficients.at[n, :, :].add(jnp.where(value3_mask[:, None], value3_all, 0.0))
         coefficients = coefficients.at[:, n, :].add(jnp.where(value3_mask[:, None], value3_all, 0.0))
-        
+
         value4 = element4(chi_grid[n], chi_grid[n + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         coefficients = coefficients.at[n, grid_size, :].add(value4)
         coefficients = coefficients.at[grid_size, n, :].add(value4)
-        
+
         value5 = element5(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         coefficients = coefficients.at[n + 1, n + 1, :].add(jnp.where(valid, value5, jnp.zeros_like(value5)))
-        
+
         def compute_element6(k):
             return element6(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2],chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         value6_all = vmap(compute_element6)(k_indices)
         value6_mask = (k_indices >= n + 2) & (k_indices < grid_size) & valid
         coefficients = coefficients.at[n + 1, :, :].add(jnp.where(value6_mask[:, None], value6_all, 0.0))
         coefficients = coefficients.at[:, n + 1, :].add(jnp.where(value6_mask[:, None], value6_all, 0.0))
-        
+
         value7 = element7(chi_grid[n], chi_grid[n + 1], chi_grid[n + 2], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         coefficients = coefficients.at[n + 1, grid_size, :].add(jnp.where(valid, value7, jnp.zeros_like(value7)))
         coefficients = coefficients.at[grid_size, n + 1, :].add(jnp.where(valid, value7, jnp.zeros_like(value7)))
-        
+
         def compute_element8_row(i):
             def compute_element8_entry(j):
                 return element8(chi_grid[n], chi_grid[n + 1], chi_grid[i - 1], chi_grid[i], chi_grid[i + 1], chi_grid[j - 1], chi_grid[j], chi_grid[j + 1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
@@ -337,19 +336,19 @@ def coefficient(chi_grid, power_grid, redshift_grid):
         value8_all = vmap(compute_element8_row)(k_indices)
         value8_mask = ((k_indices[:, None] >= n + 2) & (k_indices[:, None] < grid_size) & (k_indices[None, :] >= n + 2) & (k_indices[None, :] < grid_size))
         coefficients = coefficients + jnp.where(value8_mask[:, :, None], value8_all, 0.0)
-        
+
         def compute_element9(k):
             return element9(chi_grid[n], chi_grid[n + 1], chi_grid[k - 1], chi_grid[k], chi_grid[k + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         value9_all = vmap(compute_element9)(k_indices)
         value9_mask = (k_indices >= n + 2) & (k_indices < grid_size)
         coefficients = coefficients.at[:, grid_size, :].add(jnp.where(value9_mask[:, None], value9_all, 0.0))
         coefficients = coefficients.at[grid_size, :, :].add(jnp.where(value9_mask[:, None], value9_all, 0.0))
-        
+
         value10 = element10(chi_grid[n], chi_grid[n + 1], chi_grid[-2], chi_grid[-1], power_grid[:, n], power_grid[:, n + 1], redshift_grid[n], redshift_grid[n + 1])
         coefficients = coefficients.at[grid_size, grid_size, :].add(value10)
-        
+
         return coefficients
-    
+
     return lax.fori_loop(0, grid_size, accumulate_step, coefficients)
 
 # Spectra
