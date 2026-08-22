@@ -15,16 +15,6 @@ tests/                 Fast path, experiment-contract, and backend checks
 docs/                  Runtime, NERSC, and manuscript workflows
 ```
 
-General source directories and filenames use lowercase names. Scientific labels
-such as `CCL`, `JAX`, `CPU`, `GPU`, `Y1`, `Y10`, `NN`, and `SS` remain uppercase.
-Experiment configurations are displayed as `Single`, `Double`, and `Triple`,
-while their source files are `single.py`, `double.py`, and `triple.py`.
-
-Jupyter notebooks use `Title_Case_With_Underscores` for readability while
-preserving scientific labels, for example `EE_Error_Analysis.ipynb` and
-`Coefficient_B01_Validation.ipynb`. Their descriptive directories remain
-lowercase, such as `error_analysis/` and `matter_power/`.
-
 ## Installation
 
 Create or activate an environment containing the required scientific libraries,
@@ -44,18 +34,71 @@ NERSC environments should continue to use the collaboration's validated CCL,
 JAX, Numba, and MPI-compatible dependency versions rather than rebuilding those
 packages unnecessarily.
 
-## Runtime data
+## Environment variables and runtime data
 
 The Git checkout does not contain the LSST input arrays or production results.
-Set the external root before running scripts or notebooks:
+`LIMBERCLOUD_RUNTIME_ROOT` must point to the external directory that contains
+the canonical `data/`, `config/`, `results/`, `plots/`, and `logs/` tree.
+
+The project recognizes the following environment variables:
+
+| Variable | Requirement | Purpose |
+| --- | --- | --- |
+| `LIMBERCLOUD_RUNTIME_ROOT` | Required | External data, configuration, result, plot, and log root |
+| `CosmoENV` | Required by NERSC launchers | Name or path of the collaboration's validated Conda environment |
+| `ONE_COVARIANCE_ROOT` | Required for covariance jobs | Path to OneCovariance's `covariance.py` |
+
+### Shell and Slurm jobs
+
+Export the required values in the shell from which scripts or Slurm jobs are
+launched:
 
 ```bash
 export LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
+export CosmoENV=/path/to/or/name/of/validated/conda/environment
 ```
 
-All inputs and outputs use one canonical runtime tree. See
-[docs/runtime-tree.md](docs/runtime-tree.md) for its directory, configuration,
-and timing-file contracts.
+For covariance jobs, also set:
+
+```bash
+export ONE_COVARIANCE_ROOT=/path/to/OneCovariance/covariance.py
+```
+
+Confirm that the required values are visible before launching a job:
+
+```bash
+printf '%s\n' "${LIMBERCLOUD_RUNTIME_ROOT}"
+printf '%s\n' "${CosmoENV}"
+```
+
+### Cursor or VS Code notebooks
+
+When a notebook is opened directly in Cursor or VS Code, its Python kernel does
+not inherit variables exported later in an integrated terminal. Instead, create
+a `.env` file in the repository root. For a Cursor Remote SSH session, create
+the file in the remote NERSC checkout rather than in the local checkout:
+
+```dotenv
+LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
+```
+
+Do not include the shell keyword `export` in `.env`. The tracked
+`.vscode/settings.json` points the Python and Jupyter extensions to this file,
+and `.env` is ignored by Git so each checkout can use its own runtime path.
+After creating or changing the file, reload the editor window and restart the
+notebook kernel. Verify the kernel environment with:
+
+```python
+import os
+
+print(os.environ.get("LIMBERCLOUD_RUNTIME_ROOT"))
+```
+
+The shell launchers do not source `.env`; continue to use `export` in the shell
+that submits Slurm jobs. All inputs and outputs use one canonical runtime tree.
+See [docs/runtime-tree.md](docs/runtime-tree.md) for its directory,
+configuration, and timing-file contracts, and [docs/nersc.md](docs/nersc.md)
+for the Perlmutter workflow.
 
 ## Verification
 
