@@ -2,7 +2,7 @@
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
     "python.envFile": "${workspaceFolder}/.env",
     "python.terminal.useEnvFile": true,
-    "python-envs.workspaceSearchPaths": [
+    "python-env.workspaceSearchPaths": [
         "./.venv"
     ],
     "python.analysis.extraPaths": [
@@ -17,5 +17,9 @@
         "${workspaceFolder}/tests",
         "-p",
         "test_*.py"
+    ],
+    "cursorpyright.analysis.extraPaths": [
+        "src",
+        "${workspaceFolder}/src"
     ]
 }
