@@ -12,16 +12,13 @@
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
-# Load modules
-module load gpu
-module load conda
-module load cray-mpich
-module load PrgEnv-gnu
-module load cray-hdf5-parallel
+set -eo pipefail
 
-# Activate the conda environment
-source "${HOME}/.bashrc"
-conda activate "${CosmoENV}"
+# Configure the project environment
+REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
+source "${REPO_ROOT}/scripts/nersc/load_environment.sh"
+source "${REPO_ROOT}/scripts/nersc/modules/gpu.sh"
+conda activate "${LIMBERCLOUD_CONDA_ENV}"
 
 # Environment variables
 export JAX_PLATFORMS=cuda
@@ -38,7 +35,6 @@ export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 # Paths
 TAG="Y10"
 LABEL="Triple"
-REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 

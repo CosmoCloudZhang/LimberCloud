@@ -11,15 +11,13 @@
 #SBATCH -J PYTHON_CCL_Y10_Triple
 #SBATCH --mail-user=YunHao.Zhang@ed.ac.uk
 
-# Load modules
-module load conda
-module load cray-mpich
-module load PrgEnv-gnu
-module load cray-hdf5-parallel
+set -eo pipefail
 
-# Activate the conda environment
-source "${HOME}/.bashrc"
-conda activate "${CosmoENV}"
+# Configure the project environment
+REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
+source "${REPO_ROOT}/scripts/nersc/load_environment.sh"
+source "${REPO_ROOT}/scripts/nersc/modules/cpu.sh"
+conda activate "${LIMBERCLOUD_CONDA_ENV}"
 
 # Set environment
 export OMP_PLACES=cores
@@ -34,7 +32,6 @@ export OPENBLAS_NUM_THREADS=$SLURM_CPUS_PER_TASK
 # Initialize the process
 TAG="Y10"
 LABEL="Triple"
-REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 

@@ -3,11 +3,16 @@
 LimberCloud keeps the Git checkout separate from its data and result tree.
 Python code constructs external paths through `limbercloud.io.ProjectPaths`.
 
-Set the external root before running an experiment or notebook:
+Set the external root in the ignored repository `.env` before running an
+experiment or notebook:
 
-```bash
-export LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
+```dotenv
+LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
 ```
+
+An explicitly exported `LIMBERCLOUD_RUNTIME_ROOT` takes precedence over the
+dotenv value. See [environment.md](environment.md) for the complete local
+configuration contract.
 
 The runtime tree has one canonical structure:
 

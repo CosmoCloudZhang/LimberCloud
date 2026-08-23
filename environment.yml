@@ -1,0 +1,20 @@
+name: CosmoConda
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python >=3.12,<3.13
+  - pip
+  - setuptools >=61
+  - numpy >=2.2,<2.3
+  - scipy >=1.13,<1.14
+  - numba >=0.63,<0.64
+  - astropy >=7.2,<7.3
+  - matplotlib >=3.10,<3.11
+  - pyccl >=3.2,<3.3
+  - ipykernel >=7.1,<7.2
+  - ruff >=0.16,<0.17
+  - pip:
+      - "jax[cuda12]>=0.9.1,<0.10"

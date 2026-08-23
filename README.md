@@ -17,22 +17,30 @@ docs/                  Runtime, NERSC, and manuscript workflows
 
 ## Installation
 
-Create or activate an environment containing the required scientific libraries,
-then install this checkout in editable mode:
+LimberCloud's NERSC environment is named `CosmoConda`. If you already have a
+validated `CosmoConda` with CCL, JAX, Numba, MPI, parallel HDF5, CosmoSIS, or
+other collaboration software, keep it: this repository does not require it to
+be recreated. Activate it and install only this checkout:
 
 ```bash
-python3 -m pip install -e .
+module load conda
+conda activate CosmoConda
+python -m pip install --no-deps -e .
 ```
 
-For a development environment managed with pip:
+For a new standalone installation, `environment.yml` describes the minimum
+project environment baseline. The opt-in setup helper refuses to overwrite an
+existing Conda environment or checkout-local `.venv`:
 
 ```bash
-python3 -m pip install -e '.[science,dev]'
+scripts/nersc/create_environment.sh --name CosmoConda
 ```
 
-NERSC environments should continue to use the collaboration's validated CCL,
-JAX, Numba, and MPI-compatible dependency versions rather than rebuilding those
-packages unnecessarily.
+The ignored `.venv` entry in the checkout may be the environment itself or a
+per-user symlink to it. The tracked VS Code configuration uses that stable local
+name without committing anyone's absolute Conda path. See
+[docs/environment.md](docs/environment.md) for reuse, new-installation, GPU, and
+editor setup details.
 
 ## Environment variables and runtime data
 
@@ -45,60 +53,62 @@ The project recognizes the following environment variables:
 | Variable | Requirement | Purpose |
 | --- | --- | --- |
 | `LIMBERCLOUD_RUNTIME_ROOT` | Required | External data, configuration, result, plot, and log root |
-| `CosmoENV` | Required by NERSC launchers | Name or path of the collaboration's validated Conda environment |
-| `ONE_COVARIANCE_ROOT` | Required for covariance jobs | Path to OneCovariance's `covariance.py` |
+| `LIMBERCLOUD_CONDA_ENV` | Optional; defaults to `CosmoConda` | Conda environment name or full prefix |
+| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Covariance jobs only | OneCovariance checkout containing `covariance.py` |
+| `LIMBERCLOUD_TEXLIVE_BIN` | Optional | Directory containing `pdflatex` for plotting |
 
 ### Shell and Slurm jobs
 
-Export the required values in the shell from which scripts or Slurm jobs are
-launched:
+Create a private `.env` from the tracked template and edit the machine-specific
+paths:
 
 ```bash
-export LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
-export CosmoENV=/path/to/or/name/of/validated/conda/environment
+cp .env.example .env
 ```
 
-For covariance jobs, also set:
+The usual configuration is:
 
-```bash
-export ONE_COVARIANCE_ROOT=/path/to/OneCovariance/covariance.py
+```dotenv
+LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
+# LIMBERCLOUD_CONDA_ENV=/full/path/to/CosmoConda
+# LIMBERCLOUD_ONECOVARIANCE_ROOT=/path/to/OneCovariance
 ```
 
-Confirm that the required values are visible before launching a job:
-
-```bash
-printf '%s\n' "${LIMBERCLOUD_RUNTIME_ROOT}"
-printf '%s\n' "${CosmoENV}"
-```
+Omit `LIMBERCLOUD_CONDA_ENV` when `conda activate CosmoConda` works. Exported
+canonical variables take precedence over `.env`, and `LIMBERCLOUD_ENV_FILE`
+may select a different dotenv file. NERSC launchers load and validate this
+configuration before activating Conda. The deprecated `CosmoENV`,
+`ONECOVARIANCE_SCRIPT`, and `ONE_COVARIANCE_ROOT` names are accepted only as
+temporary migration aliases and should not be added to new `.env` files.
 
 ### Cursor or VS Code notebooks
 
 When a notebook is opened directly in Cursor or VS Code, its Python kernel does
 not inherit variables exported later in an integrated terminal. Instead, create
-a `.env` file in the repository root. For a Cursor Remote SSH session, create
-the file in the remote NERSC checkout rather than in the local checkout:
-
-```dotenv
-LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
-```
+the repository-root `.env` described above. For a Cursor Remote SSH session,
+create it in the remote NERSC checkout rather than in the local checkout.
 
 Do not include the shell keyword `export` in `.env`. The tracked
-`.vscode/settings.json` points the Python and Jupyter extensions to this file,
-and `.env` is ignored by Git so each checkout can use its own runtime path.
-After creating or changing the file, reload the editor window and restart the
-notebook kernel. Verify the kernel environment with:
+`.vscode/settings.json` uses `.venv` as the project interpreter and injects this
+file into Python tools and new integrated terminals. `.env` and `.venv` are
+ignored by Git. Select `.venv`/`CosmoConda` once in both **Python: Select
+Interpreter** and the notebook kernel picker, then reload the editor window and
+restart notebook kernels. Verify with:
 
 ```python
 import os
+import sys
+import limbercloud
 
+print(sys.executable)
+print(limbercloud.__file__)
 print(os.environ.get("LIMBERCLOUD_RUNTIME_ROOT"))
 ```
 
-The shell launchers do not source `.env`; continue to use `export` in the shell
-that submits Slurm jobs. All inputs and outputs use one canonical runtime tree.
-See [docs/runtime-tree.md](docs/runtime-tree.md) for its directory,
-configuration, and timing-file contracts, and [docs/nersc.md](docs/nersc.md)
-for the Perlmutter workflow.
+All inputs and outputs use one canonical runtime tree. See
+[docs/runtime-tree.md](docs/runtime-tree.md) for its directory, configuration,
+and timing-file contracts, and [docs/nersc.md](docs/nersc.md) for the Perlmutter
+workflow.
 
 ## Verification
 
