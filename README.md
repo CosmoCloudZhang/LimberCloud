@@ -50,12 +50,12 @@ the canonical `data/`, `config/`, `results/`, `plots/`, and `logs/` tree.
 
 The project recognizes the following environment variables:
 
-| Variable | Requirement | Purpose |
-| --- | --- | --- |
-| `LIMBERCLOUD_RUNTIME_ROOT` | Required | External data, configuration, result, plot, and log root |
-| `LIMBERCLOUD_CONDA_ENV` | Optional; defaults to `CosmoConda` | Conda environment name or full prefix |
-| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Covariance jobs only | OneCovariance checkout containing `covariance.py` |
-| `LIMBERCLOUD_TEXLIVE_BIN` | Optional | Directory containing `pdflatex` for plotting |
+| Variable                           | Requirement                         | Purpose                                                  |
+| ---------------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `LIMBERCLOUD_RUNTIME_ROOT`       | Required                            | External data, configuration, result, plot, and log root |
+| `LIMBERCLOUD_CONDA_ENV`          | Optional; defaults to`CosmoConda` | Conda environment name or full prefix                    |
+| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Covariance jobs only                | OneCovariance checkout containing`covariance.py`       |
+| `LIMBERCLOUD_TEXLIVE_BIN`        | Optional                            | Directory containing`pdflatex` for plotting            |
 
 ### Shell and Slurm jobs
 

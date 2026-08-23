@@ -99,17 +99,33 @@ environment is left untouched.
 
 ## VS Code and notebooks
 
-The tracked `.vscode/settings.json` selects `${workspaceFolder}/.venv`, adds
-`src/` for static analysis, and injects `.env` into new integrated terminals.
-After creating or changing `.venv`:
+The tracked `.vscode/settings.json` selects
+`${workspaceFolder}/.venv/bin/python`, adds `src/` for static analysis, and
+injects `.env` into new integrated terminals.
 
-1. Run **Python Environments: Refresh All Environment Managers**.
-2. Run **Python: Select Interpreter** and choose `.venv`/`CosmoConda`.
-3. In a notebook, use **Select Kernel** and choose the same environment.
-4. Reload the window and restart existing notebook kernels.
+For a notebook kernel that loads the checkout's current `.env` every time it
+starts, register the project-specific per-user kernelspec:
+
+```bash
+scripts/jupyter/register_kernel.sh
+```
+
+This changes only the user's Jupyter kernelspec registry; it does not install
+packages or modify `CosmoConda`. After registration:
+
+1. Reload the Cursor or VS Code window.
+2. Run **Python Environments: Refresh All Environment Managers**.
+3. In **Select Kernel**, choose **Jupyter Kernel** and then
+   **LimberCloud (.venv / CosmoConda)**.
+4. Shut down any old kernel and start the newly selected kernel.
+
+The ordinary global **CosmoConda** kernelspec launches Conda's Python directly
+and does not load this checkout's `.env`. The **LimberCloud** option starts
+through `scripts/jupyter/launch_kernel.sh`, which loads the project
+configuration before executing `.venv/bin/python`.
 
 The project does not rely on notebook metadata to force a machine-specific
-kernelspec. VS Code remembers each user's kernel selection.
+kernelspec. Cursor and VS Code remember each user's kernel selection.
 
 Verify both Python files and notebooks with:
 
