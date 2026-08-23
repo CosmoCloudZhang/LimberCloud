@@ -29,6 +29,11 @@ science = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.pyright]
+extraPaths = ["src"]
+venvPath = "."
+venv = ".venv"
+
 [tool.ruff]
 target-version = "py39"
 extend-include = ["*.ipynb"]

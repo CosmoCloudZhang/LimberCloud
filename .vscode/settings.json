@@ -3,6 +3,7 @@
     "python.envFile": "${workspaceFolder}/.env",
     "python.terminal.useEnvFile": true,
     "python.analysis.extraPaths": [
+        "src",
         "${workspaceFolder}/src"
     ],
     "python.testing.pytestEnabled": false,
