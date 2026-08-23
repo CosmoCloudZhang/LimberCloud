@@ -3,7 +3,7 @@
 set -euo pipefail
 
 KERNEL_NAME=limbercloud-cosmoconda
-DISPLAY_NAME='LimberCloud (.venv / CosmoConda)'
+DISPLAY_NAME='LimberCloud'
 
 usage() {
     printf '%s\n' \
