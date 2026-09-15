@@ -71,6 +71,10 @@ class ExperimentContractTests(unittest.TestCase):
                 )
                 self.assertIn(f"scripts/nersc/modules/{module_profile}", text)
 
+                self.assertIn(
+                    'git -C "${SLURM_SUBMIT_DIR:-$PWD}" rev-parse --show-toplevel',
+                    text,
+                )
                 self.assertLess(
                     text.index("REPO_ROOT="),
                     text.index("scripts/nersc/load_environment.sh"),
@@ -81,13 +85,14 @@ class ExperimentContractTests(unittest.TestCase):
                 )
 
     def test_run_all_launchers_preflight_local_environment(self):
-        run_all_launchers = sorted(EXPERIMENT_ROOT.rglob("run_all.sh"))
+        run_all_launchers = sorted(EXPERIMENT_ROOT.rglob("Run_All.sh"))
 
         self.assertEqual(len(run_all_launchers), 4)
         for path in run_all_launchers:
             text = path.read_text()
             with self.subTest(path=path.relative_to(REPOSITORY_ROOT)):
                 self.assertIn("scripts/nersc/load_environment.sh", text)
+                self.assertIn('export LIMBERCLOUD_REPO_ROOT="${REPO_ROOT}"', text)
                 self.assertLess(
                     text.index("scripts/nersc/load_environment.sh"),
                     text.index("sbatch"),

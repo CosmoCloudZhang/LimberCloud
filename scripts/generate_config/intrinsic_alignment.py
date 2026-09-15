@@ -54,7 +54,7 @@ def main(folder):
     # Define pivot values for redshift, scale factor, and eta
     z_pivot = 0.5
     a_pivot = 0.5
-    eta_pivot = 0.0
+    eta_pivot = 0.5
 
     constant = 5e-14 / numpy.square(cosmology_info['H'])
     growth = pyccl.background.growth_factor(cosmo=cosmology, a=1.0 / (1.0 + z_grid))

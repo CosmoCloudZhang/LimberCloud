@@ -14,7 +14,7 @@
 set -eo pipefail
 
 # Configure the project environment
-REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
+REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "${SLURM_SUBMIT_DIR:-$PWD}" rev-parse --show-toplevel 2>/dev/null || git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
 source "${REPO_ROOT}/scripts/nersc/load_environment.sh"
 source "${REPO_ROOT}/scripts/nersc/modules/cpu.sh"
 conda activate "${LIMBERCLOUD_CONDA_ENV}"

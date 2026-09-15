@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
+REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "${SLURM_SUBMIT_DIR:-$PWD}" rev-parse --show-toplevel 2>/dev/null || git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
+export LIMBERCLOUD_REPO_ROOT="${REPO_ROOT}"
 source "${REPO_ROOT}/scripts/nersc/load_environment.sh"
 mkdir -p "${REPO_ROOT}/logs"
 

@@ -98,7 +98,7 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
                     self.assertIn("module <load> <cpu>", commands)
 
     def test_run_all_launchers_preflight_and_submit_six_stubbed_jobs(self):
-        launchers = sorted(EXPERIMENT_ROOT.rglob("run_all.sh"))
+        launchers = sorted(EXPERIMENT_ROOT.rglob("Run_All.sh"))
 
         self.assertEqual(len(launchers), 4)
         for path in launchers:
@@ -122,6 +122,32 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("LIMBERCLOUD_RUNTIME_ROOT is required", result.stderr)
         self.assertFalse(self.command_log.exists())
+
+    def test_copied_batch_script_resolves_repo_from_submit_directory(self):
+        launcher = EXPERIMENT_ROOT / "spectra" / "CCL" / "Y1" / "single.sh"
+        copied = self.root / "slurm_script"
+        copied.write_text(launcher.read_text(encoding="utf-8"), encoding="utf-8")
+        copied.chmod(0o755)
+
+        environment = self.clean_environment()
+        del environment["LIMBERCLOUD_REPO_ROOT"]
+        environment["SLURM_SUBMIT_DIR"] = str(REPOSITORY_ROOT)
+
+        self.command_log.unlink(missing_ok=True)
+        result = subprocess.run(
+            ["bash", "--noprofile", "--norc", str(copied)],
+            cwd=self.root,
+            env=environment,
+            check=False,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        commands = self.command_log.read_text(encoding="utf-8")
+        self.assertIn("conda <activate> <SmokeConda>", commands)
+        self.assertNotIn("fatal: not a git repository", result.stderr)
 
 
 if __name__ == "__main__":
