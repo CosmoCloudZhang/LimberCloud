@@ -31,13 +31,15 @@ A typical configuration is:
 LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
 # LIMBERCLOUD_CONDA_ENV=/full/path/to/CosmoConda
 # LIMBERCLOUD_ONECOVARIANCE_ROOT=/path/to/OneCovariance
+# LIMBERCLOUD_TEXLIVE_BIN=/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/texlive/2026/bin/x86_64-linux
 ```
 
 `LIMBERCLOUD_CONDA_ENV` defaults to the name `CosmoConda`, so it is needed only
 for a custom name or full prefix. `LIMBERCLOUD_ONECOVARIANCE_ROOT` is required
 only by the two covariance launchers and must contain `covariance.py`.
 `LIMBERCLOUD_TEXLIVE_BIN` is optional and may point to the directory containing
-`pdflatex` when it is not already on `PATH`.
+`pdflatex` when it is not already on `PATH` (for example the shared CosmoCloud
+TeX Live install on CFS).
 
 The launchers parse `.env` without executing it. An already exported canonical
 variable takes precedence, and `LIMBERCLOUD_ENV_FILE` may select another dotenv
