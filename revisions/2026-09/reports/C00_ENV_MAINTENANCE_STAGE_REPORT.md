@@ -147,6 +147,6 @@ Two-rank MPI test validates the dependency only; it does not change the one-task
 
 Recorded at commit time in the section below (filled after `git commit`).
 
-- **Code commit:** _(see git log after stage commit)_
+- **Code commit:** `d664420db0c2991fe3365d73a3b72b27f838a9eb` (stage implementation; follow-up report note commits may sit on top)
 - **Paper pin:** `90d12f4f3e574a67c25944d27d7ded553e09402b` (`git ls-tree HEAD manuscript`)
 - **Manuscript:** uninitialized/absent on NERSC; `.gitmodules` intact; no `git -C manuscript`
