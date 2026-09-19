@@ -1,14 +1,16 @@
 # Code revision plan: covariance correctness and reproducible validation on Perlmutter
 
-**Original audit:** 15 September 2026. **Plan updated:** 19 September 2026 following the user's scope clarification and a fresh GitHub script/notebook review. **Status:** proposed implementation; no production code changes or scientific jobs performed for this plan.
+**Original audit:** 15 September 2026. **Plan finalized:** 19 September 2026 after the scientific, environment, style, local/remote workflow and manuscript-submodule discussions. **Status:** agreed implementation plan; implementation and remote scientific acceptance remain outstanding. This update changes planning documents only.
 
 **Current review baseline:** GitHub main [`0876bf4a50e869be1289a3eecb46931e7c8eb534`](https://github.com/CosmoCloudZhang/LimberCloud/tree/0876bf4a50e869be1289a3eecb46931e7c8eb534), retrieved into an isolated temporary clone on 19 September. Inspect and reconcile the actual Perlmutter checkout before implementation; its current revision and runtime products have not been inspected in this update. Existing detailed citations to `7d29b2f` and the historical local `57c0731` state describe the 15 September audit, not the current remote checkout. New findings below and the [ensemble follow-up](supporting/limber_ensemble_followup.md) supersede conflicting historical findings, especially the NN observer-interval interpretation. References to inspected OneCovariance remain separately pinned.
+
+**Local integration baseline:** the current folder is now the runnable LimberCloud checkout at `b16dcdc5486eed921dda447168fe2761ff2d2514`, with optional `manuscript/` submodule LimberCloudPaper pinned to `90d12f4f3e574a67c25944d27d7ded553e09402b`. Documentation lives in `documents/`; these plans remain in `revisions/2026-09/`. The [environment follow-up](supporting/limber_environment_followup.md) records the dependency/kernel audit and official NERSC MPI/HDF5 guidance checked today. Current decisions in this plan supersede historical instructions to preserve every environment variable or use NPZ for ensemble spectra.
 
 ## 0. Agreed scope and current-script reconciliation
 
 Implement one explicitly labelled fiducial cosmology plus **1,000 sampled cosmologies**, with the same saved cosmology table across Y1/Y10, Single/Double/Triple, CCL, NUMBA, JAX CPU/GPU and NUMERIC linear/quadratic/cubic. The fiducial is sample `000000`; sampled IDs are `000001` through `001000`. Ensemble quantiles use the 1,000 sampled rows only. This is a planned campaign, not an existing result.
 
-Preserve the paper's **one-task, sequential cumulative-time benchmark**. Current launchers use one task and `srun -n 1`; each process evaluates cosmologies sequentially. Numba and JAX provide internal compiled/threaded/vectorized computation. Do not add job arrays over cosmologies, multiprocessing pools, MPI, multi-device distribution or simultaneous methods within a benchmark process. Task-level production parallelism and scaling studies are future work. Existing `Run_All.sh` submits independent benchmark configurations; it does not parallelize the cosmology loop. Independent jobs must receive uncontended declared resources for timing.
+Preserve the paper's **one-task, sequential cumulative-time benchmark**. Current launchers use one task and `srun -n 1`; each process evaluates cosmologies sequentially. Numba and JAX provide internal compiled/threaded/vectorized computation. Do not add job arrays over cosmologies, multiprocessing pools, MPI execution, multi-device distribution or simultaneous methods within a benchmark process. Include `mpi4py` in the project environment for future MPI task parallelism and `h5py` for current HDF5 spectra storage. Installing these packages does not change this execution contract. Task-level production parallelism and scaling studies are future work. Existing `Run_All.sh` submits independent benchmark configurations; it does not parallelize the cosmology loop. Independent jobs must receive uncontended declared resources for timing.
 
 The current source establishes:
 
@@ -26,6 +28,14 @@ The current source establishes:
 
 See C08–C12 for precise sample, file, restart, statistical and timing contracts. [Cursor execution prompts](CURSOR_IMPLEMENTATION_PROMPTS.md) split implementation into reviewable stages. The user's clarification supersedes earlier recommendations to introduce task-based ensemble parallelism, make signed errors the main plot, or require an optimal-grid study.
 
+### C00 — Inventory first and assign local/remote ownership
+
+Before changing the remote environment, inventory the actual Perlmutter code revision/dirty state, initialized paper revision if present, `.venv` target, kernel executable, Conda packages/builds, loaded modules, CUDA driver/runtime, OneCovariance revision/effective INI, and required runtime inputs. Record array shapes, coordinate conventions, file identities and small diagnostic summaries; do not copy large data into Git or expose unrelated configuration/secrets. Reconcile differences from the audited source instead of resetting the checkout. CFS remains the retained data/results location; PSCRATCH is for temporary work/staging and must not be the sole copy of accepted results.
+
+Local Codex maintains plans, reviews changes, performs portable maintenance/tests and edits the paper. Remote Cursor performs NERSC environment setup, external-data inspection, scientific implementation and allocated validation. Assign one owner per implementation file group for each stage. Transfer bounded commits and a report containing changed files, commands/checks, code revision, artifact identities, completed/failed counts and unresolved decisions. Inspect both Git states before pulling; resolve work without destructive reset. A local check does not establish a remote numerical result.
+
+The immediate next handoff is the inventory prompt, followed by environment/maintenance changes, then scientific stages. Existing runners hardcode 1,000 evaluations: `Single` means EE and `--number` means CPU allocation, neither selects a tiny run. Implement and verify `--sample-count` and an explicit fiducial-only mode before submitting a scientific smoke job. Environment-only MPI/HDF5 checks may use a tiny multi-rank allocation; they are separate from the one-task scientific benchmark.
+
 ## 1. Recommended strategy and priorities
 
 Move expensive scientific validation into deterministic Slurm scripts that retain one sequential cosmology loop per method/configuration. Let notebooks load checked results and make figures. Share the scientific evaluator with existing experiment entry points, while keeping validation and timing as explicitly different execution modes; a timing run may save reusable spectra outside its timers.
@@ -38,6 +48,7 @@ The existing benchmark runs cannot simply supply the notebook plots: they sample
 
 | ID | Priority | Deliverable | Manuscript dependency |
 |---|---|---|---|
+| C00 | first | Remote inventory, ownership and staged Git handoff | Verified execution context and evidence limits |
 | C01 | prerequisite | One declared physics/configuration contract | Fiducial setup, IA equation, magnification definition and reproducibility |
 | C02 | prerequisite | Correct component assembly and active-cosmology factors | All component comparisons; any random-cosmology accuracy claim |
 | C03 | prerequisite | Matched multipoles and angular estimator | Accuracy figures, residuals and covariance comparisons |
@@ -50,10 +61,12 @@ The existing benchmark runs cannot simply supply the notebook plots: they sample
 | C10 | high | Plot-only notebooks and bounded memory | Reliable reruns and readable figure exports |
 | C11 | high | Explicit analysis selections and residual summaries | Niko's Y10/eligible-pair comments; meaningful accuracy claims |
 | C12 | after correctness | Matched timing campaign and stage definitions | Abstract speed-up, benchmark figure/table and conclusions |
-| C13 | operational | Preserve current environment; profile resources | Reproducible Perlmutter execution |
+| C13 | prerequisite | Dedicated shared interpreter; NERSC MPI/HDF5 setup; resources | Reproducible environment and execution |
 | C14 | release gate | Focused tests and staged acceptance | Evidence required before replacing draft claims/figures |
+| C15 | maintenance | Formatting, docstrings, root naming and obsolete arguments | Clear maintainable public code |
+| C16 | release/workflow | Optional paper submodule, documentation and package contents | Traceable code/paper revisions |
 
-Recommended patch sequence: **C01–C04 scientific definitions → C05–C07 covariance repair → C08–C10 production/plot split → C11 validated results → C12 timing**. C05/C06 unit fixes can be developed in parallel with C01–C04, but corrected final covariance requires physically matched input spectra. C13/C14 apply throughout. None of this requires rewriting the tensor framework, introducing MPI, or building an emulator.
+Recommended patch sequence: **C00 inventory → C13/C15/C16 environment and maintenance → C01–C04 scientific definitions → C08/C09 sample and HDF5 foundation → C05–C07 covariance repair plus C08–C10 experiment extraction → allocated pilots → C12 matched campaign → C11 final summaries and manuscript evidence**. Covariance unit fixes and editorial manuscript work can proceed alongside independent stages; final covariance requires matched spectra. C14 gates apply throughout. This includes MPI capability in the environment, without implementing an MPI science runner or an emulator.
 
 The companion [COAUTHOR_COMMENT_INVENTORY.md](COAUTHOR_COMMENT_INVENTORY.md) and [MANUSCRIPT_REVISION_PLAN.md](MANUSCRIPT_REVISION_PLAN.md) organize author comments and prose changes. This document supplies the implementation and evidence dependencies; it does not repeat each editorial comment.
 
@@ -218,7 +231,7 @@ Add `src/limbercloud/validation/evaluate.py` with explicit inputs for survey/con
 
 Implement one small seeded sampling helper, for example `experiments/spectra/generate_samples.py`. Generate a table once at `results/spectra/inputs/<run_id>/Cosmologies.npz` with `Manifest.json`, then require every runner to load it. Record the seed, NumPy/bit-generator versions, parameter order, explicit sorted bounds, actual values, sample IDs and content hash. Same seed alone is sufficient only with identical RNG, draws, ordering and ranges; persisting the table prevents these dependencies from drifting. Use `default_rng` with an explicitly recorded bit generator. Sort multiplicative bounds for negative fiducials such as w0=-1, and explicitly keep zero wa and curvature fixed under this study. Do not change this flat-cosmology scope incidentally. A proposed common domain is ±10% for the currently sampled nonzero parameters; finalize and document the supported parameter list/bounds before the campaign. Fiducial ID 0 is separate and does not consume a random draw. On restart, load the table rather than advancing an RNG to infer the missing rows.
 
-Make the existing `experiments/spectra/{CCL,NUMBA,JAX/...}/{Y1,Y10}/{single,double,triple}.py` entries thin users of the evaluator and sample runner. Add a NUMERIC family under `experiments/spectra/NUMERIC/` with `--interpolation linear|quadratic|cubic` (linear maps to legacy SciPy `slinear`). Mirror survey/configuration wrappers only where the current launcher convention needs them; do not duplicate scientific kernels for each order. Add proposed shared options `--run-config`, `--sample-table`, `--run-id`, `--mode validation|benchmark`, `--include-fiducial`, `--sample-count`, and `--resume`. Preserve existing `--tag` (survey), `--path`, `--label`, `--folder` and `--number` meanings in compatibility wrappers; a new shared CLI may use clearer aliases such as `--survey`. A small validation command defaults to one fiducial; the explicit paper campaign requests the fiducial plus all 1,000 table rows for every method and interpolation order.
+Make the existing `experiments/spectra/{CCL,NUMBA,JAX/...}/{Y1,Y10}/{single,double,triple}.py` entries thin users of the evaluator and sample runner. Add a NUMERIC family under `experiments/spectra/NUMERIC/` with `--interpolation linear|quadratic|cubic` (linear maps to legacy SciPy `slinear`). Mirror survey/configuration wrappers only where the current launcher convention needs them; do not duplicate scientific kernels for each order. Add proposed shared options `--run-config`, `--sample-table`, `--run-id`, `--mode validation|benchmark`, `--include-fiducial`, `--fiducial-only`, `--sample-count`, and `--resume`; sample-count counts nonfiducial rows and fiducial-only implies zero sampled rows. Preserve the useful existing `--tag` (survey), `--label`, `--folder` and `--number` meanings; remove the demonstrably unused `path`/`--path` argument together with its callers under C15. A new shared CLI may use clearer aliases such as `--survey`. A small validation command defaults to one fiducial; the explicit paper campaign requests the fiducial plus all 1,000 table rows for every method and interpolation order. Reject inconsistent selection flags and prove the evaluated IDs/count before allocating a pilot.
 
 The versioned run configuration declares physics/input identities, radial grid, analysis ell nodes/windows and a separate sampled ell grid for covariance input. The current 101-point raw grid over 20–2000 is a compatibility default to check, not a universal OneCovariance requirement. Validation and covariance preparation share this contract. Pilot CCL+Numba first, then JAX CPU/GPU and NUMERIC. Production remains one sequential cosmology loop per job; there is no new task-based cosmology parallelism. Reuse CCL tracers/backgrounds within an evaluation, retaining identical outputs and transparently remeasuring timings after any change.
 
@@ -233,9 +246,10 @@ results/spectra/CCL/Y1/<run_id>/
   Time_Triple_128.txt
   Time_Triple_128_COSMOLOGY.txt
   Time_Triple_128_CELL.txt
-  Spectra_Triple_128_EE.npz
-  Spectra_Triple_128_TE.npz
-  Spectra_Triple_128_TT.npz
+  Spectra_Triple_128_EE.h5
+  Spectra_Triple_128_TE.h5
+  Spectra_Triple_128_TT.h5
+  Time_Triple_128_SAMPLES.h5
   Manifest_Triple_128.json
 
 results/spectra/NUMBA/Y1/<run_id>/
@@ -243,27 +257,30 @@ results/spectra/NUMBA/Y1/<run_id>/
   Time_Triple_128_COSMOLOGY.txt
   Time_Triple_128_COEFFICIENT.txt
   Time_Triple_128_PROJECTION.txt
-  Spectra_Triple_128_EE.npz
+  Spectra_Triple_128_EE.h5
   ...
 
 results/spectra/JAX/{CPU,GPU}/Y1/<run_id>/
   Time_Triple_128.txt
-  Spectra_Triple_128_EE.npz
+  Spectra_Triple_128_EE.h5
   ...
 
 results/spectra/NUMERIC/LINEAR/Y1/<run_id>/
   Time_Triple_128_LINEAR.txt
   Time_Triple_128_LINEAR_COSMOLOGY.txt
   Time_Triple_128_LINEAR_CELL.txt
-  Spectra_Triple_128_LINEAR_EE.npz
-  Spectra_Triple_128_LINEAR_TE.npz
-  Spectra_Triple_128_LINEAR_TT.npz
+  Spectra_Triple_128_LINEAR_EE.h5
+  Spectra_Triple_128_LINEAR_TE.h5
+  Spectra_Triple_128_LINEAR_TT.h5
+  Time_Triple_128_LINEAR_SAMPLES.h5
   Manifest_Triple_128_LINEAR.json
 ```
 
 Use QUADRATIC/CUBIC in both directory and basename for the other NUMERIC settings. The redundancy makes detached files identifiable. Use the same pattern for Single/Double, other resource labels and Y10. One path/name helper owns these rules. `ProjectPaths.spectrum_results` currently accepts only CCL/NUMBA/JAX and must be extended. Both `experiments/benchmarks/{Y1,Y10}/benchmark.py` use exact old filenames/root paths and hardcoded cumulative counts; explicitly add run-ID, metadata and NUMERIC support. Keeping the old basename alone does not make a new subdirectory layout compatible. Offer explicit legacy-reading mode for historical plots, without mixing old timings with the new matched ensemble.
 
-Each consolidated spectra file contains numeric `sample_id`, `is_fiducial`, cosmology values/parameter labels, ell coordinates, bin-pair labels and `cl` with axes `(sample, ell, pair)`; pair orientation and symmetric-pair policy are declared. The full campaign has 1,001 rows, fiducial first. Store bandpowers separately within a clearly named array with window/edge metadata when required. Save per-sample stage timings in a numeric companion file with stage names. NPZ plus JSON is sufficient initially; use NPY with memory mapping only if the measured product size warrants it. No pickle/object arrays or new database are needed.
+Use HDF5 through `h5py` for ensemble spectra. Each consolidated file contains numeric `sample_id`, `is_fiducial`, cosmology values/parameter labels, ell coordinates, bin-pair labels and float64 `cl` with axes `(sample, ell, pair)`; pair orientation and symmetric-pair policy are declared. Use named datasets/groups and documented UTF-8 labels, never pickled Python objects. The full campaign has 1,001 rows, fiducial first. Store bandpowers and raw covariance-input samples in separate named groups with their own coordinates and window/edge metadata; neither can silently stand in for the other. Store nonoverlapping per-sample stage timings once in `Time_<configuration>_<allocation>[_<order>]_SAMPLES.h5`, linked by the manifest; retain the ten legacy-style cumulative TXT products. The small immutable shared `Cosmologies.npz` table remains as specified in C08; the HDF5 choice replaces the earlier proposed spectra NPZ files.
+
+Choose bounded dataset chunks for reading one sample or selected pairs and read the fiducial by ID without loading all 1,001 rows. Stream ensemble reductions where possible. Record chunking and any lossless compression choice; do not introduce precision loss or third-party compression plugins as an undocumented reader dependency. Serialization, compression and checksum work stay outside computation timers. One process writes each artifact namespace; ordinary h5py file access is sufficient. Do not use `driver='mpio'`, SWMR, or parallel writers in the benchmark just because MPI support is installed. HDF5 itself is not a transaction or a guarantee of safe recovery from an interrupted write.
 
 Minimum manifest fields:
 
@@ -274,9 +291,11 @@ Minimum manifest fields:
 | Coordinates | radial axes, ell nodes/edges/window, observable/bin labels/orientation, explicit vector map |
 | Numerics | dtype, interpolation variable and endpoint policy, quadrature/tolerances, tensor/chunk settings, reference-check status, component definitions |
 | Products | files/checksums, sampled spectra and requested bandpowers/components, completed/failed sample IDs, per-sample times and validity masks |
-| Execution | package versions, CPU allocation/affinity/thread pools, device/count, warm-up policy, job/segment IDs, wall time and peak memory |
+| Execution | resolved Python/package/build versions, MPI/HDF5 libraries and h5py MPI capability, modules/CUDA, CPU allocation/affinity/thread pools, device/count, warm-up policy, job/segment IDs, wall time and peak memory |
 
-Checkpoint each completed sample (for example in a configuration/resource-specific `checkpoints/` namespace), atomically writing its arrays then its completion record. Release the sample's large intermediates. Finalize the compact ensemble files after all expected IDs validate; write the completed run manifest last. Reject duplicate/missing IDs or dependency mismatches. A failed run remains visibly partial; a deliberately analysed partial ensemble must report its actual matched count and failures. Never silently drop failures or change the advertised 1,000-sample denominator.
+Checkpoint each completed sample in a configuration/resource-specific `checkpoints/` namespace. Write a temporary HDF5 shard containing its small spectra/coordinates/times, close and validate it, then atomically rename on the same filesystem before publishing its checksum/completion record. Temporary or corrupt shards are not completed samples. Release large intermediates. Reopen and verify shards on resume; never treat an HDF5 completion flag alone as crash recovery. Consolidate bounded chunks into temporary final files, close/reopen/validate, rename them and write the completed run manifest last. Restart during consolidation reuses the sample shards; it does not redo spectra. Publication of several files is governed by that final manifest, not a claim that their renames form one transaction. Reject duplicate/missing IDs or dependency mismatches. A failed run remains visibly partial; a deliberately analysed partial ensemble reports its actual matched count and failures. Never silently drop failures or change the advertised 1,000-sample denominator.
+
+Keep published products and recoverable checkpoints on CFS. If staging on PSCRATCH is useful, copy into temporary files on the destination CFS filesystem, verify checksums, then rename/publish there; a cross-filesystem move is not atomic. Follow the NERSC HDF5 locking guidance in C13 for CFS, enforce one writer per artifact namespace, and allow plot readers only after manifest publication. Keep checkpoint retention explicit and remove redundant shards only after final-product verification and the agreed retention policy.
 
 The existing `results/validation/spectra/<survey>/<run_id>` parent can hold reference diagnostics, index manifests and derived summaries pointing to these base experiment products. Avoid duplicate competing master spectra. Covariance artifacts refer to input spectra; error summaries refer to both. Base spectra do not require a covariance hash, avoiding a circular dependency. Optional `C_CCL_*`/`C_DATA*` text exports represent only a labelled fiducial compatibility view. Plot loaders must report missing/stale artifacts rather than launching calculations.
 
@@ -332,19 +351,38 @@ Science production can resume sequentially. Record restart segment IDs and repea
 
 Preserve the C09 timing basenames and explicit legacy-read mode; update readers for new directories, methods and metadata. Never mix generations after physics/grid/hardware/threading changes. A timing-mode run can also produce the reusable spectra, so the final campaign need not calculate the same 1,001 spectra twice merely to separate plotting from timing. Tiny validation/reference pilots remain independent of the full campaign. Use new evidence to resolve the abstract's approximately 3 ms claim and speed-up denominator.
 
-### C13 — Preserve the current environment fixes
+### C13 — One project environment, with validated NERSC MPI/HDF5
 
-Current GitHub already centralizes activation and replaces ambiguous environment names. Keep [the shared loader][environment-loader], `modules/cpu.sh` or `modules/gpu.sh`, and their common module stack. Canonical keys are:
+Create a dedicated `limbercloud` environment alongside the working CosmoConda, which remains available for comparison and other projects. Inventory first; do not uninstall packages from, update, recreate or rename the established environment. The current checked-in YAML is already curated and contains no CosmoSIS, mpi4py or h5py, but unconditionally selects CUDA JAX. The current installed remote environment has not been audited.
 
-| Key | Meaning |
+Use one environment for scripts, notebooks and editor tools on each machine. Provide a portable CPU recipe and a NERSC CUDA variant with matching scientific versions where supported. The NERSC environment should support explicitly selected CPU and GPU JAX execution after both pass allocated tests; local macOS uses the CPU variant. A recipe is not a solved lock: retain exact platform-specific package/build records and module/compiler/CUDA details for the paper campaign, including custom-built MPI/HDF5 packages. Align the declared Python support in `pyproject.toml` with versions actually tested. Do not force NVIDIA packages into the Mac recipe or allow a generic dependency update to replace site-built MPI/HDF5 wheels.
+
+The full project environment includes Python/build tools, NumPy, SciPy, Numba, JAX, PyCCL, **CAMB**, Matplotlib, Astropy, ipykernel, Ruff, **h5py and mpi4py**. Exclude CosmoSIS and unrelated inference/emulator packages. Declare CAMB explicitly because the selected CCL transfer model uses it; a transitive Conda installation is not a missing-package diagnosis. Astropy currently prepares covariance ASCII tables. No SymPy is required by existing Python notebooks: the 21 symbolic originals are Mathematica `.nb` files, with numerical Python validation companions. Mathematica and the working TeX system needed by current figures/paper remain external prerequisites. JupyterLab is optional when the editor supplies the notebook interface. Audit the actual OneCovariance revision for additional dependencies before declaring full-paper reproduction complete. Package dependency groups may let library users omit notebooks/development/MPI; both requested MPI/HDF5 packages belong in our full research environment.
+
+Make the ignored `.venv` link the sole checkout-local environment reference. Resolve and activate its Conda prefix in batch setup, and launch notebooks using the same Python with the required configuration and activation/module state. Setup must detect a missing/broken/mismatched link and inspect an existing target before changing it. A custom Conda name/prefix is a one-time setup choice, not a second ongoing interpreter selector. Rename the shared configuration loader to a clear portable location such as `scripts/load_config.sh`; keep NERSC module/activation logic under `scripts/nersc/` and notebook registration under `scripts/jupyter/`. Avoid multiple independent parsers. Existing kernel startup does not activate Conda or load NERSC modules, so test that compiled-library setup actually reaches the kernel. Register one plainly named **LimberCloud** kernel and preserve ownership checks when another checkout already owns its kernelspec.
+
+Target configuration:
+
+| Setting | Target meaning |
 |---|---|
-| `LIMBERCLOUD_RUNTIME_ROOT` | External data/config/results/plots/log root |
-| `LIMBERCLOUD_CONDA_ENV` | Existing environment name/prefix; default `CosmoConda` |
-| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Checkout directory containing `covariance.py` |
-| `LIMBERCLOUD_REPO_ROOT` | Optional checkout-location override |
-| `LIMBERCLOUD_TEXLIVE_BIN` | Optional TeX executable directory |
+| `PROJECT_ROOT` | Auto-detected internal checkout path; replaces local REPO_ROOT/REPOSITORY_ROOT spellings, not a user environment override |
+| `.venv` | Single local link to the selected Python/Conda environment; never copied through Git |
+| `${PROJECT_ROOT}/.env` | Fixed ignored configuration file; no environment packages live here |
+| `LIMBERCLOUD_RUNTIME_ROOT` / internal `RUNTIME_ROOT` | External data/config/results/plots/log root, distinct from checkout |
+| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Optional except for covariance; checkout containing `covariance.py` |
+| `LIMBERCLOUD_TEXLIVE_BIN` | Optional only when required TeX tools are not on PATH |
 
-The loader supports legacy aliases; do not make them canonical again. Existing wrappers use `set -eo pipefail`, load the selected CPU/GPU profile, and no longer source `.bashrc`. Preserve the project `.venv`/kernelspec startup arrangement, which loads project configuration; an ordinary global kernel does not necessarily do so. `environment.yml` is a candidate dependency specification, not a solved lock or evidence of installed versions. Reuse the working collaboration stack; do not recreate it merely to split computation from plotting. Correct only minor stale documentation such as lowercase `run_all.sh` where current Linux filenames are `Run_All.sh`.
+Remove `LIMBERCLOUD_CONDA_ENV`, `LIMBERCLOUD_ENV_FILE`, `LIMBERCLOUD_REPO_ROOT` and obsolete `CosmoENV`/OneCovariance aliases after migrating their known callers/tests and checking remote custom use. Do not replace them with a new collection of aliases; a discovered external dependency needs a specific migration note. Exported runtime settings retain precedence over `.env`. Keep non-executing configuration parsing and do not source arbitrary dotenv text as shell code. The normal `.env.example` needs only an active runtime-root placeholder; conditional OneCovariance/TeX settings are commented. Root discovery must survive SLURM copying batch scripts, use the submission context where appropriate, and never accidentally select the nested paper Git root. Fix the shared loader's modern-Bash-only features for macOS portability or replace them with one portable implementation, without asking every user to manage another shell dependency.
+
+Provide a short user workflow: create or select the environment once, link it once, set runtime location, register the kernel once, and run a diagnostic command. The diagnostic compares script/kernel interpreter and LimberCloud checkout identity, checks required packages/configuration and reports actual devices in the appropriate allocation. A lightweight configuration/path check must remain possible without CFS input files or the optional paper submodule. Ordinary numerical unit tests must not initialize MPI merely because it is installed.
+
+**NERSC build contract.** Follow the [official parallel-Python instructions][nersc-parallel] checked on 19 September and the [environment follow-up](supporting/limber_environment_followup.md). Build mpi4py with the GNU/Cray compiler wrapper against Cray MPICH in the new environment; a default unqualified Conda/pip MPI installation does not establish Perlmutter compatibility. NERSC also documents site-environment cloning and a separately configured external-MPICH ABI route; select and record one coherent route instead of mixing them. For the NERSC profile, prefer a parallel-enabled h5py build against that same MPI and `cray-hdf5-parallel` when compatible with the selected Python/dependencies. Ordinary single-writer storage remains the science implementation, and a declared serial h5py build still supports that storage contract. Record the actual capability; never claim parallel HDF5 was tested from a successful import alone.
+
+Build-only requirements such as Cython/pkgconfig are documented with the selected source-build route. Preserve GNU/MPI/HDF5 runtime modules required by the resulting libraries; do not remove them solely because old science files lacked imports. Record `MPI.Get_library_version()`, h5py/HDF5 versions and `h5py.get_config().mpi` in a separate allocated capability check, and verify tiny MPI communication plus an HDF5 write/reopen round-trip. If parallel h5py is selected, run an isolated tiny `mpio` test too. These setup tests are not science scaling benchmarks. An unavailable allocation is reported as pending validation, not success.
+
+Verify HDF5 reading from the actual notebook host as well as from allocated batch jobs. A parallel build can carry MPI/library startup requirements even when opening an ordinary file; do not assume that importing it on a login-hosted kernel is supported. Select a compatible serial h5py build if necessary to meet the shared-environment notebook contract, while retaining mpi4py for explicitly allocated MPI work. Record this choice and do not silently provide different Python interpreters to scripts and notebooks.
+
+NERSC instructs disabling HDF5 file locking for writes outside SCRATCH, which includes the planned CFS result tree. Set `HDF5_USE_FILE_LOCKING=FALSE` in the relevant NERSC/CFS launch context before importing h5py; do not impose it globally on local users. Require exclusive writer ownership per artifact namespace and publish completed files through C09 manifests; disabled locking is not a multi-writer solution. A future MPI science driver would require a separate writer/collective-I/O design and a new benchmark definition.
 
 Perlmutter CPU nodes have 128 physical cores and 512 GB RAM; GPU nodes have 64 physical cores, 256 GB host RAM and four A100 GPUs. Slurm CPU counts refer to logical CPUs; distinguish those from physical threads. [Official architecture][nersc-architecture] and [affinity guidance][nersc-affinity] should inform the allocation, then verify actual affinity on the node.
 
@@ -352,29 +390,73 @@ Preserve current launch allocations as the starting benchmark configuration and 
 
 Numba's projection helper uses NumPy `einsum`; increasing Numba threads does not automatically parallelize the whole stage. Treat contraction optimization as a separately measured change. Use one GPU per current JAX process, assert the selected device, and log GPU memory. Allocating four GPUs alone does not distribute this implementation.
 
+### C15 — Formatting, editor settings and path cleanup
+
+Apply mechanical maintenance in its own reviewable patch before changing physics. Fix Ruff import ordering (standard library, third party, local) and genuine missing/unused imports; resolve missing-package warnings through the selected environment. Preserve JAX initialization, precision and other intentional import-time ordering. Existing JAX runners import their backend before the comment claiming logging is configured first; inspect that order explicitly instead of blindly sorting or suppressing diagnostics.
+
+Use Google-style docstrings with the opening delimiter on its own line, the descriptive sentence/paragraph on the next line, then `Args:` and `Returns:` with types and meanings where applicable. Document scientific shapes, axes, units and boundary/normalization conventions. Keep closing delimiters on their own line. Example:
+
+```python
+def example(values):
+    """
+    Describe the calculation and its assumptions.
+
+    Args:
+        values (numpy.ndarray): Input values, with documented shape and units.
+
+    Returns:
+        numpy.ndarray: Result, with documented shape and units.
+    """
+```
+
+Keep blank lines free of indentation/trailing whitespace. Enable `editor.guides.indentation` and `editor.guides.highlightActiveIndentation` for visual structure. Use Ruff's second-line docstring-summary convention if enabling docstring checks; do not simultaneously enforce a conflicting first-line rule. Adopt any broader formatter only after checking it preserves this agreed docstring layout.
+
+Inspect the actual spelling extension/settings, fix misspellings, then add verified scientific/project terms to the user's dictionary (for CSpell, `cSpell.userWords`). Do not accept every unknown token or place unrelated personal words in tracked settings. Apply requested user settings through the relevant permitted editor/settings mechanism and report local versus remote scope; a shared scientific dictionary is optional. Enabling guides and preparing the verified word list can proceed independently of a settings-write permission boundary.
+
+The audit found 26 unused `path` function parameters: 24 spectra runners and two benchmark readers. Recheck use in the actual checkout, remove the corresponding required `--path` options and shell arguments together, and preserve useful runtime `folder`/`--folder` values and all scientific behavior. Do not blanket-delete every variable named path. Rename internal `REPO_ROOT`, `REPOSITORY_ROOT` and lowercase equivalents coherently to `PROJECT_ROOT`/`project_root`; keep `RUNTIME_ROOT` distinct and follow C13 for obsolete environment overrides. Update imports, tests, docs and root-discovery fixtures in the same maintenance stage.
+
+Validate the affected argument/help contracts, copied-SLURM-script root discovery, paths containing spaces, parser precedence/non-execution and kernel interpreter selection. Fix existing test assumptions that still point to `scripts/nersc/generate_config` after its move to `scripts/generate_config`. Do not add tests that merely restate formatting choices or equate lint success with numerical correctness.
+
+### C16 — Git, documentation and publication arrangement
+
+Retain the top-level LimberCloud project with `documents/`, `revisions/2026-09/` and optional `manuscript/` submodule backed by LimberCloudPaper. The conversion is already complete; do not repeat subtree extraction or create an enclosing workspace. Update README links and `documents/{environment,nersc,manuscript-workflow}.md` for the new environment, actual kernel name, current `Run_All.sh` capitalization and paper-submodule workflow. The Overleaf instructions should synchronize directly from the paper repository rather than an obsolete parent subtree; configuring or pushing an external Overleaf remote is a separate action only when requested.
+
+Code/plan/documentation changes are committed in the parent repository. Paper text and publication figures are committed and pushed in the paper repository first; then commit/push the updated parent gitlink, optionally with associated code changes. Select a paper branch before editing after submodule update has detached HEAD. Receive the parent revision and update the paper to its recorded commit; do not make `submodule update --remote` the normal reproducibility workflow. Set commit identity on each machine as needed and recommend parent-local `push.recurseSubmodules=check`; do not rewrite existing history. An ordinary code clone need not initialize the paper. Historical parent commits still contain old paper files; submodule conversion does not erase them.
+
+Package builds, installs and ordinary code checks must work without initialized `manuscript/`; verify wheel/sdist contents exclude manuscript and unrelated local research artifacts. Keep environment links/configuration and all runtime data outside Git. The paper figure manifest records producing code commit/dirty identity, run/config/sample-table/covariance hashes, producer command and figure checksum. Parent gitlinks pin paper revisions; paper provenance names the scientific code revision, avoiding circular requirements that both repos record each other's final commit hash. Preserve the original feedback and 102 comment IDs; update response status only with evidence.
+
 ## 6. File-by-file implementation packages
 
 New filenames below are proposals. Keep each package reviewable and retain compatible wrappers.
 
 | Package and files | Proposed changes | Completion check |
 |---|---|---|
+| C00: remote inventory report under `revisions/2026-09/` | Actual Git/environment/kernel/OneCovariance/input state; owner and next-stage boundaries | Recorded versions, paths and evidence limits; no production launch |
 | C01–C02: `scripts/generate_config/{intrinsic_alignment,magnification_bias,galaxy_bias}.py`; shared evaluator | Named physics, axes and active-cosmology rules; correct s/q and MS assembly | Component-isolation and configuration tests; regenerate dependent products |
 | C03–C04: `src/limbercloud/projection/{numba_backend,jax_backend}/{nn,ns,ss}.py`; new reference/window helpers | Only independently demonstrated boundary/formula corrections; common estimator | All structural/endpoint tests and reference convergence pass |
 | C05–C06: new `src/limbercloud/io/covariance.py`; both `experiments/covariance/*/matrix.py` | Serialize complete tables; explicit pair maps; float64 and grid assertions | Exact installed reader/output contract round-trip |
 | C07: proposed `experiments/covariance/{prepare,validate}.py` and INI template; both `matrix.sh` | Checked configuration, fresh output identity, post-run validation | Gaussian oracle, label/list agreement and PD/solve report |
 | C08: new `src/limbercloud/validation/{evaluate,reference}.py`; shared sampler; `experiments/spectra/NUMERIC`; small validation entry | Shared science; fiducial + saved 1,000-row ensemble; one NUMERIC family with three settings | Matched samples/outputs, focused reference checks and sequential restart |
-| C09: new `src/limbercloud/io/validation.py`; `project_paths.py` | Timing/spectra naming, sample axes, fingerprints, checkpoints and completion checks | Missing/stale/mismatched products fail; no accidental mixing of generations |
+| C09: new `src/limbercloud/io/validation.py`; `project_paths.py` | HDF5 spectra/timing datasets, sample axes, fingerprints, checkpoints and completion checks | Round-trip and interrupted-write/resume checks; stale/corrupt/mismatched products fail |
 | C10: all `notebooks/spectra/*/*` and `notebooks/error/*/*` | Load compact accepted artifacts; plot at bounded size; close figures | Fresh-kernel plotting without importing CCL/CAMB/JAX/Numba |
 | C11: new `experiments/validation/summarize.py` | Absolute-error bands, masks, per-cosmology D and optional D/N_data, Y1/Y10 tables | Counts/quantiles and statistics trace to selected arrays/covariance |
 | C12: 24 existing `experiments/spectra` Python entries plus NUMERIC; both benchmark plotters | Shared physics, saved outputs, sequential timing and metadata | Sampled-only accumulation at 100…1,000; clear cold/warm/stage/full timings |
-| C13: proposed validation Slurm wrapper; existing launchers/docs | Reuse current environment helpers; dependency/resource logging; no oversubscription | Allocated smoke test and measured RSS/affinity |
+| C13: environment recipes, `pyproject.toml`, setup/config/kernel helpers and launchers/docs | One `.venv` interpreter; minimal dependency groups; NERSC MPI/HDF5; portable configuration; resource logging | Fresh environment and actual-kernel checks; allocated MPI/HDF5/CPU/GPU checks |
 | C14: focused tests, `scripts/validate_notebooks.py`, figure manifest/docs | Contract/science tests and provenance checks | Local checks plus explicitly separate Perlmutter science gates |
+| C15: 26 Python entries/callers, source docstrings/imports, `.vscode/`, affected tests | Remove unused path argument; PROJECT_ROOT naming; agreed formatting/guides and verified spelling terms | Same runtime/CLI behavior apart from documented removal; clean lint and launcher tests |
+| C16: README, `documents/`, package configuration, paper figure manifest/workflow | Current links; optional paper submodule and independent Git workflow; release contents | Code checks/builds without paper; correct archive contents and figure provenance |
 
 ## 7. C14 — Verification gates and command templates
+
+### Gate 0: environment and maintenance acceptance
+
+Accept C00 inventory, then verify the new environment without changing the old one: declared dependencies, interpreter/check-out identity, portable config loading, script and real-kernel startup, HDF5 round-trip on the actual CFS path, and separate allocated MPI/library/device checks. Confirm `.env` and `.venv` are ignored and do not leak local paths into tracked recipes. Validate the coherent removal of old variables and `--path` across callers. Verify a paper-uninitialized code checkout can install/build/run ordinary checks. Capture exact versions and module/build identity before science timing. MPI/HDF5 import success alone is not this acceptance gate.
 
 ### Gate A: fast deterministic checks
 
 Add meaningful small tests for the observed failures: 2×3 input-table sentinel; three-bin output triangle; s/q and zero magnification; MS/MI factors; active cosmology; named grids and IA law; first/final tensor intervals with the correct cubic observer policy; common window; shared sampling across all configurations and restart; invalid artifact rejection; nonzero/signed/near-zero spectra. Verify quantiles after absolute values, fiducial exclusion, known covariance quadratic forms and cumulative-stage accounting outside file I/O. Preserve the current environment/launcher smoke tests. `make check` validates code/notebook contracts but does not establish scientific accuracy or runtime success.
+
+Test the HDF5 schema round-trip with distinct sentinel sample/ell/pair values, selective fiducial reads, missing/corrupt checkpoints, interruption before manifest publication and consolidation restart. Verify wrong cosmology/config/window hashes and unfinished archives are rejected, timing data join by ID, and absent/duplicate IDs cannot look complete. Tiny-run selection tests must prove zero or the requested number of sampled evaluations; do not use existing unmodified `Single` jobs as smoke tests. Do not add MPI process management to numerical unit tests.
 
 ### Gate B: allocated Y1/Y10 science
 
@@ -392,15 +474,16 @@ Run the physically matched one-task timing campaign after pilot science acceptan
 
 These commands were **not executed**. New validation/prepare/validate CLIs below are proposed interfaces to implement with the file packages above. Run expensive work only inside an appropriate allocation; use the actual approved project account, paths and resource layout.
 
-Existing preparation/preflight pattern:
+Target preparation/preflight pattern **after C13 implementation**, replacing the current loader and Conda-selector commands:
 
 ```bash
 cd /path/to/reconciled/LimberCloud
-source scripts/nersc/load_environment.sh
+PROJECT_ROOT=$(pwd -P)
+source scripts/load_config.sh
 source scripts/nersc/modules/cpu.sh
-conda activate "${LIMBERCLOUD_CONDA_ENV}"
+conda activate "$(cd -- "${PROJECT_ROOT}/.venv" && pwd -P)"
 limbercloud_require_onecovariance
-export PYTHONPATH="${PWD}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 git rev-parse HEAD
 git -C "${LIMBERCLOUD_ONECOVARIANCE_ROOT}" rev-parse HEAD
 python -c 'import sys; print(sys.executable)'
@@ -408,7 +491,7 @@ module list
 make check
 ```
 
-The job wrapper should record resolved numerical-package versions, config/data hashes and actual thread/device state as well. If editable installation is necessary, use the project's existing procedure and `python -m pip install --no-deps -e .` to preserve the established dependency stack.
+The setup helper must install all declared dependencies before using `python -m pip install --no-deps -e .` for the checkout. This template does not initialize MPI or prove compute-node placement. The job wrapper additionally applies CFS HDF5 settings before Python starts and records resolved packages/libraries, config/data hashes and actual thread/device state. Keep expensive or MPI/device acceptance tests inside allocations; login-node checks stay lightweight.
 
 Proposed deterministic production and covariance steps, inside an `sbatch` script or a verified compute-node shell with the selected binding. Obtaining an `salloc` allocation alone does not prove a command runs on a compute node; use an appropriate `srun` job step when launching from that shell. Set the Numba/OpenMP thread budget for the spectrum step and reset worker/thread pools for the covariance step, rather than inheriting unrestricted threading across the sequence. The run-config file below is a proposed configuration to create and validate under C01/C03/C08; it declares both analysis and raw covariance ell grids:
 
@@ -417,7 +500,7 @@ python experiments/validation/spectra.py \
     --run-config "${LIMBERCLOUD_RUNTIME_ROOT}/config/validation_revision_y1.json" \
     --survey Y1 --backend NUMBA --configuration Triple \
     --reference-methods ccl \
-    --run-id revision_y1_fiducial --resume
+    --fiducial-only --run-id revision_y1_fiducial --resume
 
 python experiments/covariance/prepare.py \
     --run-config "${LIMBERCLOUD_RUNTIME_ROOT}/config/validation_revision_y1.json" \
@@ -435,7 +518,7 @@ python experiments/validation/summarize.py \
     --covariance-run revision_y1_gaussian
 ```
 
-These commands illustrate the small fiducial/covariance pilot. After acceptance, run the explicit shared-table campaign for CCL, NUMBA, JAX CPU/GPU and NUMERIC LINEAR/QUADRATIC/CUBIC, each with the fiducial plus 1,000 sampled rows and one task. Plotting refreshes only read those products. Implement `prepare.py` so it refuses an artifact lacking the raw sampled spectra declared by the shared run configuration or whose physical/estimator contract differs; check monotonic ell support, sufficient range and adequate sampling resolution, with 101 points only the current compatibility default. It must not silently treat 20 bandpowers as raw inputs. Repeat for Y10 after the pilot gates pass. The Slurm wrappers can link preparation/covariance/summary steps with `afterok` dependencies or execute them sequentially with fail-fast semantics. These dependencies do not parallelize cosmologies. A failed validation must prevent downstream publication of a completed manifest.
+These commands illustrate the fiducial/covariance pilot after a tiny valid-grid smoke test; a full fiducial/reference/covariance calculation may itself be costly. After acceptance, run the explicit shared-table campaign for CCL, NUMBA, JAX CPU/GPU and NUMERIC LINEAR/QUADRATIC/CUBIC, each with `--include-fiducial --sample-count 1000` and one task. Plotting refreshes only read those products. Implement `prepare.py` so it refuses an HDF5 artifact lacking the raw sampled spectra declared by the shared run configuration or whose physical/estimator contract differs; check monotonic ell support, sufficient range and adequate sampling resolution, with 101 points only the current compatibility default. It must not silently treat 20 bandpowers as raw inputs. Repeat for Y10 after the pilot gates pass. The Slurm wrappers can link preparation/covariance/summary steps with `afterok` dependencies or execute them sequentially with fail-fast semantics. These dependencies do not parallelize cosmologies. A failed validation must prevent downstream publication of a completed manifest.
 
 Retrieve diagnostic accounting for actual job IDs:
 
@@ -453,6 +536,8 @@ The review covered all seven manuscript sections and main file/figure mapping; 2
 The **15 September audit** executed source comparisons, input/output sentinels, historical local VAE table ordering and float64 covariance eigenvalue/Cholesky checks, the quoted limited NN scalar quadrature check, and analytical memory/ell-centre calculations. Its installed OneCovariance source was at `91e139622eba568d7f742a2d12f6b66a106e6e68`; its source was unmodified, while three existing output spectrum files were dirty and left untouched. Those historical source trees/artifacts are not bundled in this review folder. The **19 September update** reread the fresh GitHub scripts/notebooks/core sources, reconciled contracts and revised planning documents; it did not repeat production scientific calculations.
 
 The current Perlmutter OneCovariance revision, effective LimberCloud INI, exact active environment, source data, scientific arrays, job logs, timing distributions and measured RSS were not inspected here. No fresh scientific spectra, correct production covariance, Y10 residual maxima or replacement speed-up measurements are claimed. The successful historical VAECloud correction may be a different remote revision/product and remains a retrieval task. This plan creates a route to those results; it does not mark their validation complete.
+
+The final 19 September planning pass additionally audited local imports across 103 Python/notebook files, all 40 Python notebooks, environment/kernel helpers and the completed paper-submodule arrangement. It checked current official NERSC/mpi4py/h5py guidance and incorporated the author's MPI/HDF5, style and workflow choices. No environment installation, production source edit, TeX edit, remote connection or job submission occurred in this pass. Remaining scientific settings in C01/C03/C07 and actual package compatibility must be established by implementation evidence; a finalized work plan does not invent those answers.
 
 <!-- Source links are pinned to the audited code revision. -->
 [ia]: https://github.com/CosmoCloudZhang/LimberCloud/blob/7d29b2f0a5e4f216bd4dd9b4cd36b9ffb6a4487c/scripts/generate_config/intrinsic_alignment.py#L50-L68
@@ -487,5 +572,6 @@ The current Perlmutter OneCovariance revision, effective LimberCloud INI, exact 
 [nersc-architecture]: https://docs.nersc.gov/systems/perlmutter/architecture/
 [nersc-affinity]: https://docs.nersc.gov/jobs/affinity/
 [nersc-jobs]: https://docs.nersc.gov/systems/perlmutter/running-jobs/
+[nersc-parallel]: https://docs.nersc.gov/development/languages/python/parallel-python/
 
 [binny-selection]: https://github.com/binny-org/binny/blob/eb913fe99675019d8f410ef40d1b5aed4b560291/docs/examples/tomography/selections.rst#L241-L321
