@@ -18,89 +18,67 @@ validated figures and tables to a CFS bundle with checksums and provenance for
 local integration, rather than writing into a remote manuscript directory.
 See [manuscript-workflow.md](manuscript-workflow.md) for the complete handoff.
 
-Start implementation with Prompt 0 in the
-[revision prompts](../revisions/2026-09/CURSOR_IMPLEMENTATION_PROMPTS.md), then
-follow Prompts 0A–3 on NERSC. Prompt 4 is for local manuscript work. The setup
-below describes current helpers; the planned environment and experiment
-changes remain pending implementation and validation.
+Follow Prompts 0A–3 in the
+[revision prompts](../revisions/2026-09/CURSOR_IMPLEMENTATION_PROMPTS.md) on
+NERSC after the inventory report. Prompt 4 is for local manuscript work.
 
 ## Checkout and environment
 
-The collaboration environment is named `CosmoConda`. An existing validated
-environment may also contain CosmoSIS, parallel HDF5, MPI builds, and other
-project software; keep that environment and install only LimberCloud:
+Preserve CosmoConda until the dedicated `limbercloud` environment and notebook
+launches pass. Create the NERSC variant with:
 
 ```bash
 module load conda
-conda activate CosmoConda
-python -m pip install --no-deps -e .
+scripts/nersc/create_environment.sh --name limbercloud --nersc
+conda activate limbercloud
+source scripts/nersc/modules/cpu.sh
+scripts/nersc/install_mpi_h5py.sh
+scripts/nersc/diagnose_environment.sh
 ```
 
-Do not run the environment-creation helper against an existing environment.
-`environment.yml` and `scripts/nersc/create_environment.sh` are an opt-in path
-for new standalone installations, not an update mechanism. See
-[environment.md](environment.md) for the two workflows and `.venv` setup.
+Point `.venv` at the accepted prefix only after inspection. See
+[environment.md](environment.md).
 
 ## Per-checkout configuration
-
-Copy the public template and edit the ignored file:
 
 ```bash
 cp .env.example .env
 ```
 
-A typical configuration is:
-
 ```dotenv
-LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
-# LIMBERCLOUD_CONDA_ENV=/full/path/to/CosmoConda
-# LIMBERCLOUD_ONECOVARIANCE_ROOT=/path/to/OneCovariance
-# LIMBERCLOUD_TEXLIVE_BIN=/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/texlive/2026/bin/x86_64-linux
+LIMBERCLOUD_RUNTIME_ROOT=/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/LimberCloud
+LIMBERCLOUD_ONECOVARIANCE_ROOT=/global/homes/y/yhzhang/opt/OneCovariance
+LIMBERCLOUD_TEXLIVE_BIN=/global/cfs/cdirs/lsst/groups/MCP/CosmoCloud/texlive/2026/bin/x86_64-linux
 ```
 
-`LIMBERCLOUD_CONDA_ENV` defaults to the name `CosmoConda`, so it is needed only
-for a custom name or full prefix. `LIMBERCLOUD_ONECOVARIANCE_ROOT` is required
-only by the two covariance launchers and must contain `covariance.py`.
-`LIMBERCLOUD_TEXLIVE_BIN` is optional and may point to the directory containing
-`pdflatex` when it is not already on `PATH` (for example the shared CosmoCloud
-TeX Live install on CFS).
-
-The launchers parse `.env` without executing it. An already exported canonical
-variable takes precedence, and `LIMBERCLOUD_ENV_FILE` may select another dotenv
-file. `LIMBERCLOUD_REPO_ROOT` remains an optional advanced override; scripts
-otherwise derive the checkout root from Git.
-
-The old `CosmoENV`, `ONECOVARIANCE_SCRIPT`, and `ONE_COVARIANCE_ROOT` names are
-temporary migration aliases. Do not add them to new configuration.
+`scripts/load_config.sh` reads the fixed `${PROJECT_ROOT}/.env` without
+executing it. Exported canonical variables take precedence. Python selection
+uses `.venv` via `scripts/nersc/activate_venv.sh`. Do not set
+`LIMBERCLOUD_CONDA_ENV`, `LIMBERCLOUD_ENV_FILE`, or `LIMBERCLOUD_REPO_ROOT`.
 
 ## Modules and job submission
-
-Every batch script uses a centralized module profile:
 
 - CPU, configuration, covariance, and plotting jobs load
   `scripts/nersc/modules/cpu.sh`.
 - JAX GPU jobs load `scripts/nersc/modules/gpu.sh`.
-- Both profiles load the shared Conda, Cray MPI, GNU programming environment,
-  and parallel-HDF5 modules.
+- Both profiles load Conda, Cray MPI, GNU, and parallel HDF5, and set
+  `HDF5_USE_FILE_LOCKING=FALSE` for CFS. Disabled locking is not a multi-writer
+  solution; require exclusive ownership per artifact namespace.
 
-The scripts no longer source `~/.bashrc`. They load `.env`, select the module
-profile, and activate `LIMBERCLOUD_CONDA_ENV` directly. GPU jobs still request
-GPU nodes and devices through their `#SBATCH` directives; loading `gpu` alone
-does not allocate hardware.
-
-Create the checkout-local log directory before direct submissions:
+Batch scripts resolve `PROJECT_ROOT` from `SLURM_SUBMIT_DIR` or by walking from
+the script path, looking for `scripts/load_config.sh` and `src/limbercloud`
+(never the nested paper Git root).
 
 ```bash
 mkdir -p logs
 sbatch --chdir="${PWD}" experiments/spectra/NUMBA/Y1/single.sh
 ```
 
-The four `Run_All.sh` launchers create `logs/`, validate `.env` before the first
-submission, and use the repository as the Slurm working directory.
+Spectra runners default to `--sample-count=0`. Do not submit the 1,001-row
+campaign unless you pass `--sample-count=1000` explicitly (plus fiducial when
+that path exists). `--number` is the CPU allocation label.
 
 ## Configuration generation order
-
-Run the generators in this order:
 
 1. `cosmology.sh`
 2. `survey.sh`
@@ -109,33 +87,15 @@ Run the generators in this order:
 5. `galaxy_bias.sh`
 6. `intrinsic_alignment.sh`
 
-The final two depend on the generated cosmology configuration.
-
 ## Validation sequence
 
-Follow C00, C13, and C14 in the
-[code plan](../revisions/2026-09/CODE_REVISION_PLAN.md): inventory the established
-environment first and build a separate candidate without replacing it.
+1. Lightweight path, configuration, syntax, and contract checks (`make check`).
+2. Dedicated `limbercloud` imports and kernel `--probe` without initializing MPI
+   on login nodes.
+3. Tiny allocated CPU checks: CCL+CAMB, Numba, JAX CPU, serial HDF5 round-trip
+   under CFS with `HDF5_USE_FILE_LOCKING=FALSE`, and a two-rank `mpi4py`
+   compatibility `srun` (dependency only; not a science benchmark).
+4. Separate GPU allocation for JAX device visibility.
+5. Bounded science pilots only after sample controls and scientific stages.
 
-1. Run lightweight path, configuration, syntax, and contract checks first.
-   Keep MPI/HDF5 imports and scientific computations in the appropriate
-   allocated context; importing an MPI-enabled library can initialize MPI.
-2. Confirm the selected Python imports this checkout. Validate the candidate
-   environment's CPU/GPU, MPI, and HDF5 compatibility before adopting it.
-3. Implement bounded-run controls before submitting scientific smoke tests.
-   Current runners use 1,000 iterations: `Single` means EE and `--number`
-   specifies CPU allocation. Neither makes an existing job a tiny run.
-4. Run the planned tiny CCL, Numba, JAX CPU/GPU, and NUMERIC checks in allocated
-   jobs. Confirm JAX devices and asynchronous timing synchronization. The new
-   sample controls and HDF5 outputs are planned interfaces, not existing ones.
-5. Validate covariance generation and vector/ell ordering in a bounded case
-   before the full matrix. Check storage, resume, and timing contracts as well
-   as numerical agreement.
-6. Validate notebook structure and saved-data loading. Select the registered
-   **LimberCloud** kernel for interactive execution. Publication plotting may
-   need TeX on NERSC, but manuscript editing and compilation remain local.
-7. Confirm code checks work with `manuscript/` both absent and empty. Complete
-   the plan's scientific gates before any 1,001-sample production campaign.
-
-All jobs use the canonical runtime tree documented in
-[runtime-tree.md](runtime-tree.md). Verify that tree before submitting jobs.
+All jobs use the canonical runtime tree in [runtime-tree.md](runtime-tree.md).

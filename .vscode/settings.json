@@ -21,5 +21,35 @@
     "cursorpyright.analysis.extraPaths": [
         "src",
         "${workspaceFolder}/src"
+    ],
+    "editor.guides.indentation": true,
+    "editor.guides.highlightActiveIndentation": true,
+    "cSpell.userWords": [
+        "astropy",
+        "camb",
+        "ccl",
+        "cfs",
+        "cosmoconda",
+        "cosmosis",
+        "dotenv",
+        "fiducial",
+        "h5py",
+        "hdf5",
+        "ipykernel",
+        "jaxlib",
+        "limbercloud",
+        "matplotlib",
+        "mpi4py",
+        "mpich",
+        "nersc",
+        "nonfiducial",
+        "numba",
+        "onecovariance",
+        "perlmutter",
+        "pscratch",
+        "pyccl",
+        "scipy",
+        "slurm",
+        "tomographic"
     ]
 }

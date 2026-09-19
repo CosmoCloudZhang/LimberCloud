@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-KERNEL_NAME=limbercloud-cosmoconda
+KERNEL_NAME=limbercloud
 DISPLAY_NAME='LimberCloud'
+LEGACY_KERNEL_NAME=limbercloud-cosmoconda
 
 usage() {
     printf '%s\n' \
@@ -35,8 +36,8 @@ esac
 SCRIPT_DIRECTORY=$(
     cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P
 )
-REPOSITORY_ROOT=$(cd -- "${SCRIPT_DIRECTORY}/../.." && pwd -P)
-PYTHON_PATH="${REPOSITORY_ROOT}/.venv/bin/python"
+PROJECT_ROOT=$(cd -- "${SCRIPT_DIRECTORY}/../.." && pwd -P)
+PYTHON_PATH="${PROJECT_ROOT}/.venv/bin/python"
 LAUNCHER_PATH="${SCRIPT_DIRECTORY}/launch_kernel.sh"
 
 [[ -x ${PYTHON_PATH} ]] || {
@@ -51,7 +52,7 @@ LAUNCHER_PATH="${SCRIPT_DIRECTORY}/launch_kernel.sh"
 
 USER_KERNEL_DIRECTORY=$(
     "${PYTHON_PATH}" -c \
-        'from pathlib import Path; from jupyter_core.paths import jupyter_data_dir; print(Path(jupyter_data_dir()) / "kernels" / "limbercloud-cosmoconda")'
+        'from pathlib import Path; from jupyter_core.paths import jupyter_data_dir; print(Path(jupyter_data_dir()) / "kernels" / "limbercloud")'
 )
 KERNEL_JSON="${USER_KERNEL_DIRECTORY}/kernel.json"
 replace_argument=()
@@ -94,3 +95,5 @@ trap cleanup EXIT
 
 printf 'Registered Jupyter kernel: %s (%s)\n' \
     "${DISPLAY_NAME}" "${KERNEL_NAME}"
+printf 'Legacy kernelspec name %s may still exist; prefer %s.\n' \
+    "${LEGACY_KERNEL_NAME}" "${KERNEL_NAME}"

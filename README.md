@@ -7,8 +7,7 @@ The [September revision package](revisions/2026-09/README.md) contains the
 author-comment inventory, finalized code and manuscript plans, and staged
 implementation prompts. Code, scripts, and notebook implementation take place
 on NERSC; manuscript editing and publication-figure integration take place
-locally. The environment and experiment changes in those plans are pending
-implementation; the setup below describes the current code.
+locally.
 
 ## Repository structure
 
@@ -25,10 +24,21 @@ revisions/             Author feedback, revision plans, and agent prompts
 
 ## Installation
 
-LimberCloud's NERSC environment is named `CosmoConda`. If you already have a
-validated `CosmoConda` with CCL, JAX, Numba, MPI, parallel HDF5, CosmoSIS, or
-other collaboration software, keep it: this repository does not require it to
-be recreated. Activate it and install only this checkout:
+Prefer a dedicated `limbercloud` environment. Preserve an existing
+`CosmoConda` until that environment and notebook launches pass.
+
+```bash
+# Portable CPU (no mandatory CUDA JAX)
+scripts/nersc/create_environment.sh --name limbercloud
+
+# NERSC CUDA variant + site MPI/HDF5 builds
+scripts/nersc/create_environment.sh --name limbercloud --nersc
+conda activate limbercloud
+source scripts/nersc/modules/cpu.sh
+scripts/nersc/install_mpi_h5py.sh
+```
+
+Temporary CosmoConda reuse (do not recreate it for LimberCloud alone):
 
 ```bash
 module load conda
@@ -36,133 +46,76 @@ conda activate CosmoConda
 python -m pip install --no-deps -e .
 ```
 
-For a new standalone installation, `environment.yml` describes the minimum
-project environment baseline. The opt-in setup helper refuses to overwrite an
-existing Conda environment or checkout-local `.venv`:
-
-```bash
-scripts/nersc/create_environment.sh --name CosmoConda
-```
-
-The ignored `.venv` entry in the checkout may be the environment itself or a
-per-user symlink to it. The tracked VS Code configuration uses that stable local
-name without committing anyone's absolute Conda path. See
-[documents/environment.md](documents/environment.md) for reuse, new-installation, GPU, and
-editor setup details.
+The ignored `.venv` link is the sole checkout-local interpreter selector. See
+[documents/environment.md](documents/environment.md).
 
 ## Environment variables and runtime data
 
-The Git checkout does not contain the LSST input arrays or production results.
 `LIMBERCLOUD_RUNTIME_ROOT` must point to the external directory that contains
 the canonical `data/`, `config/`, `results/`, `plots/`, and `logs/` tree.
+`PROJECT_ROOT` is discovered automatically. Python comes from `.venv`.
 
-The project recognizes the following environment variables:
-
-| Variable                           | Requirement                         | Purpose                                                  |
-| ---------------------------------- | ----------------------------------- | -------------------------------------------------------- |
-| `LIMBERCLOUD_RUNTIME_ROOT`       | Required                            | External data, configuration, result, plot, and log root |
-| `LIMBERCLOUD_CONDA_ENV`          | Optional; defaults to`CosmoConda` | Conda environment name or full prefix                    |
-| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Covariance jobs only                | OneCovariance checkout containing`covariance.py`       |
-| `LIMBERCLOUD_TEXLIVE_BIN`        | Optional                            | Directory containing`pdflatex` for plotting            |
-
-### Shell and Slurm jobs
-
-Create a private `.env` from the tracked template and edit the machine-specific
-paths:
+| Variable | Requirement | Purpose |
+| --- | --- | --- |
+| `LIMBERCLOUD_RUNTIME_ROOT` | Required | External data, configuration, result, plot, and log root |
+| `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Covariance jobs only | OneCovariance checkout containing `covariance.py` |
+| `LIMBERCLOUD_TEXLIVE_BIN` | Optional | Directory containing `pdflatex` for plotting |
 
 ```bash
 cp .env.example .env
 ```
 
-The usual configuration is:
-
 ```dotenv
 LIMBERCLOUD_RUNTIME_ROOT=/path/to/external/LimberCloud
-# LIMBERCLOUD_CONDA_ENV=/full/path/to/CosmoConda
 # LIMBERCLOUD_ONECOVARIANCE_ROOT=/path/to/OneCovariance
+# LIMBERCLOUD_TEXLIVE_BIN=/path/to/texlive/bin
 ```
 
-Omit `LIMBERCLOUD_CONDA_ENV` when `conda activate CosmoConda` works. Exported
-canonical variables take precedence over `.env`, and `LIMBERCLOUD_ENV_FILE`
-may select a different dotenv file. NERSC launchers load and validate this
-configuration before activating Conda. The deprecated `CosmoENV`,
-`ONECOVARIANCE_SCRIPT`, and `ONE_COVARIANCE_ROOT` names are accepted only as
-temporary migration aliases and should not be added to new `.env` files.
+Jobs and notebooks load `${PROJECT_ROOT}/.env` through `scripts/load_config.sh`
+without executing it. Exported values take precedence. Do not set
+`LIMBERCLOUD_CONDA_ENV`, `LIMBERCLOUD_ENV_FILE`, or `LIMBERCLOUD_REPO_ROOT`.
 
 ### Cursor or VS Code notebooks
 
-When a notebook is opened directly in Cursor or VS Code, its Python kernel does
-not inherit variables exported later in an integrated terminal. Instead, create
-the repository-root `.env` described above. For a Cursor Remote SSH session,
-create it in the remote NERSC checkout rather than in the local checkout.
+Register the **LimberCloud** kernel once:
 
-Do not include the shell keyword `export` in `.env`. The tracked
-`.vscode/settings.json` uses `.venv` as the project interpreter and injects this
-file into Python tools and new integrated terminals. `.env` and `.venv` are
-ignored by Git. Select `.venv`/`CosmoConda` once in both **Python: Select
-Interpreter** and the notebook kernel picker, then reload the editor window and
-restart notebook kernels. Verify with:
-
-```python
-import os
-import sys
-import limbercloud
-
-print(sys.executable)
-print(limbercloud.__file__)
-print(os.environ.get("LIMBERCLOUD_RUNTIME_ROOT"))
+```bash
+scripts/jupyter/register_kernel.sh
+scripts/jupyter/launch_kernel.sh --probe
+scripts/nersc/diagnose_environment.sh
 ```
 
-All inputs and outputs use one canonical runtime tree. See
-[documents/runtime-tree.md](documents/runtime-tree.md) for its directory, configuration,
-and timing-file contracts, and [documents/nersc.md](documents/nersc.md) for the Perlmutter
-workflow.
-
 ## Verification
-
-Run the lightweight local checks with:
 
 ```bash
 make check
 ```
 
-This checks the package and experiment contracts, cross-backend projection
-values when the optional scientific dependencies are available, Python and
-notebook lint, shell syntax, and notebook JSON/path setup. Full CCL/JAX/GPU and
-covariance validation remains a Perlmutter workflow.
+Spectra runners default to `--sample-count=0`. Pass `--fiducial-only` or an
+explicit `--sample-count` (campaign: `1000`) before science jobs. `--number` is
+the host CPU allocation label, not a sample limit.
 
 ## Experiments
 
-The complete backend matrix is retained under `experiments/spectra/`:
-
-- CCL: Y1/Y10 × Single/Double/Triple
-- Numba CPU: Y1/Y10 × Single/Double/Triple
-- JAX CPU: Y1/Y10 × Single/Double/Triple
-- JAX GPU: Y1/Y10 × Single/Double/Triple
-
-The existing runners use 1,000 iterations; `Single` selects the EE probe and
-`--number` specifies CPU allocation, not sample count. Follow the revision
-plan's bounded-test gates before using these runners for validation.
-
-Slurm launchers require `LIMBERCLOUD_RUNTIME_ROOT` and derive the Git checkout
-path automatically. See [documents/nersc.md](documents/nersc.md) before running
-the production matrix.
+Backend matrix under `experiments/spectra/`: CCL, Numba CPU, JAX CPU, and JAX
+GPU for Y1/Y10 × Single/Double/Triple. `Single`/`Double`/`Triple` select probe
+configurations (EE / TE+TT / EE+TE+TT), not tiny runs.
 
 ## Notebooks and manuscript
 
-Notebooks read the runtime root from the environment and use the installed
-package for path resolution. Their stored outputs have been preserved, but the
-scientific notebooks should be re-executed on Perlmutter after the canonical
-runtime tree has been populated.
+The manuscript is the separate `LimberCloudPaper` repository, checked out
+locally through the optional `manuscript/` submodule. On NERSC, leave it
+uninitialized or absent and update the parent with:
 
-The manuscript is a separate Git repository, checked out locally through the
-optional `manuscript/` submodule. Publication figure PDFs are tracked in that
-repository; LaTeX auxiliary files and `main.pdf` are ignored. On NERSC, leave
-the submodule uninitialized or absent and receive parent-repository changes
-with `git pull --ff-only --no-recurse-submodules`.
+```bash
+git pull --ff-only --no-recurse-submodules
+git ls-tree HEAD manuscript
+```
 
-NERSC produces validated figures and tables in a CFS export bundle. Integrate
-that bundle into the manuscript locally, push paper commits first, and then
-commit and push the updated submodule reference in this repository. See
-[documents/manuscript-workflow.md](documents/manuscript-workflow.md) for the
-complete workflow.
+Do not initialize the paper for code work. Package installs and ordinary checks
+must succeed with `manuscript/` absent. Overleaf synchronization, if used,
+targets the paper repository directly—not a parent-repository subtree.
+
+See [documents/manuscript-workflow.md](documents/manuscript-workflow.md),
+[documents/nersc.md](documents/nersc.md), and
+[documents/runtime-tree.md](documents/runtime-tree.md).

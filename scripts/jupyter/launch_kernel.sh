@@ -5,10 +5,11 @@ set -eo pipefail
 SCRIPT_DIRECTORY=$(
     cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P
 )
-REPOSITORY_ROOT=$(cd -- "${SCRIPT_DIRECTORY}/../.." && pwd -P)
-PYTHON_PATH="${REPOSITORY_ROOT}/.venv/bin/python"
+PROJECT_ROOT=$(cd -- "${SCRIPT_DIRECTORY}/../.." && pwd -P)
+PYTHON_PATH="${PROJECT_ROOT}/.venv/bin/python"
 
-source "${REPOSITORY_ROOT}/scripts/nersc/load_environment.sh"
+# shellcheck source=/dev/null
+source "${PROJECT_ROOT}/scripts/load_config.sh"
 
 if [[ ! -x ${PYTHON_PATH} ]]; then
     printf 'LimberCloud kernel error: Python is not executable: %s\n' \
@@ -16,7 +17,12 @@ if [[ ! -x ${PYTHON_PATH} ]]; then
     exit 1
 fi
 
-export PYTHONPATH="${REPOSITORY_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
+
+# NERSC notebook hosts that write under CFS need the same locking policy as jobs.
+if [[ -n ${NERSC_HOST:-} || -d /global/cfs ]]; then
+    export HDF5_USE_FILE_LOCKING=FALSE
+fi
 
 if [[ ${1:-} == "--probe" ]]; then
     exec "${PYTHON_PATH}" -c \

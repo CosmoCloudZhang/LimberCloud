@@ -7,7 +7,7 @@ name = "limbercloud"
 version = "0.1.0"
 description = "Fast analytic Limber angular-power-spectrum calculations."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12,<3.13"
 authors = [
     {name = "LimberCloud collaboration"},
 ]
@@ -18,8 +18,11 @@ dev = [
 ]
 science = [
     "astropy",
+    "camb",
+    "h5py",
     "jax",
     "matplotlib",
+    "mpi4py",
     "numba",
     "numpy",
     "pyccl",
@@ -29,14 +32,20 @@ science = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+limbercloud = ["py.typed"]
+
 [tool.pyright]
 extraPaths = ["src"]
 venvPath = "."
 venv = ".venv"
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py312"
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "UP032", "W291", "W293"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

@@ -18,20 +18,19 @@ def _load_timing(folder, suffix, configuration, number):
     return numpy.loadtxt(candidate)
 
 
-def main(tag, path, label, folder, number):
-    '''
+def main(tag, label, folder, number):
+    """
     Plot benchmark: cumulative time vs number of evaluations.
 
-    Arguments:
+    Args:
         tag (str): The tag of the configuration
-        path (str): The path of the project scripts
         label (str): The label of the configuration
         folder (str): The base folder of the dataset
         number (int): The number of cores for parallel computation
 
     Returns:
         duration (float): The duration of the process
-    '''
+    """
     # Start
     start = time.time()
     configuration = Configuration.parse(label)
@@ -140,17 +139,10 @@ if __name__ == '__main__':
     # Input
     parse = argparse.ArgumentParser(description='Benchmark')
     parse.add_argument('--tag', type=str, required=True, help='The tag of the configuration')
-    parse.add_argument('--path', type=str, required=True, help='The path of the project scripts')
     parse.add_argument('--label', type=str, required=True, help='The label of the configuration')
     parse.add_argument('--folder', type=str, required=True, help='The base folder of the dataset')
     parse.add_argument('--number', type=int, required=True, help='The number of cores for parallel computation')
 
     # Parse
-    TAG = parse.parse_args().tag
-    PATH = parse.parse_args().path
-    LABEL = parse.parse_args().label
-    FOLDER = parse.parse_args().folder
-    NUMBER = parse.parse_args().number
-
-    # OUTPUT
-    OUTPUT = main(TAG, PATH, LABEL, FOLDER, NUMBER)
+    ARGS = parse.parse_args()
+    OUTPUT = main(ARGS.tag, ARGS.label, ARGS.folder, ARGS.number)

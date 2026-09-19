@@ -1,142 +1,111 @@
 # Python environment and editor setup
 
-This page describes the current helpers. The
-[environment revision plan](../revisions/2026-09/supporting/limber_environment_followup.md)
-specifies a dedicated LimberCloud environment, including `mpi4py` and `h5py`,
-shared by scripts and notebooks on each machine, with simpler configuration
-and appropriate CPU/CUDA variants. Those changes are pending implementation
-on NERSC. Preserve the existing validated environment during that work.
-Local work covers planning, review, and the manuscript; the NERSC paper
-submodule remains uninitialized or absent.
+LimberCloud uses one selected interpreter per machine, referenced by the
+checkout-local `.venv` link. Create or reuse an environment once, point `.venv`
+at it, and use the same prefix for scripts, the editor, and Jupyter.
 
-LimberCloud uses three separate configuration layers:
+Local work covers planning, review, and the manuscript. The NERSC paper
+submodule remains uninitialized or absent. See
+[manuscript-workflow.md](manuscript-workflow.md).
 
-1. `environment.yml` describes a minimum standalone `CosmoConda` for new
-   installations.
-2. NERSC module profiles under `scripts/nersc/modules/` select system-provided
-   CPU, GPU, MPI, HDF5, and Conda support for jobs.
-3. A private repository-root `.env` records per-checkout paths and overrides.
+## Layers
 
-The YAML does not replace NERSC modules, and `.env` does not install packages.
+1. `environment.yml` — portable CPU recipe (`limbercloud`; CPU JAX, serial
+   `h5py`, conda-forge `mpi4py`). No CosmoSIS. No mandatory CUDA JAX.
+2. `environment.nersc.yml` — NERSC CUDA JAX variant with matching scientific
+   pins. Build `mpi4py` / parallel `h5py` afterward with
+   `scripts/nersc/install_mpi_h5py.sh` against Cray MPICH and
+   `cray-hdf5-parallel` (do not install a generic MPI stack over NERSC's).
+3. NERSC module profiles under `scripts/nersc/modules/` — Conda, GNU, Cray
+   MPICH, parallel HDF5. They also set `HDF5_USE_FILE_LOCKING=FALSE` for CFS
+   writes; disabled locking still requires exclusive writer ownership.
+4. Private `${PROJECT_ROOT}/.env` — external path configuration only.
 
-## Reuse an existing CosmoConda
+## Preserve CosmoConda while validating limbercloud
 
-A working collaboration environment may contain more than LimberCloud needs,
-including parallel HDF5, CosmoSIS, and locally validated MPI builds. Do not
-recreate or update it merely because this repository provides
-`environment.yml`. Install only the checkout without dependency resolution:
+A working collaboration `CosmoConda` may contain CosmoSIS and other software.
+Keep it until the dedicated `limbercloud` environment and notebook launches
+pass. To reuse CosmoConda temporarily:
 
 ```bash
 module load conda
 conda activate CosmoConda
 python -m pip install --no-deps -e .
+test ! -e .venv || readlink -f .venv
+# Only if .venv is absent:
+# ln -s "${CONDA_PREFIX}" .venv
 ```
 
-VS Code uses the ignored checkout-local `.venv` name. If it does not exist,
-link it to the already active environment:
+Never replace an existing `.venv` until its target has been inspected.
+
+## Create the dedicated limbercloud environment
+
+Portable / laptop CPU:
 
 ```bash
-test ! -e .venv
+scripts/nersc/create_environment.sh --name limbercloud
+```
+
+NERSC CUDA variant (leaves MPI/HDF5 Python builds to the site installer):
+
+```bash
+module load conda
+scripts/nersc/create_environment.sh --name limbercloud --nersc
+conda activate limbercloud
+source scripts/nersc/modules/cpu.sh
+scripts/nersc/install_mpi_h5py.sh
+```
+
+The helper refuses to modify CosmoConda or an existing `.venv`. After
+validation, point `.venv` at the accepted prefix if it still targets
+CosmoConda:
+
+```bash
+readlink -f .venv
+rm .venv   # only after inspection
 ln -s "${CONDA_PREFIX}" .venv
 ```
 
-Never replace an existing `.venv` until its target has been inspected with
-`readlink .venv`.
+OneCovariance (`@311c2cf` on NERSC) needs a Python build with `gfortran`,
+`gsl`, and `pybind11` for its own install; those stay outside the minimal
+LimberCloud recipe unless you install OneCovariance into the same prefix.
 
-## Create a new minimum environment
-
-New users may invoke the opt-in helper with a new environment name or absolute
-prefix:
+## Select, check, and register
 
 ```bash
-scripts/nersc/create_environment.sh --name CosmoConda
-# Or: scripts/nersc/create_environment.sh --prefix /absolute/new/prefix
+# Configuration (fixed .env; exported values win)
+cp .env.example .env   # first time
+source scripts/load_config.sh
+
+# Interpreter diagnostics
+scripts/nersc/diagnose_environment.sh
+
+# Notebook kernel (display name LimberCloud)
+scripts/jupyter/register_kernel.sh
+scripts/jupyter/launch_kernel.sh --probe
 ```
-
-The helper stops if the requested Conda environment already exists. It creates
-the environment from `environment.yml`, installs this checkout in editable mode
-with `--no-deps`, and creates the local `.venv` link only when that path is
-absent. If `.venv` already exists, the helper reports it and leaves it unchanged.
-It is not an upgrade command for an established collaboration environment.
-
-`environment.yml` is a curated minimum rather than a byte-for-byte export of a
-developer environment. Raw Conda exports contain unrelated packages and
-platform build strings, while the NERSC modules remain outside Conda.
-
-The minimum manifest intentionally does not install `mpi4py` or `h5py`.
-Parallel Python bindings must be built or cloned against NERSC's Cray MPICH and
-parallel HDF5 stack; ordinary Conda builds do not establish that integration.
-Keep a working build in an existing `CosmoConda`. New users who need it should
-follow the [NERSC parallel Python guide](https://docs.nersc.gov/development/languages/python/parallel-python/)
-and validate it on compute nodes before production use.
 
 ## Local configuration
-
-Create an ignored `.env` from the public template:
-
-```bash
-cp .env.example .env
-```
-
-The canonical keys are:
 
 | Key | Required | Meaning |
 | --- | --- | --- |
 | `LIMBERCLOUD_RUNTIME_ROOT` | Yes | External runtime data and results tree |
-| `LIMBERCLOUD_CONDA_ENV` | No | Conda name or prefix; defaults to `CosmoConda` |
 | `LIMBERCLOUD_ONECOVARIANCE_ROOT` | Covariance only | Checkout containing `covariance.py` |
 | `LIMBERCLOUD_TEXLIVE_BIN` | No | Directory containing `pdflatex` |
 
-An already exported canonical key overrides the value in `.env`. Set
-`LIMBERCLOUD_ENV_FILE` to use a different dotenv file. The parser accepts plain
-`KEY=value` assignments and quoted values but does not execute shell code.
+`PROJECT_ROOT` is discovered automatically. Python comes from `.venv` only.
+Do not set `LIMBERCLOUD_CONDA_ENV`, `LIMBERCLOUD_ENV_FILE`, or
+`LIMBERCLOUD_REPO_ROOT`.
 
-`CosmoENV`, `ONECOVARIANCE_SCRIPT`, and `ONE_COVARIANCE_ROOT` are deprecated
-migration inputs. New configuration must use the canonical names above.
-
-## CPU and GPU separation
-
-CPU jobs source `scripts/nersc/modules/cpu.sh`; JAX GPU jobs source
-`scripts/nersc/modules/gpu.sh`. Both source the common Conda, Cray MPI, GNU
-programming-environment, and parallel-HDF5 profile. Loading a GPU module does
-not allocate a GPU: GPU launchers also retain their Slurm GPU constraint and
-GPU resource request.
-
-The GPU-capable JAX packages in `CosmoConda` and the selected NERSC CUDA module
-must remain a validated pair. The setup in an existing collaboration
-environment is left untouched.
+Batch jobs source `scripts/load_config.sh`, the CPU/GPU module profile, and
+`scripts/nersc/activate_venv.sh`.
 
 ## VS Code and notebooks
 
-The tracked `.vscode/settings.json` selects
-`${workspaceFolder}/.venv/bin/python`, adds `src/` for static analysis, and
-injects `.env` into new integrated terminals.
-
-For a notebook kernel that loads the checkout's current `.env` every time it
-starts, register the project-specific per-user kernelspec:
-
-```bash
-scripts/jupyter/register_kernel.sh
-```
-
-This changes only the user's Jupyter kernelspec registry; it does not install
-packages or modify `CosmoConda`. After registration:
-
-1. Reload the Cursor or VS Code window.
-2. Run **Python Environments: Refresh All Environment Managers**.
-3. In **Select Kernel**, choose **Jupyter Kernel** and then
-   **LimberCloud**.
-4. Shut down any old kernel and start the newly selected kernel.
-
-The ordinary global **CosmoConda** kernelspec launches Conda's Python directly
-and does not load this checkout's `.env`. The **LimberCloud** option starts
-through `scripts/jupyter/launch_kernel.sh`, which loads the project
-configuration before executing `.venv/bin/python`.
-
-The project does not rely on notebook metadata to force a machine-specific
-kernelspec. Cursor and VS Code remember each user's kernel selection.
-
-Verify both Python files and notebooks with:
+Tracked `.vscode/settings.json` selects `.venv`, enables indentation guides,
+and injects `.env`. Prefer the **LimberCloud** Jupyter kernel
+(`limbercloud`), which loads configuration through
+`scripts/jupyter/launch_kernel.sh`.
 
 ```python
 import os
@@ -148,5 +117,8 @@ print(limbercloud.__file__)
 print(os.environ["LIMBERCLOUD_RUNTIME_ROOT"])
 ```
 
-The executable should resolve through `.venv`, and `limbercloud.__file__`
-should resolve under this checkout's `src/limbercloud/` directory.
+## Sample-count safety
+
+Spectra runners default to `--sample-count=0`. Pass `--fiducial-only` or an
+explicit `--sample-count` (campaign: `1000`) before any science launch.
+`--number` remains the host CPU allocation label, not a sample limit.

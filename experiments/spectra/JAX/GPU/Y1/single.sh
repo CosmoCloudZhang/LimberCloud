@@ -15,10 +15,25 @@
 set -eo pipefail
 
 # Configure the project environment
-REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "${SLURM_SUBMIT_DIR:-$PWD}" rev-parse --show-toplevel 2>/dev/null || git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
-source "${REPO_ROOT}/scripts/nersc/load_environment.sh"
-source "${REPO_ROOT}/scripts/nersc/modules/gpu.sh"
-conda activate "${LIMBERCLOUD_CONDA_ENV}"
+_lc_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+PROJECT_ROOT=""
+if [[ -n "${SLURM_SUBMIT_DIR:-}" && -f "${SLURM_SUBMIT_DIR}/scripts/load_config.sh" && -d "${SLURM_SUBMIT_DIR}/src/limbercloud" ]]; then
+    PROJECT_ROOT=$(cd -- "${SLURM_SUBMIT_DIR}" && pwd -P)
+else
+    _walk=${_lc_dir}
+    while [[ ${_walk} != "/" ]]; do
+        if [[ -f "${_walk}/scripts/load_config.sh" && -d "${_walk}/src/limbercloud" ]]; then
+            PROJECT_ROOT=${_walk}
+            break
+        fi
+        _walk=$(dirname -- "${_walk}")
+    done
+fi
+[[ -n ${PROJECT_ROOT} ]] || { echo "LimberCloud error: could not resolve PROJECT_ROOT" >&2; exit 1; }
+unset _lc_dir _walk
+source "${PROJECT_ROOT}/scripts/load_config.sh"
+source "${PROJECT_ROOT}/scripts/nersc/modules/gpu.sh"
+source "${PROJECT_ROOT}/scripts/nersc/activate_venv.sh"
 
 # Environment variables
 export JAX_PLATFORMS=cuda
@@ -36,7 +51,7 @@ export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 TAG="Y1"
 LABEL="Single"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
-export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Run the script
-srun -n 1 -c $SLURM_CPUS_PER_TASK -G 1 python -u "${REPO_ROOT}/experiments/spectra/JAX/GPU/${TAG}/${LABEL,,}.py" --tag="${TAG}" --path="${REPO_ROOT}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"
+srun -n 1 -c $SLURM_CPUS_PER_TASK -G 1 python -u "${PROJECT_ROOT}/experiments/spectra/JAX/GPU/${TAG}/${LABEL,,}.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"

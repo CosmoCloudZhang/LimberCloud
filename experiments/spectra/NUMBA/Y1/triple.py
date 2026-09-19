@@ -8,22 +8,26 @@ import pyccl
 import scipy
 
 from limbercloud import Configuration, ProjectPaths
+from limbercloud.experiments import (
+    add_sample_control_arguments,
+    build_checkpoint_counts,
+    resolve_sample_count,
+)
 
 
-def main(tag, path, label, folder, number):
-    '''
+def main(tag, label, folder, number, sample_count=None, fiducial_only=False):
+    """
     Calculate the angular power spectra under the triple configuration
 
-    Arguments:
+    Args:
         tag (str): The tag of the configuration
-        path (str): The path of the project scripts
         label (str): The label of the configuration
         folder (str): The base folder of the dataset
         number (int): The number of cores for parallel computation
 
     Returns:
         duration (float): The duration of the process
-    '''
+    """
     # Start
     start = time.time()
     label = Configuration.parse(label).value
@@ -122,12 +126,11 @@ def main(tag, path, label, folder, number):
     amplitude_gm = galaxy_bias * amplitude
     amplitude_gg = galaxy_bias ** 2
 
-    # Count
-    count1 = 100
-    count2 = 1000
-    count_size = 10
-    count_step = int((count2 - count1) // (count_size - 1))
-    count_list = numpy.linspace(count1, count2, count_size, dtype='int32')
+    # Count (sample_count = non-fiducial rows; default 0 is safe)
+    count2 = resolve_sample_count(sample_count, fiducial_only)
+    count_list = build_checkpoint_counts(count2)
+    count_size = int(count_list.size)
+    count_targets = {int(count): index for index, count in enumerate(count_list)}
 
     # Time
     time_list = numpy.zeros(count_size)
@@ -138,7 +141,7 @@ def main(tag, path, label, folder, number):
     duration_cosmology = 0.0
     duration_projection = 0.0
     duration_coefficient = 0.0
-    for index in range(count_list.max()):
+    for index in range(int(count_list.max()) if count_list.size else 0):
         t0 = time.time()
         cosmology = pyccl.Cosmology(
             h=numpy.random.uniform(cosmology_info['H'] * 0.95, cosmology_info['H'] * 1.05),
@@ -349,8 +352,8 @@ def main(tag, path, label, folder, number):
         t3 = time.time()
         duration_projection += (t3 - t2)
 
-        if (index + 1) % count_step == 0:
-            count_index = int((index + 1) // count_step) - 1
+        if (index + 1) in count_targets:
+            count_index = count_targets[index + 1]
 
             time_cosmology_list[count_index] = duration_cosmology
             time_projection_list[count_index] = duration_projection
@@ -376,17 +379,18 @@ if __name__ == '__main__':
     # Input
     PARSE = argparse.ArgumentParser(description='Triple')
     PARSE.add_argument('--tag', type=str, required=True, help='The tag of the configuration')
-    PARSE.add_argument('--path', type=str, required=True, help='The path of the project scripts')
     PARSE.add_argument('--label', type=str, required=True, help='The label of the configuration')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the dataset')
-    PARSE.add_argument('--number', type=int, required=True, help='The number of cores for parallel computation')
+    PARSE.add_argument('--number', type=int, required=True, help='Host CPU allocation label for output filenames')
+    add_sample_control_arguments(PARSE)
 
     # Parse
-    TAG = PARSE.parse_args().tag
-    PATH = PARSE.parse_args().path
-    LABEL = PARSE.parse_args().label
-    FOLDER = PARSE.parse_args().folder
-    NUMBER = PARSE.parse_args().number
-
-    # Output
-    OUTPUT = main(TAG, PATH, LABEL, FOLDER, NUMBER)
+    ARGS = PARSE.parse_args()
+    OUTPUT = main(
+        ARGS.tag,
+        ARGS.label,
+        ARGS.folder,
+        ARGS.number,
+        sample_count=ARGS.sample_count,
+        fiducial_only=ARGS.fiducial_only,
+    )

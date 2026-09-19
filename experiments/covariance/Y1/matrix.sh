@@ -14,10 +14,25 @@
 set -eo pipefail
 
 # Configure the project environment
-REPO_ROOT="${LIMBERCLOUD_REPO_ROOT:-$(git -C "${SLURM_SUBMIT_DIR:-$PWD}" rev-parse --show-toplevel 2>/dev/null || git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)}"
-source "${REPO_ROOT}/scripts/nersc/load_environment.sh"
-source "${REPO_ROOT}/scripts/nersc/modules/cpu.sh"
-conda activate "${LIMBERCLOUD_CONDA_ENV}"
+_lc_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+PROJECT_ROOT=""
+if [[ -n "${SLURM_SUBMIT_DIR:-}" && -f "${SLURM_SUBMIT_DIR}/scripts/load_config.sh" && -d "${SLURM_SUBMIT_DIR}/src/limbercloud" ]]; then
+    PROJECT_ROOT=$(cd -- "${SLURM_SUBMIT_DIR}" && pwd -P)
+else
+    _walk=${_lc_dir}
+    while [[ ${_walk} != "/" ]]; do
+        if [[ -f "${_walk}/scripts/load_config.sh" && -d "${_walk}/src/limbercloud" ]]; then
+            PROJECT_ROOT=${_walk}
+            break
+        fi
+        _walk=$(dirname -- "${_walk}")
+    done
+fi
+[[ -n ${PROJECT_ROOT} ]] || { echo "LimberCloud error: could not resolve PROJECT_ROOT" >&2; exit 1; }
+unset _lc_dir _walk
+source "${PROJECT_ROOT}/scripts/load_config.sh"
+source "${PROJECT_ROOT}/scripts/nersc/modules/cpu.sh"
+source "${PROJECT_ROOT}/scripts/nersc/activate_venv.sh"
 
 # Set environment
 export NUMEXPR_MAX_THREADS=$SLURM_CPUS_PER_TASK
@@ -29,12 +44,12 @@ export OMP_PLACES=threads
 # Initialize the process
 TAG="Y1"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
-export PYTHONPATH="${REPO_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 limbercloud_require_onecovariance
 ONECOVARIANCE_SCRIPT="${LIMBERCLOUD_ONECOVARIANCE_ROOT%/}/covariance.py"
 
 COVARIANCE_CONFIG="${RUNTIME_ROOT}/results/covariance/${TAG}/CONFIG.ini"
 
 # Run applications
-python -u "${REPO_ROOT}/experiments/covariance/${TAG}/matrix.py" --tag="${TAG}" --folder="${RUNTIME_ROOT}" &&
+python -u "${PROJECT_ROOT}/experiments/covariance/${TAG}/matrix.py" --tag="${TAG}" --folder="${RUNTIME_ROOT}" &&
 python "${ONECOVARIANCE_SCRIPT}" "${COVARIANCE_CONFIG}"

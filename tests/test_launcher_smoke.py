@@ -7,7 +7,7 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT_ROOT = REPOSITORY_ROOT / "experiments"
-GENERATOR_ROOT = REPOSITORY_ROOT / "scripts" / "nersc" / "generate_config"
+GENERATOR_ROOT = REPOSITORY_ROOT / "scripts" / "generate_config"
 
 
 class LauncherSmokeTests(unittest.TestCase):
@@ -22,53 +22,40 @@ class LauncherSmokeTests(unittest.TestCase):
             "# smoke-test fixture\n",
             encoding="utf-8",
         )
-        self.dotenv = self.root / ".env"
-        self.dotenv.write_text(
-            "\n".join(
-                (
-                    f"LIMBERCLOUD_RUNTIME_ROOT={self.runtime_root}",
-                    "LIMBERCLOUD_CONDA_ENV=SmokeConda",
-                    (
-                        "LIMBERCLOUD_ONECOVARIANCE_ROOT="
-                        f"{self.onecovariance_root}"
-                    ),
-                    "",
-                )
-            ),
-            encoding="utf-8",
-        )
         self.command_log = self.root / "commands.log"
         self.stub_bin = self.root / "bin"
         self.stub_bin.mkdir()
         stub = """#!/usr/bin/env bash
 printf '%s' "${0##*/}" >> "${LIMBERCLOUD_SMOKE_LOG}"
 printf ' <%s>' "$@" >> "${LIMBERCLOUD_SMOKE_LOG}"
-printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
+printf '\\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
 """
         for command in ("conda", "mkdir", "module", "python", "sbatch", "srun"):
             path = self.stub_bin / command
             path.write_text(stub, encoding="utf-8")
             path.chmod(0o755)
 
+        self.venv_prefix = (REPOSITORY_ROOT / ".venv").resolve()
+
     def tearDown(self):
         self.temporary_directory.cleanup()
 
-    def clean_environment(self, dotenv=None):
+    def clean_environment(self):
         return {
             "HOME": str(self.root),
             "LANG": "C",
-            "LIMBERCLOUD_ENV_FILE": str(dotenv or self.dotenv),
-            "LIMBERCLOUD_REPO_ROOT": str(REPOSITORY_ROOT),
+            "LIMBERCLOUD_RUNTIME_ROOT": str(self.runtime_root),
+            "LIMBERCLOUD_ONECOVARIANCE_ROOT": str(self.onecovariance_root),
             "LIMBERCLOUD_SMOKE_LOG": str(self.command_log),
             "PATH": f"{self.stub_bin}:/usr/bin:/bin",
             "SLURM_CPUS_PER_TASK": "2",
         }
 
-    def run_launcher(self, path, dotenv=None):
+    def run_launcher(self, path):
         return subprocess.run(
             ["bash", "--noprofile", "--norc", str(path)],
             cwd=REPOSITORY_ROOT,
-            env=self.clean_environment(dotenv),
+            env=self.clean_environment(),
             check=False,
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -82,6 +69,7 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
         launchers = [path for path in shell_files if "#SBATCH" in path.read_text()]
 
         self.assertEqual(len(launchers), 34)
+        activate_token = f"conda <activate> <{self.venv_prefix}>"
         for path in launchers:
             self.command_log.unlink(missing_ok=True)
             result = self.run_launcher(path)
@@ -89,7 +77,7 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
             with self.subTest(path=relative_path):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 commands = self.command_log.read_text(encoding="utf-8")
-                self.assertIn("conda <activate> <SmokeConda>", commands)
+                self.assertIn(activate_token, commands)
                 self.assertIn("module <load> <conda>", commands)
 
                 if "experiments/spectra/JAX/GPU" in relative_path.as_posix():
@@ -110,14 +98,19 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
                 self.assertEqual(commands.count("sbatch "), 6)
 
     def test_invalid_configuration_stops_before_module_or_conda(self):
-        invalid_dotenv = self.root / "invalid.env"
-        invalid_dotenv.write_text(
-            "LIMBERCLOUD_RUNTIME_ROOT=\n",
-            encoding="utf-8",
-        )
         launcher = EXPERIMENT_ROOT / "spectra" / "NUMBA" / "Y1" / "single.sh"
+        environment = self.clean_environment()
+        environment["LIMBERCLOUD_RUNTIME_ROOT"] = ""
 
-        result = self.run_launcher(launcher, invalid_dotenv)
+        result = subprocess.run(
+            ["bash", "--noprofile", "--norc", str(launcher)],
+            cwd=REPOSITORY_ROOT,
+            env=environment,
+            check=False,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("LIMBERCLOUD_RUNTIME_ROOT is required", result.stderr)
@@ -130,7 +123,6 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
         copied.chmod(0o755)
 
         environment = self.clean_environment()
-        del environment["LIMBERCLOUD_REPO_ROOT"]
         environment["SLURM_SUBMIT_DIR"] = str(REPOSITORY_ROOT)
 
         self.command_log.unlink(missing_ok=True)
@@ -146,7 +138,7 @@ printf '\n' >> "${LIMBERCLOUD_SMOKE_LOG}"
 
         self.assertEqual(result.returncode, 0, result.stderr)
         commands = self.command_log.read_text(encoding="utf-8")
-        self.assertIn("conda <activate> <SmokeConda>", commands)
+        self.assertIn(f"conda <activate> <{self.venv_prefix}>", commands)
         self.assertNotIn("fatal: not a git repository", result.stderr)
 
 
