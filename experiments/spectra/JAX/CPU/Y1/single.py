@@ -9,6 +9,7 @@ import pyccl
 import scipy
 
 from limbercloud import Configuration, ProjectPaths
+from limbercloud.projection.jax_backend import NN, NS, SN, SS, TENSOR
 
 logging.getLogger("jax._src.xla_bridge").setLevel(logging.CRITICAL)
 
@@ -38,7 +39,6 @@ def main(tag, path, label, folder, number):
     print(f'Tag: {tag}')
 
     # Runtime paths
-    from limbercloud.projection.jax_backend import NN, NS, SN, SS, TENSOR
 
     paths = ProjectPaths.from_root(folder)
     data_folder = str(paths.survey_data(tag))
