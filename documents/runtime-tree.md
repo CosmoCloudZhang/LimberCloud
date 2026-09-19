@@ -3,6 +3,15 @@
 LimberCloud keeps the Git checkout separate from its data and result tree.
 Python code constructs external paths through `limbercloud.io.ProjectPaths`.
 
+This page describes the current layout. The
+[code revision plan](../revisions/2026-09/CODE_REVISION_PLAN.md) defines the
+pending shared cosmology table, NUMERIC interpolation variants, HDF5 spectra,
+run identities, and checkpoint contracts. Implement and validate these on
+NERSC before treating the proposed outputs as available. Durable datasets and
+publication-export bundles stay on CFS; the local paper owner receives only
+accepted figures, compact tables, and provenance as described in the
+[manuscript workflow](manuscript-workflow.md).
+
 Set the external root in the ignored repository `.env` before running an
 experiment or notebook:
 

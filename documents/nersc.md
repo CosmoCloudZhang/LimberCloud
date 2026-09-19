@@ -1,5 +1,29 @@
 # Perlmutter workflow
 
+## Development ownership and Git updates
+
+Implement code, scripts, notebooks, environment helpers, and tests on NERSC.
+Edit and compile the manuscript locally. The remote `manuscript/` submodule
+stays uninitialized, empty, or absent; retain its Git reference and
+`.gitmodules` entry. Routine remote updates use:
+
+```bash
+git pull --ff-only --no-recurse-submodules
+git ls-tree HEAD manuscript
+```
+
+Read the recorded paper commit with `git ls-tree`; do not initialize the paper
+or inspect it with `git -C manuscript` when its directory is empty. Export
+validated figures and tables to a CFS bundle with checksums and provenance for
+local integration, rather than writing into a remote manuscript directory.
+See [manuscript-workflow.md](manuscript-workflow.md) for the complete handoff.
+
+Start implementation with Prompt 0 in the
+[revision prompts](../revisions/2026-09/CURSOR_IMPLEMENTATION_PROMPTS.md), then
+follow Prompts 0A–3 on NERSC. Prompt 4 is for local manuscript work. The setup
+below describes current helpers; the planned environment and experiment
+changes remain pending implementation and validation.
+
 ## Checkout and environment
 
 The collaboration environment is named `CosmoConda`. An existing validated
@@ -71,7 +95,7 @@ mkdir -p logs
 sbatch --chdir="${PWD}" experiments/spectra/NUMBA/Y1/single.sh
 ```
 
-The four `run_all.sh` launchers create `logs/`, validate `.env` before the first
+The four `Run_All.sh` launchers create `logs/`, validate `.env` before the first
 submission, and use the repository as the Slurm working directory.
 
 ## Configuration generation order
@@ -89,25 +113,29 @@ The final two depend on the generated cosmology configuration.
 
 ## Validation sequence
 
-Validation must not recreate or update an established `CosmoConda`.
+Follow C00, C13, and C14 in the
+[code plan](../revisions/2026-09/CODE_REVISION_PLAN.md): inventory the established
+environment first and build a separate candidate without replacing it.
 
-1. Confirm `.venv/bin/python` imports this checkout and the required scientific
-   packages.
-2. Run `make check` on a login node. This is read-only apart from ordinary test
-   caches ignored by Git.
-3. Run the dotenv-loader tests, which use temporary files and clean subprocess
-   environments rather than the real `.env`.
-4. Submit one CCL Y1 Single smoke job.
-5. Submit one Numba Y1 Single smoke job.
-6. Submit one JAX CPU Y1 Single smoke job.
-7. Submit one JAX GPU Y1 Single smoke job and confirm `jax.devices()` reports a
-   GPU.
-8. Submit one covariance smoke job after setting
-   `LIMBERCLOUD_ONECOVARIANCE_ROOT`.
-9. Confirm generated filenames follow the `Time_Single_*` contract before
-   submitting the full experiment matrix.
-10. Validate all notebooks and select the `.venv`/`CosmoConda` kernel for
-    interactive execution.
+1. Run lightweight path, configuration, syntax, and contract checks first.
+   Keep MPI/HDF5 imports and scientific computations in the appropriate
+   allocated context; importing an MPI-enabled library can initialize MPI.
+2. Confirm the selected Python imports this checkout. Validate the candidate
+   environment's CPU/GPU, MPI, and HDF5 compatibility before adopting it.
+3. Implement bounded-run controls before submitting scientific smoke tests.
+   Current runners use 1,000 iterations: `Single` means EE and `--number`
+   specifies CPU allocation. Neither makes an existing job a tiny run.
+4. Run the planned tiny CCL, Numba, JAX CPU/GPU, and NUMERIC checks in allocated
+   jobs. Confirm JAX devices and asynchronous timing synchronization. The new
+   sample controls and HDF5 outputs are planned interfaces, not existing ones.
+5. Validate covariance generation and vector/ell ordering in a bounded case
+   before the full matrix. Check storage, resume, and timing contracts as well
+   as numerical agreement.
+6. Validate notebook structure and saved-data loading. Select the registered
+   **LimberCloud** kernel for interactive execution. Publication plotting may
+   need TeX on NERSC, but manuscript editing and compilation remain local.
+7. Confirm code checks work with `manuscript/` both absent and empty. Complete
+   the plan's scientific gates before any 1,001-sample production campaign.
 
 All jobs use the canonical runtime tree documented in
 [runtime-tree.md](runtime-tree.md). Verify that tree before submitting jobs.

@@ -1,5 +1,7 @@
 # LimberCloud OneCovariance audit and minimal implementation plan
 
+> **Status — 2026-09-19:** This is historical audit evidence, not the current execution plan. The [code plan](../CODE_REVISION_PLAN.md), [manuscript plan](../MANUSCRIPT_REVISION_PLAN.md), and [implementation prompts](../CURSOR_IMPLEMENTATION_PROMPTS.md) take precedence over its provisional recommendations. Code and scientific scripts are edited and validated on NERSC; manuscript sources, accepted publication figures, and the paper manifest are edited locally. The manuscript submodule may remain uninitialized and absent on NERSC; scientific jobs and ordinary checks must not require it. Source paths, environment contracts, and line numbers below describe the inspected historical snapshots. In particular, advice to preserve the old environment selectors does not override the later approved environment simplification, and earlier NPZ proposals do not override the final HDF5 spectra contract. The audit findings and original evidence below are retained for traceability.
+
 Audit date: 2026-09-15. This is a read-only investigation and proposed implementation; no production code was changed and no Perlmutter jobs were submitted.
 
 ## 0. Live GitHub reconciliation (supersedes older environment/path details)

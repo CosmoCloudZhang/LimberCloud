@@ -1,5 +1,7 @@
 # Ensemble follow-up: current source and interpolation contract
 
+> **Status — 2026-09-19:** This is source-audit evidence, not the current execution plan. The [code plan](../CODE_REVISION_PLAN.md), [manuscript plan](../MANUSCRIPT_REVISION_PLAN.md), and [implementation prompts](../CURSOR_IMPLEMENTATION_PROMPTS.md) take precedence over its provisional recommendations. Code and scientific scripts are edited and validated on NERSC; manuscript sources, accepted publication figures, and the paper manifest are edited locally. The manuscript submodule may remain uninitialized and absent on NERSC; scientific jobs and ordinary checks must not require it. The `.npz` spectrum names proposed below have been superseded by `.h5` products under the same method/order naming scheme. Pinned scientific findings, including the correct NN observer factor `1/4` for cubic first-interval power, remain evidence for the final plans; the historical body is preserved.
+
 **Date:** 19 September 2026. **Inspected revision:** [`0876bf4a50e869be1289a3eecb46931e7c8eb534`](https://github.com/CosmoCloudZhang/LimberCloud/tree/0876bf4a50e869be1289a3eecb46931e7c8eb534). This is a read-only source audit in a temporary checkout, supporting the updated code and manuscript plans. No production source was changed, no spectra were generated, and no Perlmutter jobs or installed OneCovariance version were inspected. Notebook cell references below are **zero-based indices in the notebook JSON**, counting all cells.
 
 ## 1. Correction to the earlier observer-interval diagnosis

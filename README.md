@@ -3,6 +3,13 @@
 LimberCloud is an analytic framework for fast, scalable computation of angular
 power spectra for weak gravitational lensing and large-scale structure.
 
+The [September revision package](revisions/2026-09/README.md) contains the
+author-comment inventory, finalized code and manuscript plans, and staged
+implementation prompts. Code, scripts, and notebook implementation take place
+on NERSC; manuscript editing and publication-figure integration take place
+locally. The environment and experiment changes in those plans are pending
+implementation; the setup below describes the current code.
+
 ## Repository structure
 
 ```text
@@ -10,9 +17,10 @@ src/limbercloud/       Reusable Numba/JAX projection code and runtime paths
 experiments/           CCL, Numba, JAX, covariance, and benchmark entry points
 scripts/               Configuration generators, validators, and NERSC helpers
 notebooks/             Derivation, spectrum, error, kernel, and power notebooks
-manuscript/            Journal manuscript and tracked publication figures
+manuscript/            Optional LimberCloudPaper submodule, edited locally
 tests/                 Fast path, experiment-contract, and backend checks
-docs/                  Runtime, NERSC, and manuscript workflows
+documents/             Runtime, NERSC, and manuscript workflows
+revisions/             Author feedback, revision plans, and agent prompts
 ```
 
 ## Installation
@@ -39,7 +47,7 @@ scripts/nersc/create_environment.sh --name CosmoConda
 The ignored `.venv` entry in the checkout may be the environment itself or a
 per-user symlink to it. The tracked VS Code configuration uses that stable local
 name without committing anyone's absolute Conda path. See
-[docs/environment.md](docs/environment.md) for reuse, new-installation, GPU, and
+[documents/environment.md](documents/environment.md) for reuse, new-installation, GPU, and
 editor setup details.
 
 ## Environment variables and runtime data
@@ -106,8 +114,8 @@ print(os.environ.get("LIMBERCLOUD_RUNTIME_ROOT"))
 ```
 
 All inputs and outputs use one canonical runtime tree. See
-[docs/runtime-tree.md](docs/runtime-tree.md) for its directory, configuration,
-and timing-file contracts, and [docs/nersc.md](docs/nersc.md) for the Perlmutter
+[documents/runtime-tree.md](documents/runtime-tree.md) for its directory, configuration,
+and timing-file contracts, and [documents/nersc.md](documents/nersc.md) for the Perlmutter
 workflow.
 
 ## Verification
@@ -132,9 +140,13 @@ The complete backend matrix is retained under `experiments/spectra/`:
 - JAX CPU: Y1/Y10 × Single/Double/Triple
 - JAX GPU: Y1/Y10 × Single/Double/Triple
 
+The existing runners use 1,000 iterations; `Single` selects the EE probe and
+`--number` specifies CPU allocation, not sample count. Follow the revision
+plan's bounded-test gates before using these runners for validation.
+
 Slurm launchers require `LIMBERCLOUD_RUNTIME_ROOT` and derive the Git checkout
-path automatically. See [docs/nersc.md](docs/nersc.md) before running the
-production matrix.
+path automatically. See [documents/nersc.md](documents/nersc.md) before running
+the production matrix.
 
 ## Notebooks and manuscript
 
@@ -143,7 +155,14 @@ package for path resolution. Their stored outputs have been preserved, but the
 scientific notebooks should be re-executed on Perlmutter after the canonical
 runtime tree has been populated.
 
-The manuscript lives under `manuscript/`. Publication figure PDFs are tracked;
-LaTeX auxiliary files and `main.pdf` are ignored. See
-[docs/manuscript-workflow.md](docs/manuscript-workflow.md) for the local Git to
-Overleaf workflow.
+The manuscript is a separate Git repository, checked out locally through the
+optional `manuscript/` submodule. Publication figure PDFs are tracked in that
+repository; LaTeX auxiliary files and `main.pdf` are ignored. On NERSC, leave
+the submodule uninitialized or absent and receive parent-repository changes
+with `git pull --ff-only --no-recurse-submodules`.
+
+NERSC produces validated figures and tables in a CFS export bundle. Integrate
+that bundle into the manuscript locally, push paper commits first, and then
+commit and push the updated submodule reference in this repository. See
+[documents/manuscript-workflow.md](documents/manuscript-workflow.md) for the
+complete workflow.

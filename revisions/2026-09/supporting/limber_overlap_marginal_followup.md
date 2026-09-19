@@ -1,5 +1,7 @@
 # Followup: overlap selection and marginalisation algebra
 
+> **Status — 2026-09-19:** This is supporting evidence, not the current execution plan. The [code plan](../CODE_REVISION_PLAN.md), [manuscript plan](../MANUSCRIPT_REVISION_PLAN.md), and [implementation prompts](../CURSOR_IMPLEMENTATION_PROMPTS.md) define the accepted scope and sequence. Code and scientific scripts are edited and validated on NERSC; manuscript sources, accepted publication figures, and the paper manifest are edited locally. The manuscript submodule may remain uninitialized and absent on NERSC; scientific jobs and ordinary checks must not require it. The pinned overlap definition and algebra below remain evidence for the final plans; they do not constitute completed numerical validation or instructions to start an additional inference study. The original body is preserved.
+
 ## 1. Verified overlap sources
 
 ### Primary binny implementation: concrete match to Niko

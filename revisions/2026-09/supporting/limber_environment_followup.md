@@ -4,6 +4,7 @@ Decision record checked on 2026-09-19. This supplements the final code plan and 
 
 ## Agreed scope
 
+- Implement code, scripts, notebooks, environment helpers and tests on NERSC with the remote Cursor agent. Local Codex owns plans/review and manuscript editing/compilation; it does not concurrently implement code changes. Keep `manuscript/` initialized locally and intentionally uninitialized or absent on NERSC. The remote agent reads the versioned plans/comment inventory and reports the parent's paper pin with `git ls-tree HEAD manuscript`; it does not need a paper checkout or paper-repository credentials.
 - Use one project environment per machine for scripts, editor and Jupyter. Select it through the checkout-local `.venv` link; a Conda environment remains the underlying installation. Keep the working CosmoConda intact while creating and validating a separate `limbercloud` environment.
 - Include `mpi4py` for future task-based work and `h5py` for the spectra archive. Exclude CosmoSIS. Installing MPI support does not introduce multiple cosmology tasks into this paper's benchmark: retain one SLURM task and sequential samples, with backend-internal threading/JAX execution.
 - Prefer a validated MPI-enabled h5py build on NERSC when compatible with the common environment. Ordinary serial h5py is sufficient for the current single-writer archive and the portable local environment. Parallel h5py capability is not a benchmark acceptance requirement.
@@ -57,12 +58,14 @@ Our implementation must separately enforce exclusive run ownership, reject simul
 
 ## Remote evidence required before adopting the environment
 
-1. Capture both Git revisions and dirty state; existing Conda package/build records; `.venv` target; kernel interpreter; current modules; compiler paths; actual CFS input/output locations; and OneCovariance revision/configuration. Avoid including secrets in reports.
+1. Capture the NERSC parent Git revision/dirty state and its recorded paper pin without initializing the submodule; existing Conda package/build records; `.venv` target; kernel interpreter; current modules; compiler paths; actual CFS input/output locations; and OneCovariance revision/configuration. The local paper owner separately records the working paper revision. Avoid including secrets in reports.
 2. Create the separate candidate environment and record installation choices. Confirm the editor, kernel launcher, command-line scripts and SLURM launcher resolve its same Python prefix. Verify package imports and a tiny CAMB-backed CCL calculation, then representative Numba and JAX calculations.
 3. In a small allocation, run an MPI rank/count and reduction test with `srun`; record `MPI.Get_library_version()`. Add a minimal cross-node check before claiming cross-node MPI support. These are installation checks, not changes to benchmark task counts.
 4. Record `h5py.version.info` and `h5py.get_config().mpi`; inspect loaded MPI/HDF5 libraries, not just package names. Check serial HDF5 round trips, metadata/dtype preservation and checkpoint/restart behavior on the actual CFS path and with the notebook reader.
 5. If the parallel h5py variant is adopted, run a separate tiny collective-file test under `srun` and verify every rank's values after closing. If only serial capability is validated, state that explicitly and retain the single-writer workflow.
 6. Run tiny allocated CPU and GPU tests with explicit device/thread settings, synchronization and recorded hardware; test the actual NERSC notebook startup context separately. Preserve previous environments and results until these checks pass.
 7. Save a concise remote validation report with commands, outcomes, package/platform records, external module versions and unresolved limitations. Only then choose exact lock records and point `.venv` to the accepted environment. Do not claim the local review has performed these tests.
+
+Code installation and ordinary checks must pass with the remote paper path absent or empty. Remote plotting may still require TeX for Matplotlib text, even though manuscript compilation is local. Remote accepted figures/tables and their checksum/provenance manifest go to a labelled CFS handoff directory; the local owner verifies transferred outputs and updates the paper's figures and manifest. Do not use `manuscript/` as a remote export directory. Large scientific products remain on CFS.
 
 All online sources above were checked on 2026-09-19. Recheck site instructions when implementing because NERSC's module and package versions can change.

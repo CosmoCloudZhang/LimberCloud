@@ -1,5 +1,14 @@
 # Python environment and editor setup
 
+This page describes the current helpers. The
+[environment revision plan](../revisions/2026-09/supporting/limber_environment_followup.md)
+specifies a dedicated LimberCloud environment, including `mpi4py` and `h5py`,
+shared by scripts and notebooks on each machine, with simpler configuration
+and appropriate CPU/CUDA variants. Those changes are pending implementation
+on NERSC. Preserve the existing validated environment during that work.
+Local work covers planning, review, and the manuscript; the NERSC paper
+submodule remains uninitialized or absent.
+
 LimberCloud uses three separate configuration layers:
 
 1. `environment.yml` describes a minimum standalone `CosmoConda` for new
@@ -116,7 +125,7 @@ packages or modify `CosmoConda`. After registration:
 1. Reload the Cursor or VS Code window.
 2. Run **Python Environments: Refresh All Environment Managers**.
 3. In **Select Kernel**, choose **Jupyter Kernel** and then
-   **LimberCloud (.venv / CosmoConda)**.
+   **LimberCloud**.
 4. Shut down any old kernel and start the newly selected kernel.
 
 The ordinary global **CosmoConda** kernelspec launches Conda's Python directly
