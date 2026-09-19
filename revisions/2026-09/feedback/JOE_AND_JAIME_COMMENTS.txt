@@ -1,0 +1,133 @@
+LimberCloud: Scalable Analytic Computation of Limber Power Spectra for Stage-IV Cosmology
+
+Comments requested by: May 30th, 2026
+Leading authors: Yunhao Zhang, Yi-Ru Chen,
+Overleaf link to the updated draft:
+https://www.overleaf.com/read/hpycmtfksykg#bfde58
+
+
+
+Instructions for co-authors.   
+Include your comments in the relevant section and subsection number below, in a black font. Identify each comment with your initials, and add your name to the list.
+
+The draft is soon undergoing the LSST DESC internal review; we encourage co-authors to limit the comments they provide to only those points that are critical.  Matters of style and taste should not be included as they often conflict between co-authors.
+
+Please do not repeat the same comment made by another co-author. You may find that by the time you type up your comments, your point has already been identified and addressed.
+
+In cases where your comment conflicts with another co-author, please contact them directly to resolve the difference.
+
+
+Instructions for lead authors.
+Please reply to each comment as rapidly as possible in a different coloured font.  This will ensure that co-authors can quickly assess if their point has already been addressed when they visit this document.
+
+Write your reply as you would a reply to a referee.  It’s not always helpful to enter into a lengthy discussion.  Instead say “We have updated the paper as follows” and copy and paste the revised section of text into the document.
+
+Colour-code the comments.  When co-authors leave them they will be black.  Once you have addressed them, turn them blue.  If you have a query, turn them orange and e-mail the co-author for further information.  If you disagree with the comment, explain why and turn them red. 
+
+Example comments
+
+JZ: Shorten the conclusions a bit.
+
+
+YHZ:  Thanks - I’ve updated that accordingly.
+
+JZ:  I’m afraid I don’t understand the second sentence.
+
+YHZ:   I have emailed you to ask for clarification of what is unclear.
+
+JZ: I believe Equation 2 is missing a factor of B^2
+
+YHZ:  I have re-checked this and point you to the full derivation of this equation in Appendix A.
+
+
+List of co-authors:  add your name here
+Add your name and initials here once you have submitted your comments eg:
+
+YHZ: Yun-Hao Zhang
+JZ: Joe Zuntz
+JRZ: Jaime Ruiz Zapatero
+
+Title
+
+
+Abstract
+
+
+Section 1: Introduction
+
+
+Section 2: Theoretical Formalism
+
+JZ: "Each observable receives cosmological contributions from weak gravitational lensing" - this sounds like even the clustering correlation takes this contribution.
+
+JZ: In eq 2.4, define f_K(χ′ − χ). This is probably also a good place to say that this work mostly assumes flat cosmology.
+JRZ: I think for the sake of brevity on an already long paper we could just assume flat cosmology.
+
+JZ: Table 1 - you never defined P_δδ
+
+JRZ: The kernels defined in Eqs 2.3 and 2.4 are disconnected from the Cls presented in Eqs. 2.5, 2.6 and 2.7. We introduce the kernel phi but the clustering Cl refers to a different kernel theta. Similarly, we define the convergence kernel but we then write the shear Cls. Also the definition of the additional contributions to Eqs. 2.5, 2.6 and 2.7 only happens in Tab. 1 which is very confusing.
+
+JRZ: I would also rename this section “Angular power spectrum formalism” 
+
+
+
+Section 3: Fiducial Survey Configuration
+
+JZ: add a link to the DESC forecasting library
+
+JRZ: This section breaks the discussion of the theoretical framework. I understand that you want to introduce the reference cosmology and set up you want to use to test the validity of the kernel approximations but the current structure breaks the flow of the paper. This is particularly true for section 3.4 since the covariance and the Cls are only used in section 5.
+
+JRZ: I think the way to fix this would be to front load the discussion of the mathematical formalism of LimberCloud and then have the plots comparing LimberCloud vs CCL in a new subsection in section 6 called accuracy which would introduce the benchmark settings. I understand that this would involve a significant rewrite but at the moment I find the current structure quite difficult to follow.
+
+Section 4: Piecewise Linearisation of Physical Quantities
+
+JRZ: Figures 3 & 4 - share x and y axis so the panels are bigger.
+
+JZ: Figure 2 - maybe use a log scale on the x-axis so we can see the detail?
+
+JZ: 4.2 You say that "The number-density kernel W^1_ϕ (χ) is determined entirely by the tomographic redshift distribution" but just below you note that it includes H(z).
+
+JZ: You say that scale dependent bias models are "not yet standard" but I don't think you can really say this for LSST - we are expecting to need higher order biases. e.g. https://arxiv.org/abs/2307.03226
+
+JRZ: You want to make sure readers understand this is the novel thing we are presenting. I would rename this section LimberCloud
+
+JRZ: Introduce flat cosmology in Section 2 doing so here feels out of place.
+
+JRZ: Section 4.1 seems more complicated than what it needs to be. We are essentially proposing a linear interpolation of the matter power spectrum in comoving distance. Could we get rid of this section and simply write Eqn. 4.1 in section 5 before Eq. 5.1.
+
+JRZ: Through this section we compare LimberCloud vs CCL but we also compare these “Numeric” schemes. These schemes outperform LimberCloud in Fig. 2 but do worse everywhere else. It seems like in any case we are not interested in these schemes because “would break the analytic integrability on which the tensorised reformulation in Section 5 relies”. Given this, I would strongly suggest we simply get rid of them to streamline the discussion and simply the plots. At the moment, the first one reads these plots it is difficult to tell how to interpret these schemes.
+
+
+Section 5: Tensorised Reformulation of the Limber Projection
+
+JZ: Figure 5 - the legend is overlapping the axis. You can make a separate axis just for the legend maybe.
+JRZ: I second this.
+
+JZ: Figure 8 - I don't understand the relation to the text here - the top two panels seem to show CCL with a lower time than all the others? Is the legend wrong?
+
+JZ: You have all the ingredients to compute the change in chi^2  (or log(L)) compared to CCL. It looks weird not to report it anywhere.
+JRZ: Completely agree!
+
+JRZ: I think this section should be a sub-section of the LimberCloud section since it is part of the new formalism we are proposing.
+
+JRZ: Plots in this section need some love. The size of the ylabel is disproportionally large. Legend should be moved to the top. Again get rid of the numerical schemes. I would also plot delta_Cl over sigma to show they are very small compared to the covariance.
+
+
+Section 6: Evaluation and Discussion
+
+JZ: When you talk about the prospects for end-to-end emulation you should probably put this in the context of works that try to emulate the data vector itself, e.g. Boruah et al 2023, Nygaard et al 2022, Chun-Hao et al 2023 and some more recent ones.
+
+JRZ: As I said I would front load the maths and have an accuracy section here with plots.
+
+JRZ: I would shorten section 6.4 and move it to Section 7.
+
+Section 7: Summary and Conclusions
+
+
+Additionals
+
+
+JZ: Are you planning to release the code? Put a link if so.
+
+
+

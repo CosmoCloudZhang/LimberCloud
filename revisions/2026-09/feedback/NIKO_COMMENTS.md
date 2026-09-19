@@ -1,0 +1,15 @@
+# Niko comments
+
+Transcribed from the user-supplied message; line-break formatting normalised.
+
+Overall, I think the paper is very strong and the central idea is clear: the tensorised Limber reformulation gives a clean separation between cosmology-dependent coefficients and survey-specific redshift distributions. I have a few comments that I think would make the claims sharper and safer.
+
+My main suggestion is to clarify the speed-up claims. The abstract quotes an approximately 3 ms evaluation and a speed-up of more than three orders of magnitude, while the benchmark later separates the cosmology, coefficient, and projection stages. It would help to state explicitly whether the headline number refers to the projection stage only, the LimberCloud part excluding the CAMB/CCL cosmology calculation, or the full end-to-end evaluation.
+
+I would also slightly qualify the analytic marginalisation claim. The bilinear dependence on the redshift distributions is exact, which is a very nice result. However, the actual likelihood marginalisation appears to reduce to the standard Gaussian covariance-inflation form at linear order, with higher-order corrections left for future work. I would therefore frame this as enabling a controlled analytic marginalisation framework, rather than implying that the full nonlinear marginalisation has already been demonstrated.
+
+Since the text says the results generalise to the Y10 survey scenario, I think it would be useful to include either a small appendix table/plot or a sentence giving the maximum and typical residuals for Y10. This would strengthen the Stage-IV validation claim.For Figures 6 and 7, some overlapping or non-standard bin pairs show larger fractional errors. The explanation is reasonable, but I think it would help to mark or explicitly state which bin pairs would actually enter a standard 3×2pt analysis after lens-source separation and scale cuts. This would prevent the larger residuals in excluded cases from appearing more concerning than they are. (I can tell you that in SRD, the GGL bins are chosen so that the lens is in front of the bins and there is not more than 25% overlap between lens and source bins. In LSST Y1 it is 10%).
+
+I would also highlight the bias-factorisation assumptions earlier. The method is cleanest when the relevant bias factors are bin-independent functions of $(k,z)$ or per-bin constants that can be absorbed into the distributions. If scale-dependent galaxy bias varies by tomographic bin, separate basis tensors are required. This is an important limitation/assumption and should probably be mentioned in the introduction or summary.
+
+Minor consistency checks: please standardise “3×2 pt” versus “3 × 2 pt”, “Stage-IV” versus “Stage IV”, and check whether “flat-sky” is sometimes being used where “spatially flat cosmology” is meant. I would also check the Figure 3 axis labels (increase the font size), the consistency of the IA density convention around Eq. 3.2, and soften speculative emulation language in the abstract unless the quoted additional speed-up is benchmarked.

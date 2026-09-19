@@ -1,0 +1,818 @@
+[
+  {
+    "id": "JZ01",
+    "section": "2",
+    "source": "Pasted, Section 2",
+    "comment": "The statement that each observable receives contributions from weak gravitational lensing sounds as though intrinsic clustering itself receives that contribution; clarify the physical decomposition.",
+    "action": "Define observed shape and position fields first; explain shear/IA versus intrinsic clustering/magnification, then expand their correlations. Distinguish intrinsic clustering from observed number-count correlations, which can contain magnification terms; do not say every individual term receives every contribution.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JZ02",
+    "section": "2",
+    "source": "Pasted, Section 2, Eq. 2.4",
+    "comment": "Define f_K(chi\u2032-chi) and state the spatially flat assumption early.",
+    "action": "Adopt f_K(chi)=chi in the main derivation; explain it is transverse comoving distance. If the general expression remains, define both arguments and the curvature sign convention.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JZ03",
+    "section": "2",
+    "source": "Pasted, Section 2, Table 1",
+    "comment": "P_delta_delta has not been defined.",
+    "action": "Define the matter-density-contrast power spectrum, units, nonlinear prescription, and relation to each tracer spectrum before Table 1.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JZ04",
+    "section": "3.3",
+    "source": "Pasted, Section 3",
+    "comment": "Add the DESC forecasting-library link.",
+    "action": "Cite the actual DESC SRD and link the forecasting/analysis_choices repository and binny separately; identify the version used to generate the inputs.",
+    "gate": "Source provenance"
+  },
+  {
+    "id": "JZ05",
+    "section": "4.1",
+    "source": "Pasted, Section 4, Figure 2",
+    "comment": "Use a logarithmic x axis to reveal the small-distance detail.",
+    "action": "If retaining the P(k,z) diagnostic, use positive-distance log chi or a low-chi inset and explicitly exclude chi=0 from log display. Keep the operational Limber-trajectory plot; optionally add a familiar P(k) reference.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "JZ06",
+    "section": "4.2",
+    "source": "Pasted, Section 4.2",
+    "comment": "The number-density kernel is not determined entirely by n(z), because it includes H(z).",
+    "action": "Write phi_i=H(z_i;theta)p_i/c; reserve survey-only language for p_i and absorb the H/c factors into a transformed tensor when making the strict separation claim.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "JZ07",
+    "section": "5",
+    "source": "Pasted, Section 4; actual bias-regime paragraph is Section 5",
+    "comment": "Do not dismiss scale-dependent/higher-order galaxy bias as not standard for LSST; consider arXiv:2307.03226.",
+    "action": "Remove the forecast about model standardness; describe the validated fiducial linear-bias case and the bin-dependent scale-dependent case separately. Cite the nonlinear-bias challenge and state its extra basis cost.",
+    "gate": "Source provenance"
+  },
+  {
+    "id": "JZ08",
+    "section": "5.1",
+    "source": "Pasted, Section 5, Figure 5",
+    "comment": "Legend overlaps an axis; a separate legend axis could fix it.",
+    "action": "Use one triangle for symmetric shear pairs and a dedicated top/empty-panel legend; verify the rendered page.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "JZ09",
+    "section": "6.1",
+    "source": "Pasted, Section 5, Figure 8; actual Section 6.1",
+    "comment": "Figure 8 appears to show CCL faster in the top panels, contrary to the prose; check the legend.",
+    "action": "Reconcile plotted arrays and claims. Show comparable end-to-end times, label any CCL-total reference as total, and remove it from stage panels if it invites a false stage comparison.",
+    "gate": "Timing validation"
+  },
+  {
+    "id": "JZ10",
+    "section": "5",
+    "source": "Pasted, Section 5",
+    "comment": "Report the change in chi-square or log likelihood relative to CCL.",
+    "action": "Compute the joint covariance-weighted residual on an explicitly selected, identically ordered and identically binned data vector; explain when it equals a likelihood change.",
+    "gate": "Covariance and estimator validation"
+  },
+  {
+    "id": "JZ11",
+    "section": "6.2",
+    "source": "Pasted, Section 6",
+    "comment": "Place proposed emulation in context of data-vector emulators, including Boruah 2023, Nygaard 2022, Chun-Hao 2023, and recent work.",
+    "action": "Add a concise comparison of matter-power, survey-specific data-vector, and proposed tensor emulators, including the verified Boruah/Nygaard references and relevant newer work. Chun-Hao To is first author of LINNA: Likelihood Inference Neural Network Accelerator, To et al. (2023), JCAP 2023(01),016, https://arxiv.org/abs/2203.05583 (DOI https://doi.org/10.1088/1475-7516/2023/01/016). This is the likely intended mapping of Joe's shorthand Chun-Hao et al. 2023; the identification is an inference, while the paper metadata are verified. Check and use exact bibliography records before insertion.",
+    "gate": "Literature verification"
+  },
+  {
+    "id": "JZ12",
+    "section": "7",
+    "source": "Pasted, Additionals",
+    "comment": "State whether the code will be released and include a link.",
+    "action": "Add a code-availability statement with the public GitHub URL and the tested commit/release; distinguish public source from external runtime data and unimplemented extensions.",
+    "gate": "Release provenance"
+  },
+  {
+    "id": "JRZ01",
+    "section": "2",
+    "source": "Pasted, Section 2",
+    "comment": "For brevity, assume flat cosmology throughout the presented method.",
+    "action": "Use spatial flatness in the main formalism and a short scope sentence; move curvature generalisation to the outlook.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ02",
+    "section": "2",
+    "source": "Pasted, Section 2, Eqs. 2.3-2.7 and Table 1",
+    "comment": "The phi and kappa kernels are disconnected from theta/epsilon observables; contributions are introduced too late in the table.",
+    "action": "Add an explicit map: observed epsilon=gamma+I and theta=g+mu; gamma/mu use the lensing kernel, g/I the number-density kernel, with spin/bias factors specified. Introduce this before the expanded spectra.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ03",
+    "section": "2",
+    "source": "Pasted, Section 2",
+    "comment": "Rename the section Angular power spectrum formalism.",
+    "action": "Adopt that title and keep this section limited to established notation and assumptions.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ04",
+    "section": "3",
+    "source": "Pasted, Section 3, especially 3.4",
+    "comment": "The survey configuration interrupts the theoretical argument; covariance is only used much later.",
+    "action": "Move the full fiducial configuration directly ahead of the accuracy results in a unified validation section. Retain only grid definitions needed for the method earlier.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ05",
+    "section": "3",
+    "source": "Pasted, Section 3 and repeated in Section 6 (JRZ substantive source comments 5 and 15)",
+    "comment": "Front-load the mathematics and introduce benchmark settings and comparison plots in a new Accuracy subsection in current Section 6; repeats this reorganisation request in the Section 6 comments.",
+    "action": "Use the proposed new order: formalism, LimberCloud method, validation setup/accuracy, performance, concise implications, conclusions. Group repeated requests in both source sections under this ID.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ06",
+    "section": "4",
+    "source": "Pasted, Section 4, Figures 3-4",
+    "comment": "Share axes so panels can be larger.",
+    "action": "Share chi and appropriate ratio limits, suppress repeated ticks, and use sensible per-panel signal limits when amplitudes differ; enlarge fonts at manuscript print size.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "JRZ07",
+    "section": "4",
+    "source": "Pasted, Section 4",
+    "comment": "Rename the novel-method section LimberCloud.",
+    "action": "Merge current Sections 4 and 5 into a section entitled The LimberCloud method, led by the central contraction.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ08",
+    "section": "4",
+    "source": "Pasted, Section 4",
+    "comment": "Introducing flat cosmology here is too late.",
+    "action": "State spatial flatness in the established formalism, then refer back without reintroducing it in every derivation.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ09",
+    "section": "4.1",
+    "source": "Pasted, Section 4.1",
+    "comment": "The power-spectrum interpolation discussion is too long; place Eq. 4.1 immediately before the interval-integral derivation.",
+    "action": "Condense to a short explanation of linear interpolation along k=(ell+1/2)/chi, its endpoint samples and accuracy controls. Keep the equation in the method; move the diagnostic to validation/appendix.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ10",
+    "section": "4",
+    "source": "Pasted, Section 4",
+    "comment": "Remove the numerical interpolation schemes that distract from the intended analytic method and appear inconsistent across plots.",
+    "action": "Remove first/second/third-order comparator curves from the main story; retain a clearly defined optional appendix experiment only if it answers a scientific question. Preserve diagnostic code behind an opt-in mode.",
+    "gate": "Figure and numerical validation"
+  },
+  {
+    "id": "JRZ11",
+    "section": "5.1",
+    "source": "Pasted, Section 5",
+    "comment": "Agrees that Figure 5 legend needs moving.",
+    "action": "Implement JZ08 with a shared external legend and check every accuracy panel.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "JRZ12",
+    "section": "5",
+    "source": "Pasted, Section 5",
+    "comment": "Agrees that a covariance-weighted chi-square comparison should be reported.",
+    "action": "Implement JZ10, retaining the full cross-observable covariance for the joint statistic.",
+    "gate": "Covariance and estimator validation"
+  },
+  {
+    "id": "JRZ13",
+    "section": "5",
+    "source": "Pasted, Section 5",
+    "comment": "Tensorisation should be a subsection of the LimberCloud method section.",
+    "action": "Merge current Sections 4 and 5; keep a readable derivation and move lengthy coefficient cases to an appendix.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "JRZ14",
+    "section": "5",
+    "source": "Pasted, Section 5",
+    "comment": "Reduce oversized y labels, move legends to the top, remove numerical schemes, and plot delta C_ell/sigma.",
+    "action": "Apply a common figure design; show signed delta C/sqrt(Cov_ii) and optional fractional errors, with units and retained/excluded bins explicit.",
+    "gate": "Covariance and figure validation"
+  },
+  {
+    "id": "JRZ16",
+    "section": "6.4",
+    "source": "Pasted, Section 6",
+    "comment": "Shorten future extensions and move them into the conclusions.",
+    "action": "Replace the long speculative section with one short concluding outlook paragraph; retain only defensible possible extensions.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "N01",
+    "section": "Abstract",
+    "source": "Niko message, speed-up paragraph",
+    "comment": "Specify whether 3 ms and the >1000x claim mean projection, all LimberCloud stages, or end-to-end runtime.",
+    "action": "Use separately measured labels for cosmology, coefficient, contraction and full prediction. The existing text identifies 3 ms as contraction only; remove the headline ratio until matched benchmark outputs support it.",
+    "gate": "Timing validation"
+  },
+  {
+    "id": "N02",
+    "section": "Abstract",
+    "source": "Niko message, marginalisation paragraph",
+    "comment": "The exact bilinear dependence on redshift distributions is a strength, but it does not demonstrate full nonlinear likelihood marginalisation; describe a controlled analytic framework and identify the first-order Gaussian result.",
+    "action": "Say exact quadratic response for the discretised density coefficients; Gaussian covariance inflation follows after linearising that response. Explicitly defer nonlinear likelihood validation. Apply throughout Sections 1, 6.3, 6.4 and 7.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "N03",
+    "section": "3",
+    "source": "Niko message, Y10 paragraph",
+    "comment": "Support the assertion that results generalise to Y10 with maximum and typical residuals or a small appendix plot/table.",
+    "action": "Generate a matched Y1/Y10 residual summary with bin counts, median/95th/max, selected/all pair distinction, worst-case labels, and estimator metadata. Do not reuse unverified figure values as new measurements.",
+    "gate": "Y10 numerical validation"
+  },
+  {
+    "id": "N04",
+    "section": "5.2",
+    "source": "Niko message, Figures 6-7",
+    "comment": "Identify which bin pairs actually enter a standard analysis after lens-source separation and scale cuts. Niko states that GGL lenses should be in front of sources, with no more than 25% overlap in the SRD and 10% in LSST Y1.",
+    "action": "Implement a labelled Niko/binny selection: unit-normalised minimum-overlap integral <=0.10 for Y1 and <=0.25 for Y10, with source peak above lens peak, as verified in the pinned binny example. Save the exact pair/scale mask and mark exclusions. Do not imply this establishes every SRD implementation or infer surviving pairs without the actual distributions.",
+    "gate": "Selection definition and covariance validation"
+  },
+  {
+    "id": "N05",
+    "section": "1",
+    "source": "Niko message, bias-factorisation paragraph",
+    "comment": "Highlight early that bias is bin-independent in (k,z), or a per-bin constant absorbed into distributions; bin-dependent scale-dependent bias needs separate tensors.",
+    "action": "Add a short assumption statement in the introduction and a three-regime table in the method, with computational consequences.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "N06",
+    "section": "Global",
+    "source": "Niko message, minor consistency",
+    "comment": "Standardise 3x2 pt spacing and Stage-IV versus Stage IV.",
+    "action": "Use a single LaTeX macro for 3\\times2\\,\\mathrm{pt}; choose Stage-IV consistently as an adjective and apply the house style globally.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "N07",
+    "section": "Global",
+    "source": "Niko message, minor consistency",
+    "comment": "Check flat-sky versus spatially flat cosmology.",
+    "action": "Replace flat-sky where f_K=chi follows from zero spatial curvature; retain true flat-sky terminology only for angular approximations and distinguish it from Limber.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "N08",
+    "section": "4.2",
+    "source": "Niko message, Figure 3",
+    "comment": "Increase Figure 3 axis-label font size.",
+    "action": "Regenerate the panel layout at final manuscript size and verify readability, including ticks and ratio labels.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "N09",
+    "section": "3.2",
+    "source": "Niko message, Eq. 3.2",
+    "comment": "Check the intrinsic-alignment density convention.",
+    "action": "Define rho_m,0=Omega_m rho_crit,0 and C1 units; the generator already uses comoving density at a=1. Verify agreement with the CCL raw IA coefficient. Separately resolve latest GitHub eta=0.5 versus draft eta=0, and regenerate matching configuration/results.",
+    "gate": "IA numerical validation"
+  },
+  {
+    "id": "N10",
+    "section": "Abstract",
+    "source": "Niko message, final sentence",
+    "comment": "Soften emulation language unless the additional quoted speed-up is benchmarked.",
+    "action": "Remove unmeasured additional 3-4 orders of magnitude; retain a short future tensor-emulation opportunity and a clear distinction between incremental and total speed-up.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA01",
+    "section": "Abstract",
+    "source": "Marika PDF p. 1",
+    "comment": "Asks whether LimberCloud is public.",
+    "action": "Add a GitHub footnote at first use and a code-availability statement; avoid promising a release status not verified.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA02",
+    "section": "Abstract",
+    "source": "Marika PDF p. 1",
+    "comment": "Asks what separating cosmology-dependent quantities from survey-specific distributions means.",
+    "action": "Explain in physical terms that redshift-distribution changes reuse a precomputed tensor; give the short contraction equation early and define the survey vector correctly.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA03",
+    "section": "Abstract",
+    "source": "Marika PDF p. 1",
+    "comment": "Marks the claim that numerical quadrature is eliminated and asks for an explanation.",
+    "action": "Restrict the statement to the radial Limber integrals of the adopted piecewise representation; cosmology calculations and any ell-band integration remain distinct numerical stages.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA04",
+    "section": "Abstract",
+    "source": "Marika PDF p. 1",
+    "comment": "Asks whether the speed comparison is to CPU, and how the additional emulation gain relates to the previous gain.",
+    "action": "Name backend/hardware/workload and timing boundary for each comparison; remove speculative cumulative multiplication of speed-up factors.",
+    "gate": "Timing validation"
+  },
+  {
+    "id": "MA05",
+    "section": "Abstract",
+    "source": "Marika PDF p. 1",
+    "comment": "Asks to explain the finite-difference/fixed-cosmology marginalisation comparison.",
+    "action": "Explain analytic response coefficients and their cosmology dependence in the discussion; avoid claiming all previous work must use a fixed cosmology or numerical derivatives.",
+    "gate": "Literature and formalism verification"
+  },
+  {
+    "id": "MA06",
+    "section": "Front matter",
+    "source": "Marika PDF p. 1",
+    "comment": "Flags the email address; no replacement address is supplied.",
+    "action": "Check the desired current corresponding-author address during final front-matter review. Do not infer a replacement from the mark.",
+    "gate": "Author information"
+  },
+  {
+    "id": "MA07",
+    "section": "2",
+    "source": "Marika PDF p. 4",
+    "comment": "Suggests and/or and explicitly mentions galaxy bias in the opening description.",
+    "action": "Define which observable receives which physical contribution and name galaxy bias as an adopted tracer model.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA08",
+    "section": "2",
+    "source": "Marika PDF p. 4",
+    "comment": "The exclusion of CMB secondaries appears before CMB observables have been introduced.",
+    "action": "Keep one short scope sentence for the three galaxy observables; move the CMB extension discussion to the outlook.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA09",
+    "section": "2",
+    "source": "Marika PDF p. 4",
+    "comment": "Marks the distance terminology with angular diameter.",
+    "action": "Clarify that f_K is transverse comoving distance and D_A=f_K/(1+z) is physical angular-diameter distance; do not substitute D_A into the comoving Limber equation.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "MA10",
+    "section": "3.2",
+    "source": "Marika PDF p. 6",
+    "comment": "Say linear galaxy bias is assumed for simplicity and discuss the impact of this assumption.",
+    "action": "State this as the validated fiducial model, explain numerical versus astrophysical accuracy, and connect to the bin-dependent bias cost table.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA11",
+    "section": "3.2",
+    "source": "Marika PDF p. 7",
+    "comment": "Prefer active language: the authors choose the NLA model rather than implying nature is necessarily described by it.",
+    "action": "Write We adopt the NLA model for the fiducial tests and apply the same choice-based language to other modelling assumptions.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA12",
+    "section": "3.3",
+    "source": "Marika PDF p. 8",
+    "comment": "The 351-point grid with Delta z=0.01 is a key choice buried in the text; give it a separate paragraph or move it to the method.",
+    "action": "Introduce grid nodes versus intervals in the method and list the numerical values in the validation setup, distinct from tomographic bin counts.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA13",
+    "section": "3.3",
+    "source": "Marika PDF p. 8",
+    "comment": "How were N_z and Delta z chosen; are different resolutions explored?",
+    "action": "Run a controlled resolution/convergence study, varying redshift resolution separately from ell sampling; choose the coarsest grid satisfying an explicit data-vector error budget.",
+    "gate": "Convergence validation"
+  },
+  {
+    "id": "MA14",
+    "section": "3.3",
+    "source": "Marika PDF p. 9",
+    "comment": "Suggests a survey-properties table including shape dispersion, sky fraction/footprint and effective densities.",
+    "action": "Create a compact Y1/Y10 settings table including per-component sigma_e, area, f_sky, per-bin densities, distribution source and deviations from the SRD.",
+    "gate": "Configuration provenance"
+  },
+  {
+    "id": "MA15",
+    "section": "3.4",
+    "source": "Marika PDF p. 10",
+    "comment": "Highlights the 20 multipole bins and asks, in combination with Delta z, which k values are sampled along the Limber trajectory.",
+    "action": "Define ell edges/centres/window, k_n(ell)=(ell+1/2)/chi_n, units and valid k range; give chi=0 and extrapolation handling.",
+    "gate": "Estimator and range validation"
+  },
+  {
+    "id": "MA16",
+    "section": "4",
+    "source": "Marika PDF p. 10",
+    "comment": "Underlines the statement that curvature generalisation amounts to linearising f_K; no separate written instruction is attached.",
+    "action": "Treat this as a flagged claim for scrutiny; shorten to an unimplemented extension rather than promising an unchanged analytic structure.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA17",
+    "section": "4.1",
+    "source": "Marika PDF p. 11",
+    "comment": "P(k,z) plotted along chi at fixed ell is unfamiliar; asks for the familiar k-dependent view and an explanation.",
+    "action": "Explain that the interpolated function follows a Limber trajectory in (k,z), so the chi plot tests the actual algorithm. Add a small explanatory k-z diagram or appendix P(k) comparison only if useful.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA18",
+    "section": "4.1",
+    "source": "Marika PDF p. 11",
+    "comment": "The differences between interpolation schemes and the reason for comparing them are unclear.",
+    "action": "Explain variables/objects held fixed if retaining the comparison; otherwise remove the schemes from the main figures, retaining a focused appendix diagnostic.",
+    "gate": "Diagnostic validation"
+  },
+  {
+    "id": "MA19",
+    "section": "4.1",
+    "source": "Marika PDF p. 11",
+    "comment": "A dark-ink note suggests logarithmic horizontal scaling to show detail.",
+    "action": "Implement the same positive-chi log view or inset as JZ05. The identity of the dark-ink writer is not established independently; retained under the supplied PDF source.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "MA20",
+    "section": "4.2",
+    "source": "Marika PDF p. 12",
+    "comment": "Asks whether these interpolation equations can use the same form as the other equations.",
+    "action": "Adopt a consistent basis-function notation and alignment for power, density and lensing kernels; define indices before displaying them.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA21",
+    "section": "4.2",
+    "source": "Marika PDF p. 13",
+    "comment": "Asks which curves are shown and why the interpolation schemes are being compared.",
+    "action": "Name the tested function and reference in the caption; restrict the main plot to CCL and LimberCloud, with consistent colour semantics.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "MA22",
+    "section": "4.2",
+    "source": "Marika PDF p. 13, 15",
+    "comment": "Crosses out captions describing the visible 2x3 arrangement and legend position.",
+    "action": "Replace layout narration with what is being tested, the reference, residual definition, denominator treatment and scientific takeaway.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA23",
+    "section": "4.3",
+    "source": "Marika PDF p. 14",
+    "comment": "The nested subscript chi_(N_z-1) is difficult to read.",
+    "action": "Use clearly grouped node indices and consistent N_grid/N_interval notation; inspect equation typography in the final PDF.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA24",
+    "section": "4.3",
+    "source": "Marika PDF p. 15",
+    "comment": "Are the low-bin kernel residuals good enough; explain the circled tail feature.",
+    "action": "Show where the kernel carries significant weight, identify near-zero denominator effects and boundary artefacts, and quantify their effect on the projected spectra.",
+    "gate": "Convergence and estimator validation"
+  },
+  {
+    "id": "MA25",
+    "section": "4.3",
+    "source": "Marika PDF p. 15",
+    "comment": "Questions whether all numerical interpolation curves are needed.",
+    "action": "Apply JRZ10 consistently to Figures 2-7; optional appendix comparisons must have a specific diagnostic purpose.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA26",
+    "section": "5",
+    "source": "Marika PDF p. 15",
+    "comment": "The wording that kernels admit a decomposition is unclear.",
+    "action": "Say each kernel is a weighted sum of the sampled distribution values, with weights determined by cosmology and the grid.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA27",
+    "section": "5",
+    "source": "Marika PDF p. 16",
+    "comment": "Move the main contraction equation to the start of the paper before the derivations.",
+    "action": "Show the equation and physical interpretation at the end of the introduction and at the start of the method; derive it only once in the method.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA28",
+    "section": "5",
+    "source": "Marika PDF p. 17",
+    "comment": "The long explanation of coefficient case counting should be removed or shown more clearly.",
+    "action": "Use a short structural table for density-density, density-lensing and lensing-lensing kernels; put detailed 3/8/10 formula families and boundary cases in an appendix.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA29",
+    "section": "5",
+    "source": "Marika PDF p. 17",
+    "comment": "Sentences are too long and make the prose read mechanically; split them.",
+    "action": "Rewrite the bias-regime paragraph into three short cases with assumptions and costs, and remove repeated assertions of novelty.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA30",
+    "section": "5.1",
+    "source": "Marika PDF p. 18",
+    "comment": "The interpolation alternatives need definitions and motivation.",
+    "action": "Use the same decision as JRZ10/MA18; no unexplained comparator remains in the main accuracy figures.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA31",
+    "section": "5.1",
+    "source": "Marika PDF p. 18",
+    "comment": "Questions how the ten unique coefficient elements are counted; similarly marks the three/eight descriptions.",
+    "action": "Distinguish formula families from nonzero entries in a tensor; explain the case partitions and symmetries with a small table or appendix example.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "MA32",
+    "section": "5.1",
+    "source": "Marika PDF p. 18",
+    "comment": "The fractional-error delta conflicts with the density-contrast symbol; define the error explicitly.",
+    "action": "Use r_C or epsilon_C for signed relative residual, define its absolute version separately, and reserve delta for density contrast.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA33",
+    "section": "5.1",
+    "source": "Marika PDF p. 18",
+    "comment": "Asks which fiducial spectrum normalises the uncertainty and what structured error curves means.",
+    "action": "State CCL as the reference, use sqrt(Cov_ii)/abs(C_i) for fractional uncertainty, and replace structured with a description of the observed scale dependence after revalidation.",
+    "gate": "Covariance and estimator validation"
+  },
+  {
+    "id": "MA34",
+    "section": "5.1",
+    "source": "Marika PDF p. 19",
+    "comment": "Pairs (1,2) and (2,1) should be duplicates; remove symmetric repeats and use the space for the legend.",
+    "action": "Use unique upper-triangle EE panels and a dedicated legend; verify symmetry numerically before removing duplicates.",
+    "gate": "Spectrum and figure validation"
+  },
+  {
+    "id": "MA35",
+    "section": "5.1",
+    "source": "Marika PDF p. 19",
+    "comment": "Larger fractional errors can have large covariance and small inference impact; smaller fractional errors can be more significant in precise bins.",
+    "action": "Explain both directions of this comparison; use covariance-normalised residuals and the joint quadratic statistic, rather than declaring relevance from fractional error alone.",
+    "gate": "Covariance validation"
+  },
+  {
+    "id": "MA36",
+    "section": "5.1",
+    "source": "Marika PDF p. 19",
+    "comment": "The legend covers the y axis.",
+    "action": "Apply the shared top/empty-panel legend design and render-check all labels.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "MA37",
+    "section": "5.2",
+    "source": "Marika PDF p. 21",
+    "comment": "The covariance reference is clipped in the first column.",
+    "action": "Use a covariance-normalised residual view or limits that contain the reference curves, and make any differing axis limits explicit.",
+    "gate": "Figure regeneration"
+  },
+  {
+    "id": "MA38",
+    "section": "5.2",
+    "source": "Marika PDF p. 21",
+    "comment": "Some residuals close to the covariance may matter for parameter estimation; suggests a Fisher parameter-bias forecast and mentions code in a KiDS Legacy script repository.",
+    "action": "First compute the joint discrepancy; then, if non-negligible or needed for the claim, compute a local Fisher bias with the same mask/covariance and validated parameter derivatives. Do not claim a posterior test from this approximation.",
+    "gate": "Covariance and derivative validation"
+  },
+  {
+    "id": "MA39",
+    "section": "5.2",
+    "source": "Marika PDF p. 21",
+    "comment": "CCL is not perfectly accurate, so a CCL comparison has a reference-accuracy floor.",
+    "action": "Describe agreement with a matched CCL calculation; perform tolerance/reference convergence and do not identify CCL with exact physics.",
+    "gate": "Reference convergence"
+  },
+  {
+    "id": "MA40",
+    "section": "5.3",
+    "source": "Marika PDF p. 21",
+    "comment": "Which current Stage-IV analyses are meant; the phrase is unsupported in this draft context.",
+    "action": "Name the actual published analysis or forecast and date/version, or say planned Stage-IV configurations; remove generic claims unsupported by a citation.",
+    "gate": "Literature verification"
+  },
+  {
+    "id": "MA41",
+    "section": "5.3",
+    "source": "Marika PDF p. 22",
+    "comment": "Remove i,j versus j,i duplicates in Figure 7; circles cases where error approaches the uncertainty and flags vague typical accuracy.",
+    "action": "Plot unique TT pairs, distinguish selected autos from diagnostics, give a precise summary and worst cases, and evaluate their joint impact.",
+    "gate": "Covariance and estimator validation"
+  },
+  {
+    "id": "MA42",
+    "section": "5.3",
+    "source": "Marika PDF p. 23",
+    "comment": "Would finer Delta z fix the larger residuals?",
+    "action": "Include the affected pairs in the resolution study and separate grid error, ell-window mismatch, cancellations, endpoint effects and CCL tolerance before assigning a cause.",
+    "gate": "Convergence validation"
+  },
+  {
+    "id": "MA43",
+    "section": "6.1",
+    "source": "Marika PDF p. 24",
+    "comment": "The projection-versus-full-CCL comparison is misleading because it does not show the time to evaluate the Limber integral on the same basis.",
+    "action": "Benchmark matched end-to-end and fixed-cosmology nuisance-update workloads; report isolated contraction time explicitly, without promoting it to a full prediction time.",
+    "gate": "Timing validation"
+  },
+  {
+    "id": "MA44",
+    "section": "6.1",
+    "source": "Marika PDF p. 25",
+    "comment": "Figure 8 seems to show CCL faster overall; asks for total labels and clarification of JAX CPU cost/ranking.",
+    "action": "Regenerate from recorded stage arrays with correct labels; report hardware, compilation, synchronisation, repeated evaluation statistics, and explain measured ranking only when supported.",
+    "gate": "Timing validation"
+  },
+  {
+    "id": "MA45",
+    "section": "6.2",
+    "source": "Marika PDF p. 26",
+    "comment": "Emulation discussion is too wordy, with long sentences and too many qualifiers/adjectives.",
+    "action": "Reduce it to opportunity, comparison with existing emulators, unresolved accuracy/storage cost, and future validation. Outline these points before writing short prose.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA46",
+    "section": "6.2",
+    "source": "Marika PDF p. 26",
+    "comment": "What does offline mean; why call the surrogate lightweight; turn the proposed training stages into a clearer sequence.",
+    "action": "Define training before inference and avoid an unmeasured model-size claim; present two short steps only if the training proposal is retained.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA47",
+    "section": "6.2",
+    "source": "Marika PDF p. 26-27",
+    "comment": "Training-resource estimates have unnecessary qualifiers and an unclear one-day workload count.",
+    "action": "Remove numerical training-time forecasts from the main result. If retained in an appendix, identify model, 10^6 samples, tensor output dimension, storage, hardware, parallel efficiency and assumptions; label as estimates.",
+    "gate": "Timing and storage estimate"
+  },
+  {
+    "id": "MA48",
+    "section": "6.2",
+    "source": "Marika PDF p. 27",
+    "comment": "The existing power-spectrum-emulator point is repeated; state it once and focus on projection.",
+    "action": "Explain once which part a P(k) emulator replaces; then state the distinct benefit and cost of the proposed tensor target.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA49",
+    "section": "6.2",
+    "source": "Marika PDF p. 27",
+    "comment": "Throughput is undefined and ideal parallel-scaling language is unexplained.",
+    "action": "Define throughput as completed predictions per second and remove claims of linear GPU scaling unless measured; distinguish batching from latency.",
+    "gate": "Timing validation"
+  },
+  {
+    "id": "MA50",
+    "section": "6.2",
+    "source": "Marika PDF p. 27",
+    "comment": "Substantially shorten the whole emulation section; formulate core bullet points before concise text.",
+    "action": "Keep approximately three compact paragraphs, with detailed resource speculation removed or explicitly optional.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA51",
+    "section": "6.3",
+    "source": "Marika PDF p. 27",
+    "comment": "The opening repeats previous material.",
+    "action": "Begin with the quadratic density response and the useful analytic derivative, avoiding another recap of the emulation motivation.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA52",
+    "section": "6.3",
+    "source": "Marika PDF p. 28",
+    "comment": "Explicitly define the distribution perturbation, fiducial model, data-vector M, Gamma and B; are these just the previous spectra/tensor?",
+    "action": "Define a flattened nuisance-mode vector, data index, lens/source matrices and tensor for each element. Write Gamma as an explicit derivative/contraction and document dimensions.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA53",
+    "section": "6.3",
+    "source": "Marika PDF p. 28",
+    "comment": "The claim of exactness depends on the B tensor/binning.",
+    "action": "State exact algebra for fixed discretised representation and linear density coefficients; separate radial interpolation error from nuisance-response truncation.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "MA54",
+    "section": "6.3",
+    "source": "Marika PDF p. 29",
+    "comment": "Simplify the explanation of orders in Eq. 6.5 and clarify which term is discarded at linear response.",
+    "action": "Say that dropping the quadratic term in the prediction makes the likelihood Gaussian in the nuisance coefficients; a quadratic term in the likelihood still remains. Move the quartic expansion to an appendix.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA55",
+    "section": "6.3",
+    "source": "Marika PDF p. 29",
+    "comment": "Start with covariance inflation, explain recovery of the existing first-order method, and move the useful advantages earlier.",
+    "action": "Present Sigma_eff=Sigma+Gamma Pi Gamma^T immediately after defining Gamma, retain the parameter-dependent log determinant, then discuss exact quadratic response and limitations.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "MA56",
+    "section": "6.3",
+    "source": "Marika PDF p. 30",
+    "comment": "Readers need to know explicitly how Gamma(theta) is calculated.",
+    "action": "Provide component-level Gamma for each data-vector element, including both legs and cross-bin nuisance correlations, with a small worked derivation.",
+    "gate": "Formalism audit"
+  },
+  {
+    "id": "MA57",
+    "section": "6.4",
+    "source": "Marika PDF p. 30",
+    "comment": "Do not recap every preceding subsection; remove this section and put a shortened outlook in the summary.",
+    "action": "Follow JRZ16; keep a single short outlook with clearly unimplemented extensions.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MA58",
+    "section": "6.4",
+    "source": "Marika PDF p. 30",
+    "comment": "A reference to an Appendix is flagged, but the draft has no such appendix.",
+    "action": "Either add a genuinely needed coefficient appendix and use a label-based cross-reference, or remove the dangling claim; do not cite an absent derivation.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MT01",
+    "section": "7",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "Add LimberCloud to GitHub.",
+    "action": "Public repository already exists; add its link and versioned reproducibility statement.",
+    "gate": "Release provenance"
+  },
+  {
+    "id": "MT02",
+    "section": "5",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "Move the main equation before showing derivations.",
+    "action": "Implement MA27 and the new method-first structure.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MT03",
+    "section": "4",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "Explain the motivation for different interpolation schemes.",
+    "action": "Use a two-curve main comparison; define optional diagnostic alternatives in an appendix.",
+    "gate": "Editorial"
+  },
+  {
+    "id": "MT04",
+    "section": "3.3",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "The note flags Delta z=0.01 and the redshift distribution.",
+    "action": "Document what the grid resolves and run a resolution study; the shorthand does not establish an approved optimum.",
+    "gate": "Convergence validation"
+  },
+  {
+    "id": "MT05",
+    "section": "3.4",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "Ell binning can be changed; SRD is noted.",
+    "action": "Choose and record an analysis-relevant ell estimator and edges; verify SRD provenance rather than assuming the handwritten note specifies exact binning.",
+    "gate": "Estimator validation"
+  },
+  {
+    "id": "MT06",
+    "section": "4.1",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "Interpolation for power spectra is listed as a topic.",
+    "action": "Clarify the interpolated variable/function and show convergence along the Limber trajectory; do not invent a more specific agreed change.",
+    "gate": "Convergence validation"
+  },
+  {
+    "id": "MT07",
+    "section": "3.4",
+    "source": "Photo, meeting with Marika, 2026-08-21",
+    "comment": "A starred note says there is a bug in covariance-matrix computation.",
+    "action": "Implement the covariance adapter/input-order/output-index checks in the code plan before interpreting statistical errors.",
+    "gate": "Covariance validation"
+  }
+]
