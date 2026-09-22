@@ -3,8 +3,11 @@
 The paper campaign is sample ID 0 (fiducial, no random draw) plus sampled IDs
 1–1000. One table is shared across Y1/Y10, Single/Double/Triple, every backend
 and every NUMERIC order. This module records the scientific choices that must
-agree before spectra are treated as interchangeable. It does not choose the
-unresolved ``eta_IA`` value.
+agree before spectra are treated as interchangeable.
+
+The intrinsic-alignment redshift slope is resolved: ``eta_IA = 0.0`` is the
+adopted LSST DESC SRD fiducial. The historical generator value 0.5 remains as
+provenance only, and products carrying it are refused for accepted comparisons.
 """
 
 from __future__ import annotations
@@ -30,6 +33,7 @@ PRIMARY_PARAMETERS = (
     "OMEGA_B",
     "OMEGA_K",
     "OMEGA_CDM",
+    "OMEGA_GAMMA",
 )
 SAMPLED_PARAMETERS = (
     "H",
@@ -42,6 +46,11 @@ SAMPLED_PARAMETERS = (
     "OMEGA_CDM",
 )
 FIXED_ZERO_PARAMETERS = ("WA", "OMEGA_K")
+
+# Photon density parameter. It is passed explicitly for every sample so the
+# nuisance generators and the sampled constructor share one radiation
+# convention. Holding it fixed is the declared choice, not an oversight.
+FIXED_NONZERO_PARAMETERS = ("OMEGA_GAMMA",)
 
 CONFIGURATION_PROBES = {
     "Single": ("EE",),
@@ -58,12 +67,24 @@ PROBE_COMPONENTS = {
 # Current generators store a fiducial table and reuse it for every sample.
 NUISANCE_COSMOLOGY_POLICY = "fixed_tabulated_at_fiducial"
 
-# Generator source at the audited revision hard-codes 0.5. The manuscript
-# states 0. Neither the plans nor this checkout authorise picking one.
-ETA_IA_GENERATOR_VALUE = 0.5
-ETA_IA_MANUSCRIPT_VALUE = 0.0
-ETA_IA_STATUS_UNRESOLVED = "unresolved"
-ETA_IA_STATUS_EXPLICIT = "explicit"
+# Adopted intrinsic-alignment redshift slope. The LSST DESC SRD fiducial is 0.
+ETA_IA_ADOPTED_VALUE = 0.0
+ETA_IA_SOURCE = "LSST DESC SRD fiducial intrinsic-alignment redshift slope"
+ETA_IA_STATUS_ADOPTED = "adopted"
+ETA_IA_STATUS_DIAGNOSTIC = "diagnostic"
+
+# Provenance only. Products generated with 0.5 keep their own identity and are
+# refused for accepted comparisons; relabelling their metadata is not enough.
+ETA_IA_HISTORICAL_GENERATOR_VALUE = 0.5
+
+# The distinct amplitude and pivot. Do not replace every 0.5 in the generator.
+A_IA_AMPLITUDE = 0.5
+IA_PIVOT_REDSHIFT = 0.5
+IA_CRITICAL_DENSITY_CONSTANT = "5e-14/h**2"
+IA_DENSITY_CONVENTION = (
+    "rho_x(a=1, species=matter, is_comoving=True); no (1+z)^3 factor"
+)
+IA_GROWTH_NORMALIZATION = "D(0)=1"
 
 # NN observer interval for P = P1 * (chi / chi1)^3. Do not replace 1/4 by 1/2.
 NN_OBSERVER_FACTORS = {
@@ -72,8 +93,10 @@ NN_OBSERVER_FACTORS = {
     "element3": 1.0 / 4.0,
 }
 
-# Current NN.coefficient omits the rising-hat diagonal on the last interval.
-NN_FINAL_DIAGONAL_POLICY = "current_implementation_omits_final_diagonal"
+# NN stores all four placements on every interval, including the rising-hat
+# diagonal of the final interval. Density is zero outside the finite domain,
+# not forced to zero at its last node.
+NN_FINAL_DIAGONAL_POLICY = "full_basis_including_final_diagonal"
 
 
 class UnresolvedScienceDecision(ValueError):
@@ -82,71 +105,110 @@ class UnresolvedScienceDecision(ValueError):
 
 @dataclass(frozen=True)
 class EtaIADecision:
-    """Record the intrinsic-alignment redshift slope without inventing it.
+    """The adopted intrinsic-alignment redshift slope and its provenance.
 
     Args:
-        status: ``unresolved`` or ``explicit``.
-        explicit_value: Caller-supplied eta when ``status`` is ``explicit``.
-        generator_value: Historical generator value, recorded as provenance.
-        manuscript_value: Manuscript value, recorded as provenance.
+        value: The slope in use. The campaign default is 0.
+        status: ``adopted`` for the campaign value, ``diagnostic`` for an
+            explicitly labelled alternate-eta fixture outside acceptance.
+        source: Citation for the adopted value.
+        historical_generator_value: The retired generator value, kept so
+            products written with it remain identifiable.
     """
 
-    status: str = ETA_IA_STATUS_UNRESOLVED
-    explicit_value: float | None = None
-    generator_value: float = ETA_IA_GENERATOR_VALUE
-    manuscript_value: float = ETA_IA_MANUSCRIPT_VALUE
+    value: float = ETA_IA_ADOPTED_VALUE
+    status: str = ETA_IA_STATUS_ADOPTED
+    source: str = ETA_IA_SOURCE
+    historical_generator_value: float = ETA_IA_HISTORICAL_GENERATOR_VALUE
 
     def __post_init__(self) -> None:
-        if self.status not in {ETA_IA_STATUS_UNRESOLVED, ETA_IA_STATUS_EXPLICIT}:
+        if self.status not in {ETA_IA_STATUS_ADOPTED, ETA_IA_STATUS_DIAGNOSTIC}:
             raise ValueError(f"Unknown eta_IA status {self.status!r}")
-        if self.status == ETA_IA_STATUS_EXPLICIT and self.explicit_value is None:
-            raise ValueError("An explicit eta_IA decision requires a value")
-        if self.status == ETA_IA_STATUS_UNRESOLVED and self.explicit_value is not None:
-            raise ValueError("An unresolved eta_IA decision cannot carry a chosen value")
+        object.__setattr__(self, "value", float(self.value))
+        if self.status == ETA_IA_STATUS_ADOPTED and self.value != ETA_IA_ADOPTED_VALUE:
+            raise ValueError(
+                f"The adopted campaign eta_IA is {ETA_IA_ADOPTED_VALUE}; "
+                f"got {self.value}. Label an alternate slope as diagnostic."
+            )
 
     @classmethod
-    def unresolved(cls) -> "EtaIADecision":
-        """Return the recorded disagreement, with no selected value."""
+    def adopted(cls) -> "EtaIADecision":
+        """Return the adopted campaign decision, ``eta_IA = 0``."""
 
         return cls()
 
     @classmethod
-    def explicit(cls, value: float) -> "EtaIADecision":
-        """Record a caller-supplied eta. This does not validate a preferred law."""
+    def diagnostic(cls, value: float) -> "EtaIADecision":
+        """Return an explicitly labelled alternate slope for diagnostics only.
 
-        return cls(status=ETA_IA_STATUS_EXPLICIT, explicit_value=float(value))
+        Args:
+            value (float): Slope used by a diagnostic fixture. It never enters
+                an accepted campaign product.
+
+        Returns:
+            EtaIADecision: A decision whose status is ``diagnostic``.
+        """
+
+        return cls(value=float(value), status=ETA_IA_STATUS_DIAGNOSTIC)
+
+    @property
+    def is_accepted(self) -> bool:
+        """Return whether this decision may label an accepted product."""
+
+        return self.status == ETA_IA_STATUS_ADOPTED
 
     @property
     def resolved_value(self) -> float:
-        """Return an explicit eta.
+        """Return the slope in use."""
 
-        Returns:
-            float: The caller-supplied slope.
-
-        Raises:
-            UnresolvedScienceDecision: When the generator/manuscript disagreement
-            is still open. The message names both provenance values.
-        """
-
-        if self.status != ETA_IA_STATUS_EXPLICIT or self.explicit_value is None:
-            raise UnresolvedScienceDecision(
-                "eta_IA is unresolved: the generator records "
-                f"{self.generator_value} and the manuscript records "
-                f"{self.manuscript_value}. Pass an explicit decision; "
-                "this code will not invent one."
-            )
-        return float(self.explicit_value)
+        return float(self.value)
 
     def as_dict(self) -> dict[str, object]:
         """Return JSON-ready provenance."""
 
         return {
             "status": self.status,
-            "explicit_value": self.explicit_value,
-            "generator_value": self.generator_value,
-            "manuscript_value": self.manuscript_value,
+            "value": float(self.value),
+            "source": self.source,
+            "historical_generator_value": self.historical_generator_value,
             "nuisance_cosmology_policy": NUISANCE_COSMOLOGY_POLICY,
         }
+
+
+def require_accepted_eta(record) -> float:
+    """Validate the IA metadata of a loaded nuisance artifact.
+
+    Args:
+        record: Mapping loaded from ``config/intrinsic_alignment.json`` or from
+            a product manifest.
+
+    Returns:
+        float: The adopted slope.
+
+    Raises:
+        UnresolvedScienceDecision: When the slope is missing, unresolved or is
+        not the adopted campaign value. Updating metadata alone does not
+        regenerate an array written with another slope.
+    """
+
+    if "eta_pivot" not in record:
+        raise UnresolvedScienceDecision(
+            "The intrinsic-alignment artifact records no eta_pivot. Regenerate it "
+            f"with the adopted value {ETA_IA_ADOPTED_VALUE}."
+        )
+    status = str(record.get("eta_decision", ""))
+    if status != ETA_IA_STATUS_ADOPTED:
+        raise UnresolvedScienceDecision(
+            f"The intrinsic-alignment artifact records eta_decision={status!r}. "
+            f"Accepted products require {ETA_IA_STATUS_ADOPTED!r}."
+        )
+    value = float(record["eta_pivot"])
+    if value != ETA_IA_ADOPTED_VALUE:
+        raise UnresolvedScienceDecision(
+            f"The intrinsic-alignment artifact records eta_pivot={value}. The "
+            f"adopted campaign value is {ETA_IA_ADOPTED_VALUE}; regenerate the array."
+        )
+    return value
 
 
 def configuration_probes(configuration: str) -> tuple[str, ...]:

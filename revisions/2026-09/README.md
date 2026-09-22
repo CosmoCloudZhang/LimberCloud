@@ -2,22 +2,24 @@
 
 **Updated 22 September 2026.** The new plan audits Cursor's environment and partial science/artifact implementation at `13a3c2d`, adopts the author's latest decisions, and provides detailed new Phases 1–5 through scientific execution, release and local paper completion. It is an implementation plan, not a claim that the campaign or repairs have already run.
 
+The latest [Phase 1 contract review](reports/2026-09-22_PHASE1_CONTRACT_REVIEW.md) records remaining defects in the dirty tree. The expanded [Phase 1 plan](prompts/PHASE_1_FOUNDATION_CORRECTIONS.md) now owns their closeout: faithful Jupyter editions of all 21 Mathematica derivations, four new boundary coefficients, independent review before terminal-module removal, small provenance/component checks and separate Fiducial/Cosmology timings. Phase 2 consumes accepted results. Plan edits are not implementation or acceptance evidence; keep the simplified timing CLI and label the benchmark reference `CCL`, explaining its end-to-end meaning in the caption.
+
 ## Start here
 
 1. [Current implementation review](reports/2026-09-22_IMPLEMENTATION_REVIEW.md): what exists, what failed review, and remaining work.
 2. [Code completion plan](CODE_REVISION_PLAN.md): fixed decisions, phase map and detailed C00–C16 requirements.
 3. [Cursor prompt index](CURSOR_IMPLEMENTATION_PROMPTS.md): five remote prompts plus the separate local paper prompt.
-4. [Completion checklist](COMPLETION_CHECKLIST.md): 29 requirements and their actual evidence/status.
+4. [Completion checklist](COMPLETION_CHECKLIST.md): 31 requirements and their actual evidence/status.
 5. [Manuscript plan](MANUSCRIPT_REVISION_PLAN.md) and [102-comment inventory](COAUTHOR_COMMENT_INVENTORY.md): detailed paper changes and preserved original attribution.
 
 The [second review and incorporated improvements](reports/2026-09-22_SECOND_PLAN_REVIEW.md) adds precise observer/power/noise checks, effective fiducial provenance, configuration and resume semantics, named readiness gates and reviewable diffs between uncommitted phases. It preserves the agreed science and campaign scope.
 
 ## What changed in this version
 
-- Phase 0 is retained with concrete repairs for argument forwarding, harmless defaults, portable tests, real kernel/HDF5 startup and environment checks. The latest commit's removed manuscript gitlink must be restored.
+- Phase 0 is retained with concrete repairs for argument forwarding, harmless defaults, portable tests, real kernel/HDF5 startup and environment checks. The manuscript gitlink is now restored at `90d12f4`; retain it without initializing the remote paper.
 - eta_IA=0.0 is fixed, with regenerated current inputs; A_IA and pivot remain 0.5.
-- NUMERIC gets a separate reusable implementation and experiment family. Its radial-order option cannot leak into other methods, filenames or readers.
-- NN final diagonal is included, cubic observer 1/4 retained, and related NS/SN/SS terminal cases validated.
+- NUMERIC gets a separate reusable implementation and experiment family. Its radial-order option cannot leak into other methods, filenames or readers. Product names do not include a CPU-allocation token, and the performance figure loads CCL, Numba and JAX only.
+- NN final diagonal and cubic observer 1/4 are retained. Phase 1 completes NS B09/B10 and SS B11/B12, fixes the educational kernel branch, converts the 21 original derivations, and requires independent mathematical/compiled evidence before terminal.py removal.
 - All methods use 21 common raw nodes and 20 bandpowers from the actual notebook **natural** angular spline. Covariance windows must match; old centre/101-grid products are explicitly legacy.
 - Execution must really evaluate the fiducial and samples, save spectra, enforce complete identities/transactions and preserve fair timing. Tests of unattached helpers are insufficient.
 - Completion covers all 42 matched workloads, a separate bounded fixed-cosmology distribution-update benchmark, summaries/figures, checked CFS handoff, reproducibility and the separate local paper review.

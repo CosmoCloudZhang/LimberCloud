@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 
 import numpy
-import scipy.constants
+from scipy.constants import c as speed_of_light
 
 from limbercloud.validation.contract import PROBE_COMPONENTS, configuration_probes
 
@@ -29,7 +29,7 @@ def hubble_distance_factor(h: float) -> float:
         float: ``H0/c`` using the same metre-per-second conversion as the runners.
     """
 
-    return float(h) * _H0_PER_H / float(scipy.constants.c)
+    return float(h) * _H0_PER_H / float(speed_of_light)
 
 
 def active_lensing_amplitude(omega_m: float, h: float) -> float:
@@ -46,7 +46,9 @@ def active_lensing_amplitude(omega_m: float, h: float) -> float:
     return 1.5 * float(omega_m) * hubble_distance_factor(h) ** 2
 
 
-def radial_density_weight(psi: numpy.ndarray, h_over_h0: numpy.ndarray, h: float) -> numpy.ndarray:
+def radial_density_weight(
+    psi: numpy.ndarray, h_over_h0: numpy.ndarray, h: float
+) -> numpy.ndarray:
     """Convert a redshift distribution to a comoving radial weight.
 
     Args:
@@ -59,9 +61,11 @@ def radial_density_weight(psi: numpy.ndarray, h_over_h0: numpy.ndarray, h: float
         numpy.ndarray: ``psi * E(z) * H0/c`` as float64.
     """
 
-    return numpy.asarray(psi, dtype=numpy.float64) * numpy.asarray(
-        h_over_h0, dtype=numpy.float64
-    ) * hubble_distance_factor(h)
+    return (
+        numpy.asarray(psi, dtype=numpy.float64)
+        * numpy.asarray(h_over_h0, dtype=numpy.float64)
+        * hubble_distance_factor(h)
+    )
 
 
 def magnification_response_q(slope_s: numpy.ndarray | Sequence[float]) -> numpy.ndarray:
@@ -133,6 +137,40 @@ def magnification_weighted_lens(
     return phi * response[:, numpy.newaxis]
 
 
+def component_activity(alignment_amplitude=None, response_q=None) -> dict[str, bool]:
+    """Identify wholly disabled terms before coefficient construction.
+
+    Args:
+        alignment_amplitude: Loaded signed IA amplitude across the radial grid;
+            ``None`` or identically zero disables intrinsic-alignment terms.
+            The redshift slope eta is not an amplitude/off switch.
+        response_q: Loaded per-bin magnification response ``5*s-2``; ``None``
+            or identically zero disables magnification terms. Individual zero
+            bins retain the existing response-weighted leg/pair treatment.
+
+    Returns:
+        dict[str, bool]: Activity for every named EE/TE/TT component. Exact
+        zeros are used; small nonzero or signed signals remain active.
+    """
+
+    active = []
+    for name, values in (("alignment_amplitude", alignment_amplitude), ("response_q", response_q)):
+        if values is None:
+            active.append(False)
+            continue
+        array = numpy.asarray(values, dtype=numpy.float64)
+        if array.size == 0 or not numpy.all(numpy.isfinite(array)):
+            raise ValueError(f"{name} must contain finite, nonempty values")
+        active.append(bool(numpy.any(array != 0.0)))
+    ia_active, magnification_active = active
+    return {
+        component: ("I" not in component or ia_active)
+        and ("M" not in component or magnification_active)
+        for components in PROBE_COMPONENTS.values()
+        for component in components
+    }
+
+
 def assemble_probe(
     probe: str,
     components: Mapping[str, numpy.ndarray],
@@ -158,7 +196,14 @@ def assemble_probe(
         raise KeyError(f"Probe {probe} is missing components: {', '.join(missing)}")
     total = numpy.array(components[names[0]], dtype=numpy.float64, copy=True)
     for name in names[1:]:
-        total = total + numpy.asarray(components[name], dtype=numpy.float64)
+        term = numpy.asarray(components[name], dtype=numpy.float64)
+        if term.shape != total.shape:
+            raise ValueError(
+                f"Probe {probe} component {name} has shape {term.shape}, not "
+                f"{total.shape}. Broadcasting incompatible component grids would "
+                "silently change the spectrum."
+            )
+        total = total + term
     return total
 
 

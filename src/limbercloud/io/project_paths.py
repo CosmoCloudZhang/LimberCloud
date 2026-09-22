@@ -80,6 +80,10 @@ class ProjectPaths:
     ) -> Path:
         """Return a spectrum-result directory, optionally inside a run ID.
 
+        The family, device and radial order are validated together by
+        :class:`limbercloud.validation.method.MethodIdentity`, so a NUMERIC
+        order can never reach a CCL, NUMBA or JAX directory.
+
         Args:
             backend (str): ``CCL``, ``NUMBA``, ``JAX`` or ``NUMERIC``.
             survey (str): ``Y1`` or ``Y10``.
@@ -93,23 +97,16 @@ class ProjectPaths:
             Path: Family/device/survey directory, plus ``run_id`` when given.
         """
 
-        backend_name = backend.upper()
+        from limbercloud.validation.method import MethodIdentity
+
+        method = MethodIdentity.create(backend, device, interpolation)
         survey_name = _validate_survey(survey)
-        if backend_name not in {"CCL", "NUMBA", "JAX", "NUMERIC"}:
-            raise ValueError(f"Unknown backend {backend!r}")
-        if backend_name == "NUMERIC":
-            order = _validate_interpolation(interpolation)
-            base = self.results / "spectra" / "NUMERIC" / order / survey_name
-        elif interpolation is not None:
-            raise ValueError(f"{backend_name} does not take an interpolation order")
-        elif backend_name == "JAX":
-            if device is None or device.upper() not in {"CPU", "GPU"}:
-                raise ValueError("JAX results require device='CPU' or device='GPU'")
-            base = self.results / "spectra" / "JAX" / device.upper() / survey_name
+        if method.selects_order:
+            base = self.results / "spectra" / method.family / method.interpolation / survey_name
+        elif method.selects_device:
+            base = self.results / "spectra" / method.family / method.device / survey_name
         else:
-            if device is not None and device.upper() != "CPU":
-                raise ValueError(f"{backend_name} only supports the CPU device")
-            base = self.results / "spectra" / backend_name / survey_name
+            base = self.results / "spectra" / method.family / survey_name
         if run_id is None:
             return base
         return base / _validate_run_id(run_id)
@@ -152,20 +149,6 @@ def _validate_survey(survey: str) -> str:
     if survey_name not in {"Y1", "Y10"}:
         raise ValueError(f"Unknown survey {survey!r}; expected 'Y1' or 'Y10'")
     return survey_name
-
-
-def _validate_interpolation(interpolation: str | None) -> str:
-    if interpolation is None:
-        raise ValueError("NUMERIC results require interpolation='linear', 'quadratic' or 'cubic'")
-    order = interpolation.strip().lower()
-    allowed = {"linear": "LINEAR", "quadratic": "QUADRATIC", "cubic": "CUBIC"}
-    try:
-        return allowed[order]
-    except KeyError as error:
-        choices = ", ".join(allowed)
-        raise ValueError(
-            f"Unknown interpolation {interpolation!r}; expected one of: {choices}"
-        ) from error
 
 
 def _validate_run_id(run_id: str) -> str:

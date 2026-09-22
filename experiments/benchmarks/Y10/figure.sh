@@ -50,10 +50,10 @@ export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Run applications
 LABEL="Single"
-python -u "${PROJECT_ROOT}/experiments/benchmarks/${TAG}/benchmark.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"
+python -u "${PROJECT_ROOT}/experiments/benchmarks/${TAG}/benchmark.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" "$@"
 
 LABEL="Double"
-python -u "${PROJECT_ROOT}/experiments/benchmarks/${TAG}/benchmark.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"
+python -u "${PROJECT_ROOT}/experiments/benchmarks/${TAG}/benchmark.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" "$@"
 
 LABEL="Triple"
-python -u "${PROJECT_ROOT}/experiments/benchmarks/${TAG}/benchmark.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"
+python -u "${PROJECT_ROOT}/experiments/benchmarks/${TAG}/benchmark.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" "$@"

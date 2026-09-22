@@ -39,4 +39,4 @@ RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the ex
 export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Run applications
-python -u "${PROJECT_ROOT}/scripts/generate_config/galaxy_bias.py" --folder="${RUNTIME_ROOT}"
+python -u "${PROJECT_ROOT}/scripts/generate_config/galaxy_bias.py" --folder="${RUNTIME_ROOT}" "$@"

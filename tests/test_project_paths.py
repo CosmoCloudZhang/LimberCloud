@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from limbercloud import ProjectPaths
+from limbercloud.validation.method import MethodError
 
 
 class ProjectPathsTests(unittest.TestCase):
@@ -91,6 +92,32 @@ class ProjectPathsTests(unittest.TestCase):
             paths.spectrum_results("JAX", "Y1")
         with self.assertRaises(ValueError):
             paths.config_file("unknown")
+
+    def test_a_radial_order_reaches_numeric_paths_only(self):
+        paths = ProjectPaths(self.runtime_root)
+
+        for backend, device in (("CCL", None), ("NUMBA", None), ("JAX", "CPU"), ("JAX", "GPU")):
+            with self.subTest(backend=backend, device=device):
+                with self.assertRaises(MethodError):
+                    paths.spectrum_results(backend, "Y1", device, interpolation="linear")
+        with self.assertRaises(MethodError):
+            paths.spectrum_results("NUMERIC", "Y1")
+        with self.assertRaises(MethodError):
+            paths.spectrum_results("NUMERIC", "Y1", interpolation="quintic")
+        with self.assertRaises(MethodError):
+            paths.spectrum_results("NUMERIC", "Y1", "GPU", interpolation="linear")
+        self.assertEqual(
+            paths.spectrum_results("NUMERIC", "Y10", interpolation="CUBIC"),
+            self.runtime_root / "results" / "spectra" / "NUMERIC" / "CUBIC" / "Y10",
+        )
+
+    def test_run_identifiers_stay_inside_the_family_root(self):
+        paths = ProjectPaths(self.runtime_root)
+
+        for run_id in ("", ".", "..", "a/b", "a\\b"):
+            with self.subTest(run_id=run_id):
+                with self.assertRaises(ValueError):
+                    paths.spectrum_results("NUMBA", "Y1", run_id=run_id)
 
 
 if __name__ == "__main__":

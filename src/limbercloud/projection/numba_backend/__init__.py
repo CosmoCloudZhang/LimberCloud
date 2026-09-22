@@ -5,5 +5,6 @@ from . import ns as NS
 from . import sn as SN
 from . import ss as SS
 from . import tensor as TENSOR
+from . import terminal as TERMINAL
 
-__all__ = ["NN", "NS", "SN", "SS", "TENSOR"]
+__all__ = ["NN", "NS", "SN", "SS", "TENSOR", "TERMINAL"]

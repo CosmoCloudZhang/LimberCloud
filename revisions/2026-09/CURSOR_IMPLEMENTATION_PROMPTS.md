@@ -6,24 +6,29 @@ Each linked file contains a complete copy-paste prompt with required inputs, con
 
 The [second review](reports/2026-09-22_SECOND_PLAN_REVIEW.md) is incorporated: NUMERIC observer/radial checks, safe power sampling, effective fiducial provenance, precise covariance/noise tests, config and resume semantics, and phase-specific review packets. The fixed author decisions and 42-workload campaign are unchanged.
 
+The [working-tree contract review](reports/2026-09-22_PHASE1_CONTRACT_REVIEW.md) supersedes the earlier Phase 1 completion claim. The expanded active [Phase 1 prompt](prompts/PHASE_1_FOUNDATION_CORRECTIONS.md) now owns the bounded closeout: all 21 faithful Jupyter derivation editions, four new boundary cases, independent mathematical review before terminal-module removal, small provenance/component checks, and separate Fiducial/Cosmology timings. Phase 2 reuses accepted foundations. Preserve the simplified timing CLI; deleted diagnostic/test filenames need not return, and compact tests follow generation of the new derivation files.
+
 | Order | Copy-paste prompt | Where | What must be accepted next |
 |---|---|---|---|
-| 1 | [Foundation corrections](prompts/PHASE_1_FOUNDATION_CORRECTIONS.md) | Remote Cursor/NERSC | Phase 0 follow-ups, gitlink, eta 0, NUMERIC interface, natural 21→20 operator, all terminal bases |
+| 1 | [Foundation corrections](prompts/PHASE_1_FOUNDATION_CORRECTIONS.md) | Remote Cursor/NERSC | Retained foundation repairs; 21 Jupyter derivation editions; four boundary cases; independent review/removal gate; provenance/component checks; Fiducial/Cosmology timings |
 | 2 | [NUMERIC and saved execution](prompts/PHASE_2_NUMERIC_AND_EXECUTION.md) | Remote Cursor/NERSC | Actual numerical backend/evaluator, 30 wrappers, sample 0 and sampled runs, transactional artifacts, timing |
 | 3 | [Covariance and allocated pilots](prompts/PHASE_3_COVARIANCE_AND_PILOTS.md) | Remote Cursor/NERSC | Physical/window/pair/mask covariance checks, 42-workload tiny pilots, bounded distribution-update benchmark and costed production manifest |
 | 4 | [Production and final analysis](prompts/PHASE_4_CAMPAIGN_AND_ANALYSIS.md) | Remote Cursor/NERSC | Explicitly invoked 42-workload campaign, 1001 rows each, distribution-update evidence, summaries/timing/figures/export |
 | 5A | [Release verification and handoff](prompts/PHASE_5_RELEASE_AND_HANDOFF.md) | Remote Cursor/NERSC | Reproduction, docs/package/notebook/evidence checks and verified CFS bundle |
 | 5B | [Local manuscript completion](prompts/PHASE_5B_LOCAL_MANUSCRIPT.md) | Local Codex | 102-comment ledger, verified figures/claims, compiled/page-reviewed paper and final project walkthrough |
 
-Phase 1 includes targeted repairs to the completed Phase 0 work; it does not recreate the working environment. Phase 2 completes the partial old Prompt 1 foundation instead of assuming helper modules establish end-to-end capability. Phase 3 does not launch production. Phase 4 authorizes production only when that prompt is explicitly invoked after accepted pilots. Phase 5B editorial work may proceed earlier; numerical claims wait for accepted exports.
+Phase 1 includes targeted repairs to the completed Phase 0 work; it does not recreate the working environment. Phase 2 builds evaluator/NUMERIC/storage execution on accepted Phase 1 results; helper modules alone do not establish end-to-end capability. Phase 3 does not launch production. Phase 4 authorizes production only when that prompt is explicitly invoked after accepted pilots. Phase 5B editorial work may proceed earlier; numerical claims wait for accepted exports.
+
+The notebook review distinguishes the established nested/outer n=100 NUMERIC integration from the temporary terminal-source implementation. Phase 2 first reproduces that notebook method and retains its order when bounded convergence checks pass; increased order or knot splitting is evidence-driven. Phase 1 preserves all original derivation content in the Jupyter editions and separates transparent notation corrections from transcription and fresh executable results.
 
 ## Fixed decisions the prompts must not reopen
 
 - eta_IA=0.0 throughout current products; amplitude 0.5 and pivot 0.5 are distinct.
 - Radial linear/quadratic/cubic only under NUMERIC; no order token or loop for CCL/NUMBA/JAX.
 - Common 21 geomspace nodes 20–2000, **natural** cubic spline of ell*C versus logell, 20 uniform-dell bandpowers for residual/covariance vectors. Raw 21 is reconstruction data; centres display only; no separate 101 shared science grid.
-- Include final NN diagonal, preserve cubic observer 1/4, complete independent NS/SN/SS terminal checks.
+- Include final NN diagonal, preserve cubic observer 1/4, complete NS B09/B10 and SS B11/B12 and compact independent checks. Preserve the 21 Mathematica originals and add faithful Jupyter editions; a separate agent reviews completed mathematics/code/evidence before terminal.py removal.
 - One shared fiducial+1000 table, 42 workloads, sequential one-task execution, CFS results and local paper ownership.
+- Host CPU count stays in the Slurm allocation and thread environment. Product names have no `_128` / `--number` token. Timing files stay in the family/survey directory. Every run evaluates the fiducial, and `--sample-count` is the number of additional cosmologies. Timing names end in `Fiducial` or `Cosmology`; sampled text stores actual counts and cumulative seconds, including tiny pilots. N=0 replaces only Fiducial products. The performance figure is CCL, Numba and JAX only, with the legend label `CCL` and a caption explaining the repeated end-to-end reference.
 
 ## How a stage ends
 

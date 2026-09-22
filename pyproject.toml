@@ -16,6 +16,10 @@ authors = [
 dev = [
     "ruff>=0.16,<0.17",
 ]
+notebooks = [
+    "ipython",
+    "sympy>=1.14,<2",
+]
 science = [
     "astropy",
     "camb",
@@ -31,9 +35,6 @@ science = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-limbercloud = ["py.typed"]
 
 [tool.pyright]
 extraPaths = ["src"]

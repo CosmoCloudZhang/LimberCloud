@@ -23,6 +23,6 @@ mkdir -p "${PROJECT_ROOT}/logs"
 
 for survey in Y1 Y10; do
     for configuration in single double triple; do
-        sbatch --chdir="${PROJECT_ROOT}" "${PROJECT_ROOT}/experiments/spectra/JAX/GPU/${survey}/${configuration}.sh"
+        sbatch --chdir="${PROJECT_ROOT}" "${PROJECT_ROOT}/experiments/spectra/JAX/GPU/${survey}/${configuration}.sh" "$@"
     done
 done

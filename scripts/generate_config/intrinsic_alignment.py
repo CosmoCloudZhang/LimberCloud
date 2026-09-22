@@ -3,9 +3,28 @@ import json
 import time
 
 import numpy
-import pyccl
 
 from limbercloud import ProjectPaths
+from limbercloud.validation.contract import (
+    A_IA_AMPLITUDE,
+    ETA_IA_ADOPTED_VALUE,
+    ETA_IA_HISTORICAL_GENERATOR_VALUE,
+    ETA_IA_SOURCE,
+    ETA_IA_STATUS_ADOPTED,
+    ETA_IA_STATUS_DIAGNOSTIC,
+    IA_CRITICAL_DENSITY_CONSTANT,
+    IA_DENSITY_CONVENTION,
+    IA_GROWTH_NORMALIZATION,
+    IA_PIVOT_REDSHIFT,
+    NUISANCE_COSMOLOGY_POLICY,
+)
+from limbercloud.validation.cosmology import (
+    FIDUCIAL_SOLVER,
+    build_effective_cosmology,
+    model_fingerprint,
+    parameter_hash,
+    solver_package_versions,
+)
 
 
 def main(folder, eta_ia=None):
@@ -14,6 +33,9 @@ def main(folder, eta_ia=None):
 
     Arguments:
         folder (str): The base folder of the datasets
+        eta_ia (float | None): Redshift slope. Omitting it adopts the campaign
+            value 0.0. Any other value is written as an explicitly diagnostic
+            array and is refused by accepted-campaign readers.
 
     Returns:
         duration (float): The duration of the process
@@ -29,21 +51,7 @@ def main(folder, eta_ia=None):
     with paths.config_file('cosmology').open('r') as file:
         cosmology_info = json.load(file)
 
-    cosmology = pyccl.Cosmology(
-        h=cosmology_info['H'],
-        w0=cosmology_info['W0'],
-        wa=cosmology_info['WA'],
-        n_s=cosmology_info['NS'],
-        A_s=cosmology_info['AS'],
-        m_nu=cosmology_info['M_NU'],
-        Neff=cosmology_info['N_EFF'],
-        Omega_k=cosmology_info['OMEGA_K'],
-        Omega_b=cosmology_info['OMEGA_B'],
-        Omega_c=cosmology_info['OMEGA_CDM'],
-        Omega_g=cosmology_info['OMEGA_GAMMA'],
-        mass_split = 'single', matter_power_spectrum = 'halofit', transfer_function = 'boltzmann_camb',
-        extra_parameters = {'camb': {'kmax': 100, 'lmax': 5000, 'halofit_version': 'mead2020_feedback', 'HMCode_logT_AGN': 7.8}}
-    )
+    cosmology = build_effective_cosmology(cosmology_info)
 
     # Redshift
     z1 = 0.0
@@ -51,16 +59,22 @@ def main(folder, eta_ia=None):
     grid_size = 350
     z_grid = numpy.linspace(z1, z2, grid_size + 1)
 
-    # Historical generator value versus the manuscript value. Omitting
-    # --eta-ia keeps the historical array and records the choice as unresolved.
-    z_pivot = 0.5
-    a_pivot = 0.5
+    # Alignment law. eta is the adopted SRD slope; A and the pivot are distinct
+    # quantities that both happen to equal 0.5 and are not changed with it.
+    z_pivot = IA_PIVOT_REDSHIFT
+    a_pivot = A_IA_AMPLITUDE
     if eta_ia is None:
-        eta_pivot = 0.5
-        eta_decision = "unresolved"
+        eta_pivot = ETA_IA_ADOPTED_VALUE
+        eta_decision = ETA_IA_STATUS_ADOPTED
     else:
         eta_pivot = float(eta_ia)
-        eta_decision = "explicit"
+        eta_decision = (
+            ETA_IA_STATUS_ADOPTED
+            if eta_pivot == ETA_IA_ADOPTED_VALUE
+            else ETA_IA_STATUS_DIAGNOSTIC
+        )
+
+    import pyccl
 
     constant = 5e-14 / numpy.square(cosmology_info['H'])
     growth = pyccl.background.growth_factor(cosmo=cosmology, a=1.0 / (1.0 + z_grid))
@@ -70,15 +84,26 @@ def main(folder, eta_ia=None):
     alignment_info = {
         'A': a_grid.tolist(),
         'redshift': z_grid.tolist(),
+        'redshift_axis': {'minimum': z1, 'maximum': z2, 'intervals': grid_size, 'spacing': 'linear'},
         'eta_pivot': eta_pivot,
         'eta_decision': eta_decision,
-        'eta_generator_value': 0.5,
-        'eta_manuscript_value': 0.0,
+        'eta_source': ETA_IA_SOURCE,
+        'eta_historical_generator_value': ETA_IA_HISTORICAL_GENERATOR_VALUE,
         'z_pivot': z_pivot,
         'a_pivot': a_pivot,
-        'density_convention': 'rho_x(a=1, species=matter, is_comoving=True); no (1+z)^3 factor',
-        'C1': '5e-14/h**2',
-        'nuisance_cosmology_policy': 'fixed_tabulated_at_fiducial',
+        'effective_law': (
+            'A(z) = -C1 * rho_m(0) / D(z) * A_IA * ((1+z)/(1+z_pivot))**eta_pivot; '
+            'signed NLA with comoving present-day matter density'
+        ),
+        'density_convention': IA_DENSITY_CONVENTION,
+        'growth_normalization': IA_GROWTH_NORMALIZATION,
+        'C1': IA_CRITICAL_DENSITY_CONSTANT,
+        'nuisance_cosmology_policy': NUISANCE_COSMOLOGY_POLICY,
+        'fiducial_input_hash': parameter_hash(cosmology_info),
+        'generating_model_fingerprint': model_fingerprint(cosmology_info),
+        'solver_fingerprint': FIDUCIAL_SOLVER.fingerprint(),
+        'solver_settings': FIDUCIAL_SOLVER.as_dict(),
+        'package_versions': solver_package_versions(),
     }
 
     with paths.config_file('intrinsic_alignment').open('w') as file:
@@ -97,7 +122,7 @@ if __name__ == '__main__':
     # Input
     PARSE = argparse.ArgumentParser(description='Info Alignment')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the datasets')
-    PARSE.add_argument('--eta-ia', type=float, default=None, help='Explicit eta_IA. Omit to keep the historical 0.5 array and record the manuscript disagreement as unresolved.')
+    PARSE.add_argument('--eta-ia', type=float, default=None, help='Redshift slope. Omit to adopt the campaign value 0.0; any other value is written as a diagnostic array.')
 
     # Parse
     ARGS = PARSE.parse_args()

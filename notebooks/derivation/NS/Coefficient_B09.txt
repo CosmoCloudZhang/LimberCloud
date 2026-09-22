@@ -1,0 +1,3 @@
+I9 = (1/720)*(180*a**5*p*z*numpy.log(1 - a) - 297*a**5*p*z - 240*a**5*p*numpy.log(1 - a) + 410*a**5*p - 240*a**5*z*numpy.log(1 - a) + 410*a**5*z + 360*a**5*numpy.log(1 - a) - 660*a**5 - 180*a**4*p*z*numpy.log(1 - a) - 165*a**4*p*z + 240*a**4*p*numpy.log(1 - a) + 280*a**4*p + 240*a**4*z*numpy.log(1 - a) + 280*a**4*z - 360*a**4*numpy.log(1 - a) - 720*a**4 - 270*a**3*p*z + 660*a**3*p + 660*a**3*z - 1080*a**3*numpy.log(1 - a) + 720*a**3 - 630*a**2*p*z + 960*a**2*p*numpy.log(1 - a) - 600*a**2*p + 960*a**2*z*numpy.log(1 - a) - 600*a**2*z + 720*a**2*numpy.log(1 - a) - 900*a*p*z*numpy.log(1 - a) + 540*a*p*z - 600*a*p*numpy.log(1 - a) - 600*a*z*numpy.log(1 - a) + 540*p*z*numpy.log(1 - a))/a**4
+
+J9 = 1/120 - 1/210*z

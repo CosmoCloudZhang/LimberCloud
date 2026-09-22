@@ -1,26 +1,41 @@
 import argparse
-import json
 import os
 import time
 from itertools import product
 
 import numpy
 import pyccl
-import scipy
+from scipy.integrate import trapezoid
 
 from limbercloud import Configuration, ProjectPaths
 from limbercloud.experiments import (
     add_evaluation_arguments,
     build_checkpoint_counts,
+    prepare_result_directory,
+    require_effective_work,
     resolve_sample_count,
+)
+from limbercloud.experiments.timing import write_timing_products
+from limbercloud.validation.assembly import component_activity
+from limbercloud.validation.estimator import canonical_ell_nodes
+from limbercloud.validation.nuisance import (
+    load_alignment,
+    require_nuisance_compatibility,
 )
 from limbercloud.validation.samples import (
     ccl_cosmology_kwargs,
-    sampled_parameter_rows,
+    load_cosmology_table,
+    select_rows,
 )
 
 
-def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sample_table=None, run_id=None, include_fiducial=False, resume=False):
+def main(
+    tag,
+    label,
+    folder,
+    sample_count=None,
+    sample_table=None,
+):
     """
     Calculate the angular power spectra under the single configuration
 
@@ -28,9 +43,7 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sam
         tag (str): The tag of the configuration
         label (str): The label of the configuration
         folder (str): The base folder of the dataset
-        number (int): Host CPU allocation label for output filenames
-        sample_count (int | None): Non-fiducial sample rows; default 0
-        fiducial_only (bool): When true, forces zero sampled rows
+        sample_count (int | None): Cosmologies after the fiducial; default 0
 
     Returns:
         duration (float): The duration of the process
@@ -38,19 +51,17 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sam
     # Start
     start = time.time()
     label = Configuration.parse(label).value
-    if resume:
-        raise ValueError(
-            "Timing entries do not resume HDF5 checkpoints. Resume validated "
-            "sample IDs through the shared artifact writer."
-        )
+    sampled_count = require_effective_work(
+        sample_count=resolve_sample_count(sample_count),
+        sample_table=sample_table,
+    )
 
-    print(f'Tag: {tag}')
+    print(f"Tag: {tag}")
 
     # Runtime paths
     paths = ProjectPaths.from_root(folder)
     data_folder = str(paths.survey_data(tag))
-    result_folder = paths.spectrum_results('CCL', tag, run_id=run_id)
-    result_folder.mkdir(parents=True, exist_ok=True)
+    result_folder = paths.spectrum_results("CCL", tag)
 
     # Grid
     z1 = 0.0
@@ -59,40 +70,45 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sam
     z_grid = numpy.linspace(z1, z2, grid_size + 1)
 
     # Source
-    source = numpy.load(os.path.join(data_folder, 'lsst_source_bins.npy'), allow_pickle=True).item()
-    source_redshift = source['redshift_range']
-    source_bin_size = len(source['bins'])
+    source = numpy.load(
+        os.path.join(data_folder, "lsst_source_bins.npy"), allow_pickle=True
+    ).item()
+    source_redshift = source["redshift_range"]
+    source_bin_size = len(source["bins"])
 
     source_psi_grid = numpy.zeros((source_bin_size, grid_size + 1))
     for bin_index in range(source_bin_size):
-        source_psi_grid[bin_index, :] = numpy.interp(x=z_grid, xp=source_redshift, fp=source['bins'][bin_index])
-    source_psi_grid = source_psi_grid / scipy.integrate.trapezoid(x=z_grid, y=source_psi_grid, axis=1)[:, numpy.newaxis]
+        source_psi_grid[bin_index, :] = numpy.interp(
+            x=z_grid, xp=source_redshift, fp=source["bins"][bin_index]
+        )
+    source_psi_grid = (
+        source_psi_grid
+        / trapezoid(x=z_grid, y=source_psi_grid, axis=1)[:, numpy.newaxis]
+    )
 
     # Alignment
-    with paths.config_file('intrinsic_alignment').open('r') as file:
-        alignment_info = json.load(file)
-    alignment_bias = numpy.array(alignment_info['A'])
+    alignment_bias, alignment_provenance = load_alignment(
+        paths.config_file("intrinsic_alignment"), z_grid
+    )
+    print(f"Alignment: {alignment_provenance.generating_model_fingerprint}")
 
     # Multipole
-    ell1 = 20
-    ell2 = 2000
-    ell_size = 20
-    ell_grid = numpy.geomspace(ell1, ell2, ell_size + 1)
-    ell_data = numpy.sqrt(ell_grid[1:] * (ell_grid[:-1]))
+    ell_grid = canonical_ell_nodes()
+    ell_size = ell_grid.size - 1
+    ell_data = ell_grid
 
     # Count (sample_count = non-fiducial rows; default 0 is safe)
-    count2 = resolve_sample_count(sample_count, fiducial_only)
+    count2 = sampled_count
     count_list = build_checkpoint_counts(count2)
     count_size = int(count_list.size)
     count_targets = {int(count): index for index, count in enumerate(count_list)}
 
-    parameter_rows = sampled_parameter_rows(
-        sample_count=count2,
-        sample_table=sample_table,
-        include_fiducial=include_fiducial,
-        fiducial_only=fiducial_only,
-    )
+    table = load_cosmology_table(sample_table)
+    require_nuisance_compatibility(table, alignment_provenance)
+    parameter_rows = select_rows(table, [0, *range(1, count2 + 1)])
+    activity = component_activity(alignment_bias)
 
+    result_folder = prepare_result_directory(result_folder)
 
     # Time
     time_list = numpy.zeros(count_size)
@@ -102,29 +118,67 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sam
     # Loop
     cell_duration = 0.0
     cosmology_duration = 0.0
-    for index in range(int(count_list.max()) if count_list.size else 0):
+    for index in range(-1, int(count_list.max()) if count_list.size else 0):
         t0 = time.time()
-        row = parameter_rows[index]
+        row = parameter_rows[index + 1]
         cosmology = pyccl.Cosmology(**ccl_cosmology_kwargs(row))
 
-        pyccl.gsl_params['NZ_NORM_SPLINE_INTEGRATION'] = False
-        pyccl.gsl_params['LENSING_KERNEL_SPLINE_INTEGRATION'] = False
+        pyccl.gsl_params["NZ_NORM_SPLINE_INTEGRATION"] = False
+        pyccl.gsl_params["LENSING_KERNEL_SPLINE_INTEGRATION"] = False
 
-        pyccl.gsl_params['INTEGRATION_GAUSS_KRONROD_POINTS'] = 100
-        pyccl.gsl_params['INTEGRATION_LIMBER_GAUSS_KRONROD_POINTS'] = 100
+        pyccl.gsl_params["INTEGRATION_GAUSS_KRONROD_POINTS"] = 100
+        pyccl.gsl_params["INTEGRATION_LIMBER_GAUSS_KRONROD_POINTS"] = 100
 
         t1 = time.time()
-        cosmology_duration += (t1 - t0)
+        cosmology_duration += t1 - t0
 
-        c_ccl_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size))
-        for (bin_index1, bin_index2) in product(range(source_bin_size), range(source_bin_size)):
-            tracer1 = pyccl.tracers.WeakLensingTracer(cosmo=cosmology, dndz=[z_grid, source_psi_grid[bin_index1, :]], has_shear=True, ia_bias=[z_grid, alignment_bias], use_A_ia=False, n_samples=grid_size + 1)
-            tracer2 = pyccl.tracers.WeakLensingTracer(cosmo=cosmology, dndz=[z_grid, source_psi_grid[bin_index2, :]], has_shear=True, ia_bias=[z_grid, alignment_bias], use_A_ia=False, n_samples=grid_size + 1)
-            c_ccl_ee[bin_index1, bin_index2, :] = pyccl.cells.angular_cl(cosmo=cosmology, tracer1=tracer1, tracer2=tracer2, ell=ell_data, p_of_k_a='delta_matter:delta_matter', l_limber=-1, limber_max_error=0.001, limber_integration_method='spline', p_of_k_a_lin='delta_matter:delta_matter', return_meta=False)
+        c_ccl_ee = numpy.zeros((source_bin_size, source_bin_size, ell_size + 1))
+        for bin_index1, bin_index2 in product(
+            range(source_bin_size), range(source_bin_size)
+        ):
+            tracer1 = pyccl.tracers.WeakLensingTracer(
+                cosmo=cosmology,
+                dndz=[z_grid, source_psi_grid[bin_index1, :]],
+                has_shear=True,
+                ia_bias=[z_grid, alignment_bias] if activity["II"] else None,
+                use_A_ia=False,
+                n_samples=grid_size + 1,
+            )
+            tracer2 = pyccl.tracers.WeakLensingTracer(
+                cosmo=cosmology,
+                dndz=[z_grid, source_psi_grid[bin_index2, :]],
+                has_shear=True,
+                ia_bias=[z_grid, alignment_bias] if activity["II"] else None,
+                use_A_ia=False,
+                n_samples=grid_size + 1,
+            )
+            c_ccl_ee[bin_index1, bin_index2, :] = pyccl.cells.angular_cl(
+                cosmo=cosmology,
+                tracer1=tracer1,
+                tracer2=tracer2,
+                ell=ell_data,
+                p_of_k_a="delta_matter:delta_matter",
+                l_limber=-1,
+                limber_max_error=0.001,
+                limber_integration_method="spline",
+                p_of_k_a_lin="delta_matter:delta_matter",
+                return_meta=False,
+            )
 
         t2 = time.time()
-        cell_duration += (t2 - t1)
+        cell_duration += t2 - t1
 
+        if index < 0:
+            fiducial_seconds = cell_duration + cosmology_duration
+            print(f"Fiducial time: {fiducial_seconds:.2f} seconds")
+            fiducial_timings = {
+                "": fiducial_seconds,
+                "COSMOLOGY": cosmology_duration,
+                "CELL": cell_duration,
+            }
+            cell_duration = 0.0
+            cosmology_duration = 0.0
+            continue
         if (index + 1) in count_targets:
             count_index = count_targets[index + 1]
 
@@ -132,27 +186,42 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sam
             time_cosmology_list[count_index] = cosmology_duration
             time_list[count_index] = cell_duration + cosmology_duration
 
-    # Save
-    numpy.savetxt(os.path.join(result_folder, f'Time_{label}_{number}.txt'), time_list)
-    numpy.savetxt(os.path.join(result_folder, f'Time_{label}_{number}_CELL.txt'), time_cell_list)
-    numpy.savetxt(os.path.join(result_folder, f'Time_{label}_{number}_COSMOLOGY.txt'), time_cosmology_list)
+    # Save fiducial and sampled timing populations separately.
+    write_timing_products(
+        result_folder,
+        label,
+        family="CCL",
+        sample_table_hash=table.content_hash,
+        counts=count_list,
+        fiducial=fiducial_timings,
+        sampled={
+            "": time_list,
+            "COSMOLOGY": time_cosmology_list,
+            "CELL": time_cell_list,
+        },
+    )
 
     # Duration
     end = time.time()
     duration = (end - start) / 60
 
     # Return
-    print(f'Time: {duration:.2f} minutes')
+    print(f"Time: {duration:.2f} minutes")
     return duration
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Input
-    PARSE = argparse.ArgumentParser(description='Single')
-    PARSE.add_argument('--tag', type=str, required=True, help='The tag of the configuration')
-    PARSE.add_argument('--label', type=str, required=True, help='The label of the configuration')
-    PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the dataset')
-    PARSE.add_argument('--number', type=int, required=True, help='Host CPU allocation label for output filenames')
+    PARSE = argparse.ArgumentParser(description="Single")
+    PARSE.add_argument(
+        "--tag", type=str, required=True, help="The tag of the configuration"
+    )
+    PARSE.add_argument(
+        "--label", type=str, required=True, help="The label of the configuration"
+    )
+    PARSE.add_argument(
+        "--folder", type=str, required=True, help="The base folder of the dataset"
+    )
     add_evaluation_arguments(PARSE)
 
     # Parse
@@ -161,11 +230,6 @@ if __name__ == '__main__':
         ARGS.tag,
         ARGS.label,
         ARGS.folder,
-        ARGS.number,
         sample_count=ARGS.sample_count,
-        fiducial_only=ARGS.fiducial_only,
         sample_table=ARGS.sample_table,
-        run_id=ARGS.run_id,
-        include_fiducial=ARGS.include_fiducial,
-        resume=ARGS.resume,
     )

@@ -21,13 +21,25 @@ from pathlib import Path
 
 import numpy
 
-from limbercloud.validation.contract import SPECTRA_SCHEMA_VERSION
+from limbercloud.validation.contract import CONFIGURATION_PROBES, SPECTRA_SCHEMA_VERSION
+from limbercloud.validation.estimator import EllEstimator, EstimatorMismatch
+from limbercloud.validation.method import MethodIdentity
 
 MANIFEST_STATUS_COMPLETE = "complete"
+
+SURVEYS = ("Y1", "Y10")
 
 
 class ArtifactError(ValueError):
     """Raised when an artifact is incomplete, mismatched or already owned."""
+
+
+def _validate_survey_token(survey: str) -> str:
+    token = str(survey).strip().upper()
+    if token not in SURVEYS:
+        choices = ", ".join(SURVEYS)
+        raise ArtifactError(f"Unknown survey {survey!r}; expected one of: {choices}")
+    return token
 
 
 def sha256_file(path: str | Path) -> str:
@@ -84,7 +96,9 @@ def publish_file(source: str | Path, destination: str | Path) -> Path:
     if same_filesystem(source_path.parent, destination_path.parent):
         os.replace(source_path, destination_path)
     else:
-        staging = destination_path.parent / f".{destination_path.name}.{os.getpid()}.partial"
+        staging = (
+            destination_path.parent / f".{destination_path.name}.{os.getpid()}.partial"
+        )
         shutil.copyfile(source_path, staging)
         if sha256_file(staging) != digest:
             staging.unlink(missing_ok=True)
@@ -94,7 +108,9 @@ def publish_file(source: str | Path, destination: str | Path) -> Path:
         os.replace(staging, destination_path)
         source_path.unlink(missing_ok=True)
     if sha256_file(destination_path) != digest:
-        raise ArtifactError(f"Published file {destination_path} failed checksum validation")
+        raise ArtifactError(
+            f"Published file {destination_path} failed checksum validation"
+        )
     return destination_path
 
 
@@ -162,6 +178,12 @@ class NamespaceLock:
             f"(host={recorded.get('host')}, pid={recorded.get('pid')})"
         )
 
+    @property
+    def is_held(self) -> bool:
+        """Return whether this object currently holds the namespace lock."""
+
+        return self._held
+
     def release(self) -> None:
         """Remove the lock if this process holds it."""
 
@@ -181,6 +203,11 @@ class NamespaceLock:
 class ArtifactIdentity:
     """Identity that every checkpoint in one namespace must repeat.
 
+    The family, device and radial order are validated together, so a NUMERIC
+    order cannot be attached to a CCL, NUMBA or JAX product and JAX cannot omit
+    its device. Supplying ``estimator`` additionally lets readers check the
+    fingerprint against the coordinates actually stored in a file.
+
     Args:
         run_id: Run directory name.
         survey: ``Y1`` or ``Y10``.
@@ -188,8 +215,11 @@ class ArtifactIdentity:
         configuration: ``Single``, ``Double`` or ``Triple``.
         sample_table_hash: Content hash of the shared cosmology table.
         estimator_fingerprint: Ell-estimator fingerprint.
-        device: ``CPU`` or ``GPU`` for JAX. Empty otherwise.
+        device: ``CPU`` or ``GPU``. JAX must choose; other families are CPU.
         interpolation: NUMERIC order, or empty.
+        estimator: Optional estimator whose fingerprint must equal
+            ``estimator_fingerprint`` and whose coordinates are compared with
+            the stored ``ell`` dataset.
     """
 
     run_id: str
@@ -200,6 +230,41 @@ class ArtifactIdentity:
     estimator_fingerprint: str
     device: str = ""
     interpolation: str = ""
+    estimator: EllEstimator | None = None
+
+    def __post_init__(self) -> None:
+        method = MethodIdentity.create(
+            self.family, self.device or None, self.interpolation or None
+        )
+        object.__setattr__(self, "family", method.family)
+        object.__setattr__(self, "device", method.device)
+        object.__setattr__(self, "interpolation", method.interpolation)
+        if _validate_survey_token(self.survey) != self.survey:
+            object.__setattr__(self, "survey", _validate_survey_token(self.survey))
+        if self.configuration not in CONFIGURATION_PROBES:
+            choices = ", ".join(CONFIGURATION_PROBES)
+            raise ArtifactError(
+                f"Unknown configuration {self.configuration!r}; expected one of: {choices}"
+            )
+        if not self.sample_table_hash:
+            raise ArtifactError("An artifact identity requires the sample-table hash")
+        if not self.estimator_fingerprint:
+            raise ArtifactError(
+                "An artifact identity requires the estimator fingerprint"
+            )
+        if (
+            self.estimator is not None
+            and self.estimator.fingerprint() != self.estimator_fingerprint
+        ):
+            raise ArtifactError(
+                "The supplied estimator does not reproduce estimator_fingerprint"
+            )
+
+    @property
+    def method(self) -> MethodIdentity:
+        """Return the validated family/device/order identity."""
+
+        return MethodIdentity(self.family, self.device, self.interpolation)
 
     def as_dict(self) -> dict[str, str]:
         """Return the identity fields stored as HDF5 attributes."""
@@ -252,7 +317,9 @@ def _require_h5py():
     try:
         import h5py
     except ImportError as error:
-        raise ArtifactError("h5py is required to read or write spectrum checkpoints") from error
+        raise ArtifactError(
+            "h5py is required to read or write spectrum checkpoints"
+        ) from error
     return h5py
 
 
@@ -270,19 +337,48 @@ def checkpoint_name(sample_id: int, probe: str) -> str:
     return f"sample_{int(sample_id):06d}_{probe}.h5"
 
 
-def _write_checkpoint_file(path: Path, record: SampleCheckpoint, identity: ArtifactIdentity) -> None:
+def _require_declared_coordinates(
+    identity: ArtifactIdentity, ell: numpy.ndarray
+) -> None:
+    """Compare stored multipoles with the identity's declared estimator.
+
+    Args:
+        identity: Namespace identity, optionally carrying its estimator.
+        ell (numpy.ndarray): Coordinates stored beside the spectra.
+
+    Raises:
+        ArtifactError: When the estimator names different coordinates. A
+        fingerprint that is never compared with the real array proves nothing.
+    """
+
+    if identity.estimator is None:
+        return
+    try:
+        identity.estimator.validate_coordinates(ell)
+    except EstimatorMismatch as error:
+        raise ArtifactError(str(error)) from error
+
+
+def _write_checkpoint_file(
+    path: Path, record: SampleCheckpoint, identity: ArtifactIdentity
+) -> None:
     h5py = _require_h5py()
     cl = numpy.asarray(record.cl, dtype=numpy.float64)
     ell = numpy.asarray(record.ell, dtype=numpy.float64)
     pair_i = numpy.asarray(record.pair_i, dtype=numpy.int32)
     pair_j = numpy.asarray(record.pair_j, dtype=numpy.int32)
-    if cl.ndim != 2 or cl.shape != (ell.size, pair_i.size) or pair_j.size != pair_i.size:
+    if (
+        cl.ndim != 2
+        or cl.shape != (ell.size, pair_i.size)
+        or pair_j.size != pair_i.size
+    ):
         raise ArtifactError(
             f"Checkpoint cl shape {cl.shape} does not match ell {ell.size} and pairs {pair_i.size}"
         )
     cosmology = numpy.asarray(record.cosmology, dtype=numpy.float64)
     if cosmology.shape != (len(record.parameter_names),):
         raise ArtifactError("Cosmology vector does not match parameter_names")
+    _require_declared_coordinates(identity, ell)
     with h5py.File(path, "w") as handle:
         for key, value in identity.as_dict().items():
             handle.attrs[key] = value
@@ -291,12 +387,18 @@ def _write_checkpoint_file(path: Path, record: SampleCheckpoint, identity: Artif
         handle.attrs["status"] = MANIFEST_STATUS_COMPLETE
         handle.attrs["sample_id"] = int(record.sample_id)
         handle.attrs["is_fiducial"] = bool(record.is_fiducial)
-        handle.create_dataset("sample_id", data=numpy.asarray(record.sample_id, dtype=numpy.int64))
-        handle.create_dataset("is_fiducial", data=numpy.asarray(record.is_fiducial, dtype=numpy.bool_))
+        handle.create_dataset(
+            "sample_id", data=numpy.asarray(record.sample_id, dtype=numpy.int64)
+        )
+        handle.create_dataset(
+            "is_fiducial", data=numpy.asarray(record.is_fiducial, dtype=numpy.bool_)
+        )
         handle.create_dataset("cosmology", data=cosmology)
         handle.create_dataset(
             "parameter_names",
-            data=numpy.asarray(record.parameter_names, dtype=h5py.string_dtype(encoding="utf-8")),
+            data=numpy.asarray(
+                record.parameter_names, dtype=h5py.string_dtype(encoding="utf-8")
+            ),
         )
         handle.create_dataset("ell", data=ell)
         handle.create_dataset("pair_i", data=pair_i)
@@ -318,7 +420,9 @@ def _write_checkpoint_file(path: Path, record: SampleCheckpoint, identity: Artif
         # Bandpowers are a different estimator and are absent until requested.
 
 
-def validate_checkpoint_file(path: str | Path, identity: ArtifactIdentity) -> SampleCheckpoint:
+def validate_checkpoint_file(
+    path: str | Path, identity: ArtifactIdentity
+) -> SampleCheckpoint:
     """Reopen a checkpoint and reject identity or shape mismatches.
 
     Args:
@@ -350,9 +454,12 @@ def validate_checkpoint_file(path: str | Path, identity: ArtifactIdentity) -> Sa
         pair_i = numpy.asarray(handle["pair_i"], dtype=numpy.int32)
         pair_j = numpy.asarray(handle["pair_j"], dtype=numpy.int32)
         if "coefficients" in handle:
-            raise ArtifactError("Spectrum checkpoints must not store coefficient tensors")
+            raise ArtifactError(
+                "Spectrum checkpoints must not store coefficient tensors"
+            )
         if cl.shape != (ell.size, pair_i.size) or pair_j.shape != pair_i.shape:
             raise ArtifactError(f"Checkpoint {path} has inconsistent axes")
+        _require_declared_coordinates(identity, ell)
         names = tuple(str(item) for item in handle["parameter_names"].asstr())
         stages = {
             str(key): float(value)
@@ -373,9 +480,30 @@ def validate_checkpoint_file(path: str | Path, identity: ArtifactIdentity) -> Sa
         )
 
 
-def _require_lock(namespace_lock: NamespaceLock) -> None:
-    if not isinstance(namespace_lock, NamespaceLock) or not namespace_lock._held:
+def _require_lock(
+    namespace_lock: NamespaceLock, namespace: str | Path | None = None
+) -> None:
+    """Require a held lock that owns the exact namespace being written.
+
+    Args:
+        namespace_lock: Lock supplied by the caller.
+        namespace: Directory about to be written. A lock on another directory
+            does not authorise writes here.
+
+    Raises:
+        ArtifactError: When no lock is held or it owns a different namespace.
+    """
+
+    if not isinstance(namespace_lock, NamespaceLock) or not namespace_lock.is_held:
         raise ArtifactError("This namespace requires the holding writer lock")
+    if namespace is None:
+        return
+    target = Path(namespace).expanduser().resolve()
+    owned = Path(namespace_lock.directory).expanduser().resolve()
+    if target != owned:
+        raise ArtifactError(
+            f"The held writer lock owns {owned}, not the write namespace {target}"
+        )
 
 
 def write_sample_checkpoint(
@@ -401,7 +529,7 @@ def write_sample_checkpoint(
         Path: Published shard. A temporary or invalid file is not returned.
     """
 
-    _require_lock(namespace_lock)
+    _require_lock(namespace_lock, namespace)
     destination_dir = Path(namespace) / "checkpoints"
     destination_dir.mkdir(parents=True, exist_ok=True)
     final_path = destination_dir / checkpoint_name(record.sample_id, record.probe)
@@ -414,7 +542,9 @@ def write_sample_checkpoint(
             raise ArtifactError(
                 f"Sample {record.sample_id} {record.probe} is already published in {final_path}"
             )
-    staging_root = Path(staging_directory) if staging_directory is not None else destination_dir
+    staging_root = (
+        Path(staging_directory) if staging_directory is not None else destination_dir
+    )
     staging_root.mkdir(parents=True, exist_ok=True)
     temporary = staging_root / f".{final_path.name}.{os.getpid()}.partial"
     _write_checkpoint_file(temporary, record, identity)
@@ -444,7 +574,7 @@ def write_failure_record(
         Path: Published JSON sidecar.
     """
 
-    _require_lock(namespace_lock)
+    _require_lock(namespace_lock, namespace)
     destination_dir = Path(namespace) / "checkpoints"
     destination_dir.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -454,9 +584,13 @@ def write_failure_record(
         "message": message,
         **identity.as_dict(),
     }
-    temporary = destination_dir / f".sample_{int(sample_id):06d}_{probe}.failed.json.partial"
+    temporary = (
+        destination_dir / f".sample_{int(sample_id):06d}_{probe}.failed.json.partial"
+    )
     temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
-    return publish_file(temporary, destination_dir / f"sample_{int(sample_id):06d}_{probe}.failed.json")
+    return publish_file(
+        temporary, destination_dir / f"sample_{int(sample_id):06d}_{probe}.failed.json"
+    )
 
 
 def completed_sample_ids(
@@ -505,84 +639,120 @@ def pending_sample_ids(requested: Sequence[int], completed: Sequence[int]) -> li
     return [int(sample_id) for sample_id in requested if int(sample_id) not in done]
 
 
+def _order_token(family: str | None, interpolation: str | None) -> str:
+    """Return the filename order token after checking it against the family.
+
+    Args:
+        family: Producing family. Required whenever ``interpolation`` is given.
+        interpolation: Radial order. Only NUMERIC products carry one.
+
+    Returns:
+        str: ``"_LINEAR"``-style token for NUMERIC, otherwise an empty string.
+        CCL, NUMBA and JAX names carry no radial-order token.
+    """
+
+    supplied = interpolation is not None and str(interpolation).strip() != ""
+    if family is None:
+        if supplied:
+            raise ArtifactError(
+                f"Interpolation {interpolation!r} needs an explicit family; radial "
+                "orders belong to NUMERIC filenames only"
+            )
+        return ""
+    method = MethodIdentity.create(
+        family, None if family.upper() != "JAX" else "CPU", interpolation
+    )
+    return f"_{method.interpolation}" if method.interpolation else ""
+
+
 def spectra_basename(
     configuration: str,
-    allocation: int,
     probe: str,
     interpolation: str | None = None,
+    *,
+    family: str | None = None,
 ) -> str:
     """Return a consolidated spectrum filename.
 
+    Host CPU count is a Slurm runtime setting. It is not part of the filename.
+
     Args:
         configuration (str): Title-case configuration.
-        allocation (int): Host CPU allocation label (the historical ``--number``).
         probe (str): ``EE``, ``TE`` or ``TT``.
-        interpolation: NUMERIC order, included in both the directory and the name.
+        interpolation: NUMERIC order. It requires ``family='NUMERIC'``.
+        family: Producing family. Required whenever an order is supplied.
 
     Returns:
-        str: For example ``Spectra_Triple_128_LINEAR_EE.h5``.
+        str: For example ``Spectra_Triple_EE.h5``, or
+        ``Spectra_Triple_LINEAR_EE.h5`` for NUMERIC.
     """
 
-    order = f"_{interpolation.upper()}" if interpolation else ""
-    return f"Spectra_{configuration}_{int(allocation)}{order}_{probe}.h5"
+    order = _order_token(family, interpolation)
+    return f"Spectra_{configuration}{order}_{probe}.h5"
 
 
 def timing_basename(
     configuration: str,
-    allocation: int,
     suffix: str = "",
     interpolation: str | None = None,
+    *,
+    family: str | None = None,
+    population: str = "Cosmology",
 ) -> str:
-    """Return a cumulative timing filename.
+    """Return a timing filename with an explicit evaluation population.
 
-    Args:
-        configuration (str): Title-case configuration.
-        allocation (int): Host CPU allocation label.
-        suffix (str): Stage suffix such as ``_COSMOLOGY``. Empty for the total.
-        interpolation: NUMERIC order inserted before the stage suffix.
-
-    Returns:
-        str: For example ``Time_Triple_128_LINEAR_COSMOLOGY.txt``.
+    ``Fiducial`` identifies sample 0; ``Cosmology`` identifies cumulative
+    samples 1..N. Uppercase stage tokens precede that population token. Only
+    NUMERIC carries an interpolation order; host CPU count is never included.
     """
-
-    order = f"_{interpolation.upper()}" if interpolation else ""
-    return f"Time_{configuration}_{int(allocation)}{order}{suffix}.txt"
+    if population not in {"Fiducial", "Cosmology"}:
+        raise ArtifactError("Timing population must be Fiducial or Cosmology")
+    if suffix not in {"", "_COSMOLOGY", "_CELL", "_COEFFICIENT", "_PROJECTION"}:
+        raise ArtifactError(f"Unknown timing stage suffix {suffix!r}")
+    order = _order_token(family, interpolation)
+    return f"Time_{configuration}{order}{suffix}_{population}.txt"
 
 
 def samples_timing_basename(
     configuration: str,
-    allocation: int,
     interpolation: str | None = None,
+    *,
+    family: str | None = None,
 ) -> str:
     """Return the per-sample stage-duration HDF5 name.
 
     Args:
         configuration (str): Title-case configuration.
-        allocation (int): Host CPU allocation label.
-        interpolation: NUMERIC order, when this is a NUMERIC product.
+        interpolation: NUMERIC order. It requires ``family='NUMERIC'``.
+        family: Producing family. Required whenever an order is supplied.
 
     Returns:
-        str: For example ``Time_Triple_128_SAMPLES.h5``.
+        str: For example ``Time_Triple_SAMPLES.h5``.
     """
 
-    order = f"_{interpolation.upper()}" if interpolation else ""
-    return f"Time_{configuration}_{int(allocation)}{order}_SAMPLES.h5"
+    order = _order_token(family, interpolation)
+    return f"Time_{configuration}{order}_SAMPLES.h5"
 
 
-def manifest_basename(configuration: str, allocation: int, interpolation: str | None = None) -> str:
+def manifest_basename(
+    configuration: str,
+    interpolation: str | None = None,
+    *,
+    family: str | None = None,
+) -> str:
     """Return the run-manifest filename published after product validation.
 
     Args:
         configuration (str): Title-case configuration.
-        allocation (int): Host CPU allocation label.
-        interpolation: NUMERIC order.
+        interpolation: NUMERIC order. It requires ``family='NUMERIC'``.
+        family: Producing family. Required whenever an order is supplied.
 
     Returns:
-        str: For example ``Manifest_Triple_128.json``.
+        str: For example ``Manifest_Triple.json``.
     """
 
-    order = f"_{interpolation.upper()}" if interpolation else ""
-    return f"Manifest_{configuration}_{int(allocation)}{order}.json"
+    order = _order_token(family, interpolation)
+    return f"Manifest_{configuration}{order}.json"
 
 
 def consolidate_probe(
@@ -592,7 +762,6 @@ def consolidate_probe(
     *,
     probe: str,
     configuration: str,
-    allocation: int,
     sample_ids: Sequence[int],
 ) -> Path:
     """Stack validated shards into a temporary final file and publish it.
@@ -602,7 +771,6 @@ def consolidate_probe(
         identity: Identity required of every shard and of the final file.
         probe (str): Probe to consolidate.
         configuration (str): Title-case configuration label.
-        allocation (int): Host CPU allocation label.
         sample_ids: IDs that must be present. Duplicates or gaps are rejected.
             Order in the file follows these IDs. Fiducial-first is conventional
             when ID 0 is included, but readers select on ``sample_id``.
@@ -611,7 +779,7 @@ def consolidate_probe(
         Path: Published consolidated HDF5 file.         Shards are left in place.
     """
 
-    _require_lock(namespace_lock)
+    _require_lock(namespace_lock, namespace)
     h5py = _require_h5py()
     if len(sample_ids) != len(set(int(item) for item in sample_ids)):
         raise ArtifactError("Consolidated sample IDs contain duplicates")
@@ -627,16 +795,25 @@ def consolidate_probe(
     pair_j = records[0].pair_j
     names = records[0].parameter_names
     for record in records[1:]:
-        if not numpy.array_equal(record.ell, ell) or not numpy.array_equal(record.pair_i, pair_i):
+        if not numpy.array_equal(record.ell, ell) or not numpy.array_equal(
+            record.pair_i, pair_i
+        ):
             raise ArtifactError("Checkpoint ell or pair axes disagree")
         if record.parameter_names != names:
             raise ArtifactError("Checkpoint parameter names disagree")
     cl = numpy.stack([record.cl for record in records], axis=0)
-    sample_id = numpy.asarray([record.sample_id for record in records], dtype=numpy.int64)
-    is_fiducial = numpy.asarray([record.is_fiducial for record in records], dtype=numpy.bool_)
+    sample_id = numpy.asarray(
+        [record.sample_id for record in records], dtype=numpy.int64
+    )
+    is_fiducial = numpy.asarray(
+        [record.is_fiducial for record in records], dtype=numpy.bool_
+    )
     cosmology = numpy.stack([record.cosmology for record in records], axis=0)
     destination = Path(namespace) / spectra_basename(
-        configuration, allocation, probe, identity.interpolation or None
+        configuration,
+        probe,
+        identity.interpolation or None,
+        family=identity.family,
     )
     temporary = destination.parent / f".{destination.name}.{os.getpid()}.partial"
     with h5py.File(temporary, "w") as handle:
@@ -651,7 +828,9 @@ def consolidate_probe(
             "parameter_names",
             data=numpy.asarray(names, dtype=h5py.string_dtype(encoding="utf-8")),
         )
-        handle.create_dataset("cosmology", data=numpy.asarray(cosmology, dtype=numpy.float64))
+        handle.create_dataset(
+            "cosmology", data=numpy.asarray(cosmology, dtype=numpy.float64)
+        )
         handle.create_dataset("ell", data=numpy.asarray(ell, dtype=numpy.float64))
         handle.create_dataset("pair_i", data=numpy.asarray(pair_i, dtype=numpy.int32))
         handle.create_dataset("pair_j", data=numpy.asarray(pair_j, dtype=numpy.int32))
@@ -679,17 +858,25 @@ def _validate_consolidated(
     with h5py.File(path, "r") as handle:
         for key, expected in identity.as_dict().items():
             if str(handle.attrs.get(key)) != str(expected):
-                raise ArtifactError(f"Consolidated file {path} failed identity check {key}")
+                raise ArtifactError(
+                    f"Consolidated file {path} failed identity check {key}"
+                )
         if str(handle.attrs.get("probe")) != probe:
             raise ArtifactError(f"Consolidated file {path} probe mismatch")
         stored_ids = numpy.asarray(handle["sample_id"], dtype=numpy.int64)
         if stored_ids.tolist() != [int(item) for item in sample_ids]:
-            raise ArtifactError(f"Consolidated file {path} sample IDs do not match the request")
+            raise ArtifactError(
+                f"Consolidated file {path} sample IDs do not match the request"
+            )
         cl = numpy.asarray(handle["cl"], dtype=numpy.float64)
         if cl.shape[0] != stored_ids.size:
-            raise ArtifactError(f"Consolidated file {path} cl axis 0 is not the sample axis")
+            raise ArtifactError(
+                f"Consolidated file {path} cl axis 0 is not the sample axis"
+            )
         if "coefficients" in handle:
-            raise ArtifactError("Consolidated spectra must not store coefficient tensors")
+            raise ArtifactError(
+                "Consolidated spectra must not store coefficient tensors"
+            )
         if "bandpower" in handle and "sampled" not in handle:
             raise ArtifactError("Bandpowers cannot stand in for raw sampled spectra")
 
@@ -700,7 +887,6 @@ def write_manifest(
     *,
     identity: ArtifactIdentity,
     configuration: str,
-    allocation: int,
     products: Mapping[str, Path],
     completed_sample_ids: Sequence[int],
     failed_sample_ids: Sequence[int],
@@ -713,7 +899,6 @@ def write_manifest(
         namespace: Run directory.
         identity: Namespace identity.
         configuration (str): Title-case configuration.
-        allocation (int): Host CPU allocation label.
         products: Filename to path. Each path is checksummed.
         completed_sample_ids: Sample IDs present in the products.
         failed_sample_ids: Sample IDs with published failure records. They are
@@ -725,18 +910,20 @@ def write_manifest(
         Path: Published manifest. It is the last file written.
     """
 
-    _require_lock(namespace_lock)
+    _require_lock(namespace_lock, namespace)
     product_records = {}
     for name, path in products.items():
         file_path = Path(path)
         if not file_path.is_file():
             raise ArtifactError(f"Cannot publish a manifest missing {file_path}")
-        product_records[name] = {"path": file_path.name, "sha256": sha256_file(file_path)}
+        product_records[name] = {
+            "path": file_path.name,
+            "sha256": sha256_file(file_path),
+        }
     payload = {
         "status": MANIFEST_STATUS_COMPLETE,
         "identity": identity.as_dict(),
         "configuration": configuration,
-        "allocation": int(allocation),
         "products": product_records,
         "completed_sample_ids": [int(item) for item in completed_sample_ids],
         "failed_sample_ids": [int(item) for item in failed_sample_ids],
@@ -747,7 +934,9 @@ def write_manifest(
     if extra:
         payload["extra"] = dict(extra)
     destination = Path(namespace) / manifest_basename(
-        configuration, allocation, identity.interpolation or None
+        configuration,
+        identity.interpolation or None,
+        family=identity.family,
     )
     temporary = destination.parent / f".{destination.name}.{os.getpid()}.partial"
     temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
@@ -805,5 +994,7 @@ def read_fiducial_spectrum(manifest_path: str | Path, probe: str) -> numpy.ndarr
         sample_id = numpy.asarray(handle["sample_id"], dtype=numpy.int64)
         fiducial = numpy.flatnonzero(sample_id == 0)
         if fiducial.size != 1:
-            raise ArtifactError(f"{path} does not contain a single fiducial sample ID 0")
+            raise ArtifactError(
+                f"{path} does not contain a single fiducial sample ID 0"
+            )
         return numpy.asarray(handle["cl"][int(fiducial[0])], dtype=numpy.float64)

@@ -119,6 +119,7 @@ print(os.environ["LIMBERCLOUD_RUNTIME_ROOT"])
 
 ## Sample-count safety
 
-Spectra runners default to `--sample-count=0`. Pass `--fiducial-only` or an
-explicit `--sample-count` (campaign: `1000`) before any science launch.
-`--number` remains the host CPU allocation label, not a sample limit.
+Spectra runners always evaluate the fiducial. `--sample-count` is the number of
+additional cosmologies (campaign: `1000`); `0` is the fiducial alone.
+Host CPU count stays in the Slurm allocation and thread environment. It is not a
+sample limit and it is not written into product filenames.

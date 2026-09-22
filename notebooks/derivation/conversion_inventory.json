@@ -1,0 +1,3129 @@
+{
+  "format": "limbercloud-wolfram-edition-v1",
+  "wolfram_executed": false,
+  "source_notebook_count": 21,
+  "content_cell_totals": {
+    "InlineFormula": 146,
+    "Input": 42,
+    "Output": 42
+  },
+  "notebooks": [
+    {
+      "source": "notebooks/derivation/NN/Coefficient_B01.nb",
+      "target": "notebooks/derivation/NN/Coefficient_B01.ipynb",
+      "source_sha256": "0b6647683ed98e1b96fad89f851c609c8c6306a07f550060accee3f60fe55740",
+      "target_sha256": "4c87da7e557717816375c593cc7875d747a0ff6a97d0a0b66f38a334f9a5fefd",
+      "counts": {
+        "InlineFormula": 6,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "a24086ab2daa3d3689c47bccdf71acdf75991a1c3e9900874b56e966eec0f6dc",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 12
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 105,
+          "source_cell_sha256": "8c42aaa826f710c7890457741cfab8df5cdeed3fe548583cc87a1948f7797c13",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 142,
+          "source_cell_sha256": "7d9d4b0c046ababdb735d801e683951804a1fbcdffdb10ba61e5d41c58579c76",
+          "reading_cell_index": 3,
+          "tex_expression_count": 3,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 210,
+          "source_cell_sha256": "81c3dcf0836d899d6b6084b586557e18be558527df8c66e718ed9dfe7088fc72",
+          "reading_cell_index": 4,
+          "tex_expression_count": 2,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 270,
+          "source_cell_sha256": "efb2ac6d2485c92151b46b71e754268b1d5fa3fa529c9bf751ce86c068ec28aa",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 309,
+          "source_cell_sha256": "981fdf2ca2114c791f60256a4bba312fa8542f7f1635393cd009fb394ec4aa5f",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 7,
+          "style": "Input",
+          "group": [
+            7,
+            1
+          ],
+          "source_line": 338,
+          "source_cell_sha256": "0d63d80b74d44ee5484751a451206bb4629085ed46377c75c0bc28c7b78f2444",
+          "reading_cell_index": 7,
+          "tex_expression_count": 0,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 8,
+          "style": "Output",
+          "group": [
+            7,
+            2
+          ],
+          "source_line": 380,
+          "source_cell_sha256": "92d03eb5508cbcaa7e530400239968c39238456a7e978f300b69aa4149ba77f0",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 9,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 422,
+          "source_cell_sha256": "53a0a0ace1e53d87481e0acf9baecc7b206cfd88295c88e9b5fb71a8b9e48606",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 10,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 442,
+          "source_cell_sha256": "2df5a2df02cea471b7c8b26596e69aca5ad69ab73a4712d8cad01b35c6f95b07",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NN/Coefficient_B02.nb",
+      "target": "notebooks/derivation/NN/Coefficient_B02.ipynb",
+      "source_sha256": "d89f6cba4982528bacb81a94b599595ea1c3ed9a56c9fbbc45370ae1f5f8c477",
+      "target_sha256": "c88c31f446b7880f831fef35d48f82bc3836962f9c76cc7a08710eb25ffca920",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "abc04eb366a2d6956f35bb70e5a32b1873489d49bff2b37120b97d6154efeb99",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 126,
+          "source_cell_sha256": "1b9400be458215a357b398e6c314c9b859b689abc4ed722a1b655166feca4621",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 172,
+          "source_cell_sha256": "c3c4c436c19bdc1807e1494ae244c54264137869360133e9ad243fe193b6adaa",
+          "reading_cell_index": 4,
+          "tex_expression_count": 3,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 240,
+          "source_cell_sha256": "6a29305bdf8db9fa6237909aaf86ac15c0ba173b9abc2bf32fc61c3d9d14a4e3",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 289,
+          "source_cell_sha256": "3e1623e34a5d12862388d7e0c459e30a839aba36528593e75ccbbfbd8804095d",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 323,
+          "source_cell_sha256": "f0b55031164037a642f2d8d902efb1ab8f759cb5ad5a0363c8abda21a3abd5c7",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 370,
+          "source_cell_sha256": "2a73511f405b31c6d91aed2a27e065567f1efd50ea6a4be9e10e99085207f322",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 398,
+          "source_cell_sha256": "6019b6c4e178367fc46432c5dae17df84599a30f98d56099826316e9302376d0",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 440,
+          "source_cell_sha256": "dc24263998c085a1f682464e0b65f80a215634508e43f71cd2c254bd8144e3a3",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 476,
+          "source_cell_sha256": "81791dd281d61b37891ab50e692e797e0b52c92b008b38e63044309735f504a7",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 495,
+          "source_cell_sha256": "7570b7b71f452ed32a8fc42dc0cf65cecabddb8e8f74b86e7379d0afcd2ea194",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NN/Coefficient_B03.nb",
+      "target": "notebooks/derivation/NN/Coefficient_B03.ipynb",
+      "source_sha256": "1423367289fb483d2abe3330e8a54fae59cc483f067d05dfceca1fe2b4ae2404",
+      "target_sha256": "5c37b0967fac8870f8c46fec759d8d27a9e0da4dcc67691d0d970b49effe8fb1",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "07d26c2bcbf954baca59ea79d515735f3281cb7ad00ebae7917fa7b94d07641f",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 100,
+          "source_cell_sha256": "2a5e29ac7b70daa4adc9a10566398efdd62da935729dff6a38b0a3a6e0cb62fb",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 135,
+          "source_cell_sha256": "f713f9a92fa1e964e2a2457bec77bdd367f7abcca470c744c5d25234d22c7c82",
+          "reading_cell_index": 4,
+          "tex_expression_count": 3,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 204,
+          "source_cell_sha256": "eeeb5fdcce339f23cb62a0217507dc9002e8d0c7b93204e16a7530c9fbe490fa",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 240,
+          "source_cell_sha256": "e54dc1436d4ac60c5cfc76ea513078f10f671017118f099e9f67f33445bc8edb",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 267,
+          "source_cell_sha256": "7e2af795890ef4f5c9ca3a1e569267a38763c5d2e10157ccfdf4f99d30b6c018",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 308,
+          "source_cell_sha256": "89882920d3cbaecf900017e599cdaca4517f2711386a5e24f431991cc03a105c",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 329,
+          "source_cell_sha256": "0b76933adb74b2e104432bcd9bb31a0d1ff3a72056fd09f6d1eccaa03820fba4",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 374,
+          "source_cell_sha256": "d838b099a0c3226dca93498e7781c95198addfabbb6ef3d4f20e43416b5e8858",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 417,
+          "source_cell_sha256": "7ac8eea5ef648a6d5ca32dab7c8fa95c2fa1899eac4e5f5257ca4a63e9945aea",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 441,
+          "source_cell_sha256": "325096d8dcf49eef7a4ade3a1cf6c25714c81c5ee3fc8ab5e2952ad88ec47456",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B01.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B01.ipynb",
+      "source_sha256": "48b320663a615134be075cdcfe112d34d22809ac51a0d860d127b99f4a7f1974",
+      "target_sha256": "728616891ebba193080e065329d8a354073f1b04e99fd78b462ad7b551c446ce",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "7d654b6cd99acc549f8f609104910f72fc1e14498145a6eee60930277e1be5f8",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 174,
+          "source_cell_sha256": "106cb821b623ffd1e37335edb01db87f427575d3131b22c4b8cc777a5a66134c",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 239,
+          "source_cell_sha256": "20adb181de2c82f06685b162286a366e77bd0c81b042d09034c3ac2574cba0df",
+          "reading_cell_index": 3,
+          "tex_expression_count": 4,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 329,
+          "source_cell_sha256": "bece0a56a3c02b0faf363faf48548f07dcd8b8e85093464a8240a54ec8731a31",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 380,
+          "source_cell_sha256": "b387acacf29ac1f0a9a3d86fb8943b241bffb39f2aa7a052cfb4f4b945b11412",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 419,
+          "source_cell_sha256": "b1dbf4ba56485a55c5f3af1467a72cb7bcc410cc5a3eba0013f014111a93684a",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 478,
+          "source_cell_sha256": "2f5e07477227052102a5c8f7195a69a5b16d4592d54091f0cefffa18a4a1b201",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 521,
+          "source_cell_sha256": "c0172fea744a8571106fa84147e7c73a75652fd5424ef50336a694a483a7726e",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 575,
+          "source_cell_sha256": "1584cc55270ba2892ec5395ca3d7fca082d31e7becad6bb2d13945a722ff9bc5",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 674,
+          "source_cell_sha256": "9c98532d3aa82425af46941a9ab1650b3920e5bfa165c47272876de0b993b828",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 720,
+          "source_cell_sha256": "5c124ba23d1ffae65ee64ce4e6bfca008e504ff1db8227d201dc110290960ba7",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B02.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B02.ipynb",
+      "source_sha256": "c33b16c3bd662a11fd784002c13a69ab775c01d266571d1b52d8d2ecfba97516",
+      "target_sha256": "6c71961e75ab45dec7087f5d789bf82ad4c6c789bf2587d9f06faacd5193820f",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "377dd784aaeef705f25755ef5b2b3ac2cddd0a1d2b62dd5239431d24bb41b0c5",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 174,
+          "source_cell_sha256": "4032e195ee95d7ee47a35abadfdbcf2d2a998cb578c0254912e767646482b8e5",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 237,
+          "source_cell_sha256": "d0eb76db0ad796b9516edc530244f1ce0f4119a2305d4504ea64a068c54d7159",
+          "reading_cell_index": 3,
+          "tex_expression_count": 4,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 328,
+          "source_cell_sha256": "751ecb4b7c0ff547ab4d4ac97970786b89270cddc35c0e0b3edb661a681e56ba",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 380,
+          "source_cell_sha256": "404ac677c40e9c283049916db0f1dd46318b03e7bc86308269fbd4901ebab2b8",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 420,
+          "source_cell_sha256": "ced64af4e45858b4fab09979379bad70e7f80b37b16fe89b78f801ee8fc4eacf",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 482,
+          "source_cell_sha256": "d137eb9ad5a550d979ae6772bf71cf3632bf41cd5edf60021ad5bf887f3f6119",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 519,
+          "source_cell_sha256": "21529c03d4ef93ded2c7e562b87a955ed9a74873df90faa87f316bf3f1d26719",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 571,
+          "source_cell_sha256": "039e8edef2080f7f255f638cc9108981d456f574881c743118c3f9fe5f7fd8e4",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 654,
+          "source_cell_sha256": "38ff500b0d7a386e1e55bb154eac8d310123ca6141ae3579536fe2fb663ea510",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 692,
+          "source_cell_sha256": "198f6024c1212f9afa144a2cfb9061d4f61d6f2c80beb5335ce341232712876d",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B03.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B03.ipynb",
+      "source_sha256": "136096c86da7b190744b4c2308a3ead2ce7e6deb589c5b41d85d9964549db1b8",
+      "target_sha256": "cd638ceaf10fd9f6a974884f9ecf10db47dd499ae00918dbb9997621779d0080",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "7f47276db578c4e10f5d88214c9e4acbfb5e9a67dee83c27def7d3fa9530ddfe",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 188,
+          "source_cell_sha256": "743b70286650a4e2c8cdcc31ee6cf509707bb52fdacfb54f2b7341cb5053ead6",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 290,
+          "source_cell_sha256": "ddea7dc710db01bc4269840457c3b8f07b246ce4ee73d20c358aa1945b31e0c9",
+          "reading_cell_index": 3,
+          "tex_expression_count": 6,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 448,
+          "source_cell_sha256": "f70b08d9d65689c1bc7f60cc13d1e4eedd977c3a0c92c20781653792da6451b8",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 500,
+          "source_cell_sha256": "f8a949c321ac81edef0e0369299bf47d15f88c3dee4759d0ee9c0df50b25025d",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 543,
+          "source_cell_sha256": "a22e888e07686e585854c0923ee9e52ecb83931c28f786b3eb0953ae120a8f85",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 593,
+          "source_cell_sha256": "75476031237d91a6f814265d45e021fb80122f96be999d1fbd3c685a6a5d7c94",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 633,
+          "source_cell_sha256": "8f64fef509dbf775da6d89c53e04e68b4840d57f1af022d3cb7238aede619a3d",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 684,
+          "source_cell_sha256": "d6d93a5ca862a4630b3535ee2638c013abf2bf0ed48b75f80df8f03ae255c847",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 736,
+          "source_cell_sha256": "1af5fb2e25a70c88f6d8e97deb8b2f3c561b9db5a9aaeb1c40fa2f1bfd91c17e",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 779,
+          "source_cell_sha256": "9b9b5ebae03f15c18a62191c478bb82e31c568ce5d6d37cb5ce898fb485ad2e5",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B04.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B04.ipynb",
+      "source_sha256": "029303b9a81e423e09cacb9952acd9deec31f5ffae9a2a201199a7c29b4c10fe",
+      "target_sha256": "50a0b690358bb9fcec0932547b9e5bf1948c55942d73e8937c71ab500f773c7c",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "a91e3f761e6f76a8040242e02d28479fb933a336d096cfc61d23fbd648bb0d96",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 187,
+          "source_cell_sha256": "f55e174069b270144bca1ae4ecc9e2afe8edd9ecbec9ea99f0ade19d5330a272",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 286,
+          "source_cell_sha256": "c8d6358dec173b1cb1974de587995b93ce34ab9baf861839b600ca666dbaf5b0",
+          "reading_cell_index": 4,
+          "tex_expression_count": 6,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 444,
+          "source_cell_sha256": "f9bf912ac00422dcccb0132e962652270dfd99b8c3edb200308067c503f5e8d0",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 496,
+          "source_cell_sha256": "46ef86eeb8164010e1d7f9bda677ea3eea9455a71a87ad7dc9497a9dea8c75f8",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 539,
+          "source_cell_sha256": "c33e8f69b636978c1007944825a4dd07b291946bdcc7c937e7f7772274094fef",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 593,
+          "source_cell_sha256": "cdc71efba3b6fd8fe94fbff51dd9f1fd49f963eb136ee3649c962c697840f6e3",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 627,
+          "source_cell_sha256": "f2853d628e8d828718fff8d511e81449755a26cc9de2caa32224fd55ee7435e2",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 680,
+          "source_cell_sha256": "3f5d616051d784ad4a0a0ba44cd9ff0bc20e87dcda22c04dc996e507b23a0376",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 730,
+          "source_cell_sha256": "6046cc8f3e328893277c6e16129a6709ca7483c499f7f9ae563ab4aa0bb4474e",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 770,
+          "source_cell_sha256": "c54bdce0222f0f316ba82d5f47fd41194af3f95d1984bf2b7d7a0ed23fae344a",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B05.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B05.ipynb",
+      "source_sha256": "d150599ee176e621630a007c34521e8c0df7c71f855015702846bb0b40e20797",
+      "target_sha256": "884513337d6f25c96490d0acaf92aeeaabfab105ccef570331d761077a68a2bf",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "9686afba6be12b0add3b14235f601b13168a3fe6745093366b46bf905247d292",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 206,
+          "source_cell_sha256": "402894d3d5c2d270c8dc5be1fe702f40d84d6caadc6e342e21304e749b4acaac",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 283,
+          "source_cell_sha256": "4a2efd9e1844e323141e0e8e929a39705f4c22d71450badb5852f55529d99ac9",
+          "reading_cell_index": 3,
+          "tex_expression_count": 5,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 397,
+          "source_cell_sha256": "9b64cc2c3b939bf3c2eed5b0397af8d1168baa6d87e04ccba3acf2c12f02cb5b",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 449,
+          "source_cell_sha256": "15752a3e3fc2549d2592a47b8883ac23e76d83af05e5f42090ddc35b765c93cc",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 489,
+          "source_cell_sha256": "0f4a44a03172b026e3b42dc17621dba5743af11d46434571be2f3d9f71f419be",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 562,
+          "source_cell_sha256": "e236252be791929f85c742a54468474beb0ee999a01eedd77eb27da3433b4176",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 615,
+          "source_cell_sha256": "6ddfe71e5ad0e63814487f847958acbab7196bb1656510b05a019cd823fe1608",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 683,
+          "source_cell_sha256": "b1e7d00d8751f84bdf1749267820d091eaf98ae5c33698980e2c573273eb6634",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 826,
+          "source_cell_sha256": "61827b765744066e1407b06a145b3ba563478c3963abbfcb702895bc49836875",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 881,
+          "source_cell_sha256": "4732a50a45ebdec5fb78b478dcc158849cff5c3bd1974cb6772164b053066806",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B06.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B06.ipynb",
+      "source_sha256": "530e57a77ff3e03a8bba050e2e8a889d789ac1c7ed1f40bb7c7fb37b65fdb54f",
+      "target_sha256": "39ef4e9e9b010b6254fb89c3d2bfee2e9987d5c4769d30a5d4219509ad7cd79a",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "3f14e711f0b60276480fe02f5013095792266276948540b0ef4a8e0ca67971d0",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 204,
+          "source_cell_sha256": "5d6c04634e31de8c50fa382b790fabecc319fa7ae0ab1994a326a7948b4f1e49",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 278,
+          "source_cell_sha256": "aeea645b4d1eaadb91c5d0efc5d1d566742e0bce6bfa82415eab65d7878ec092",
+          "reading_cell_index": 3,
+          "tex_expression_count": 5,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 392,
+          "source_cell_sha256": "2c649afb3aeb870b8e64c663deab20cde907bd188cb5384e2c3a71d8de490513",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 444,
+          "source_cell_sha256": "b47c1fafe78159dd865ea255d486c2c5bb99add38d45612378cec95716e2810c",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 484,
+          "source_cell_sha256": "938ea3133280a3d46154525416e25ccc9d85e0e938251d3a1adb7a48bc6cc344",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 560,
+          "source_cell_sha256": "eea318c64f0f98176abc4bd38c5e688795041b936a54496c347df25dc1e48cdc",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 607,
+          "source_cell_sha256": "91aa3356fce91a720ac62367fc415e8674ebbd63b65dd72ea5c4af3ee95a9eed",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 678,
+          "source_cell_sha256": "7e3c4c3360b95f65f8a2c9576695833b8a3bf81e505a12d74944bcfeeda378b5",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 807,
+          "source_cell_sha256": "588bc08da8d4262ce0eae6e59754656a1238dc89a698dbf67b36361156fd7994",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 858,
+          "source_cell_sha256": "3271e24ce655301711f9ea5b5326bb4a83cbf320bb0b79b39cbf6e5a761955f7",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B07.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B07.ipynb",
+      "source_sha256": "d39e03f85d1de4d80dafefbd7a48fb86ea5c4e5314525231785b7d9203bc4db6",
+      "target_sha256": "14691741c9b0efaa8bc4449576b3f229b172d9a7200e4ce507a822e66b796196",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "5c5ac701bb52acc044566322e18d0d2d8abe41a4512eb3e9e85905dd8da1a985",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 168,
+          "source_cell_sha256": "390b0fe2e53c9c674e719fa24b67594b16a0eb83426a02c71e225f9da1ec1206",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 250,
+          "source_cell_sha256": "befe29e1161a13e6c6824691e9a8a37413db1f9538a490454de8fdb14cb2f239",
+          "reading_cell_index": 4,
+          "tex_expression_count": 6,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 391,
+          "source_cell_sha256": "4235b8ca19f840b84863fa941aa1d1c7052458666617574dc081b3afedd149c4",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 442,
+          "source_cell_sha256": "93c81ab416e3195f88fd00814bd1028e6cb2032cc55c85441adb4b4537348518",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 483,
+          "source_cell_sha256": "808373df5087767553e1ef8adb098fe3e4ece49e7b8a3f554019ee30bb6deaa8",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 533,
+          "source_cell_sha256": "fadb4308ff63ff2f945a46807d9d00bbd28cf75ea483a39286b4e1a86f30d2c4",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 573,
+          "source_cell_sha256": "854a2fbb094687570737d60c766276206cf271520b59b8a74dd20a60abdba4ea",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 625,
+          "source_cell_sha256": "bc086fe3b847aa7d800013759d9745e6664aad01722a38d6a8ad381ccf8a82f8",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 677,
+          "source_cell_sha256": "b8d9d36e470a01e359f6c07c7295549bcef6bb8fb7c88ea3ddcae0dad44cc263",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 25
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 721,
+          "source_cell_sha256": "539a9d61a7e724f230aefc33e57986e3372b100a7dc807082d7161f75968ed8b",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 26
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/NS/Coefficient_B08.nb",
+      "target": "notebooks/derivation/NS/Coefficient_B08.ipynb",
+      "source_sha256": "ef668fccaa17a5e2330c0892ff1b7e3af46e745f3f529aaf98439dcd5253e5ad",
+      "target_sha256": "04ea0e8461081216a875da21c21fde052262e1fa4ccde7e1bca89f746e1e19f9",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "44b76c9382239f9f1870d57a8283c9a908e90e2cbb02e308729d4b2f7886949c",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 167,
+          "source_cell_sha256": "b0e9d37364c41dfee472630fcca907a33fa3793191662e0fce160d0913bb38ee",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 247,
+          "source_cell_sha256": "d8b558764c53702ceb87b9cd403f13743f56c8e7265603d9a68f5284f5198a26",
+          "reading_cell_index": 4,
+          "tex_expression_count": 6,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 389,
+          "source_cell_sha256": "d5ed0fd9785f60600e0ecb238bf1c255603cff2d35fe245d8aa287fd1b7c3a51",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 440,
+          "source_cell_sha256": "d823a9d554efd7d4dc3688a5c5786165c48fba8a9cc84799d6f30a72082f5fed",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 481,
+          "source_cell_sha256": "f579dfbc707d6951a54a6354aa9159f0de0e04f3653967a18275ff34bb4daded",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 534,
+          "source_cell_sha256": "92b628f2f349af910bf1d69464441f1fab94cdee57b1a3b6b4cbaa9f174ffa7d",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 568,
+          "source_cell_sha256": "efcd84af5577ecd7627974dc857e39957a8ac928fa8bdb544b443bcd6d04b2f0",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 622,
+          "source_cell_sha256": "4b9608e9e276c1ba9e10803f20cbc4a4ea08ddba367ffc98c8011ee70a587d31",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 678,
+          "source_cell_sha256": "26ba903883e2e3f4210af639f867802cb27603e8a63fa70dbfb4084376a536aa",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 719,
+          "source_cell_sha256": "34d89938d1db1ab1e8b1e7cc4c06e92782ec7f3c32974b7a19fdfc5c485dca23",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B01.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B01.ipynb",
+      "source_sha256": "10122920dadadf27dbb45d00b08ff0703e0071ce00ad8cb12474989fcc4553a4",
+      "target_sha256": "84065a39e7fcc31445ac6851158b0900f74db3723a0c13750a4cadcd0e7ab671",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "8f67a1db96c8b5f1a7a148e9fa56df4590f38c463d8be95fb8d9c4042c508f6e",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 163,
+          "source_cell_sha256": "e32d5b237b1600ee00d840e5b24844720bff32ae4773194113cb3254086c6231",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 225,
+          "source_cell_sha256": "20adb181de2c82f06685b162286a366e77bd0c81b042d09034c3ac2574cba0df",
+          "reading_cell_index": 3,
+          "tex_expression_count": 4,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 315,
+          "source_cell_sha256": "ee7432ae41f3934ccada657f307d04adb489be2d0793b2d3ab0f11f7d38c4792",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 367,
+          "source_cell_sha256": "a58c7f9b7ff3bb2df4b6acc69057f3fe7debf6f53304f1f142fc5c00acb6afa2",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 408,
+          "source_cell_sha256": "0cdc912d875c0e6f071361533b94579a6d8de65953512e8b2dc304c094bbfe8d",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 461,
+          "source_cell_sha256": "7706e8c9362cca9b3b566a2eab3fafbc919fe1171df437b3415039eaefe0c090",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 500,
+          "source_cell_sha256": "04a86418f60596006a6673f046b4793509804d24e9588da89a8486872b6eee24",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 550,
+          "source_cell_sha256": "bd702c1c7dcee853a81525a1f402866f55a46970630900a299573916e991c996",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 864,
+          "source_cell_sha256": "3efb739823bf1b99e94dc92a3320b6d1805719c461c2bf1f5652f9f338e53369",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 906,
+          "source_cell_sha256": "79c21522d007de696d743881397fe838d69cf38081d3bdbdf6504b4791a139ac",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B02.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B02.ipynb",
+      "source_sha256": "4ef537fef55f09e65570f1aaa1c782e0ceb0f07bdfa2872f6a58e80d522f5a59",
+      "target_sha256": "f1bc4909286fbaeb1e3b7b60dea423f2ece6c83b005ec921ce56f21a44b1deca",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "df49738f9df5f3248e4ccdefb044583eb4cf9de94d8e110dfbebf6f81575c7ad",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 238,
+          "source_cell_sha256": "64a08d6e696cb60c60a25be3ed91e08ec05a5853e58ad5d38f4d3d919d9bc204",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 333,
+          "source_cell_sha256": "444d2e134979dcef53f0135404f5cb38ee296f3bf40644a763da3f0e1e6faf99",
+          "reading_cell_index": 3,
+          "tex_expression_count": 5,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 446,
+          "source_cell_sha256": "06ddae16d34ddda7fe66eb3d61113a68b4af64767b193f61c08f898f36379d59",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 510,
+          "source_cell_sha256": "a86779447829984a1733fa3c8e0442c0ad1ffc59864cb70dcdb0aa0915c27caa",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 558,
+          "source_cell_sha256": "39689f5ab13dceee5a959cca605db129cadf5a1dba046aa022b89fd9b3c00a10",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 638,
+          "source_cell_sha256": "a3db9e788362274398497743d79d0130317fe65fe751544d6fa0dc275c018ddf",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 695,
+          "source_cell_sha256": "8c9109c2dcf728156cf129684887fece7e6a70f8633a54b92c0f1d2d64f31007",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 761,
+          "source_cell_sha256": "e25f960af1272b3db8c6e7eed4e56b910d74bf66c6a24ed9357329afb668007e",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 1349,
+          "source_cell_sha256": "c8340e2a1842cd2f8519b9515d335c08dfcc8fcf65942ad69ff45d9f2a00c99b",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1400,
+          "source_cell_sha256": "f3f6ccce3d941d0655fc5343126eb6b79f5e5d540122a80419a5d8883443a137",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B03.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B03.ipynb",
+      "source_sha256": "fcafa36b0fa016a43f268b7f44bfce8f5804699e49fc07f18ae90aaa3bbf05ce",
+      "target_sha256": "58cb66421fbb18fec0e0e647c04dc579c2ab881cf18eb998bbff111956e38982",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "7989f16ae51a2304485d1b8f92bb06ad767398bbe58af1f0ebb3bc7560a59789",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 220,
+          "source_cell_sha256": "e8f4289c9cbed9884479f5eaee158e8055029afa91013f9d93f20c549de63963",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 336,
+          "source_cell_sha256": "ddea7dc710db01bc4269840457c3b8f07b246ce4ee73d20c358aa1945b31e0c9",
+          "reading_cell_index": 3,
+          "tex_expression_count": 6,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 494,
+          "source_cell_sha256": "c20f78c67d124f1b02c7d7cb8572fc27caf5e6cab182dac1cd1cce2d84872052",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 561,
+          "source_cell_sha256": "80aba09c089b0957e9955fea248d158b1718c365f8a5de6e89e9941c857f3aab",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 613,
+          "source_cell_sha256": "6b97ca4bf77bd54c054814694f106a4a92ff397aee842df2e1f89e5c0981585d",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 671,
+          "source_cell_sha256": "b2a87b0cd0e86f91c6ec2dd02da31ca1e80e93d02157bde6374d732d97d24819",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 715,
+          "source_cell_sha256": "10297305864d1e614226ff46e83093ec2ba50b2ab1c02643220de21e560d4a56",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 770,
+          "source_cell_sha256": "48b69c13440fad6a13785123a4c86561221b3d4544bae4e37a614a29e93d51fa",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 1116,
+          "source_cell_sha256": "dc6f37e5197a1d800c6c81570cae93211b3d957e4ccf18b105b9ab68cac38214",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1162,
+          "source_cell_sha256": "c01ad15467c05974ee28d51091ee22f5950386ad0ede4b9a66dbe8474e34c1a8",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B04.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B04.ipynb",
+      "source_sha256": "a5bdce8ff6fa414bbe9c53886e9478e30010047a2909cc552a3fbe639c3b9bbd",
+      "target_sha256": "0a7088852e131dbe83341688559be88454cbcf30facaa0f0829e31df721d07a3",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "53144ebc2726a98fd39c5a899a669592f4a14a45943c671f915bc843d4b4313a",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 199,
+          "source_cell_sha256": "4c5a3ab6d462124e9b33a0bbb6226d66db093764929e04f640cf6c6a7c1e3cbf",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 295,
+          "source_cell_sha256": "a40339755acd8e013440246b28c8a521a6d605712852009582b349c7c17015f2",
+          "reading_cell_index": 3,
+          "tex_expression_count": 6,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 436,
+          "source_cell_sha256": "b3b5e5150d37ddcdb69b8ac25a89a1e66cf33e0d0296df578274b94981996987",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 498,
+          "source_cell_sha256": "204f2ebcbd2e8dbf091cebaf9a11968d0df0020302b9f6289938aa6e4b4c89e3",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 548,
+          "source_cell_sha256": "67175893bccd4795b77ac44a4e96c2a4840d460718525aaa66b20941b819934c",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 606,
+          "source_cell_sha256": "91feb9541a25c08668b7e37a6184b972fafa315b1c43bd711504be90242396e7",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 650,
+          "source_cell_sha256": "356fa42b986bd30a3ddd9fd510cad83399b51171bdb999c94347cd9d98d3eb3f",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 706,
+          "source_cell_sha256": "468ecd506c157e79824871dac634bed97b4b0e839dab2cc37610fd093df1aad7",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 1051,
+          "source_cell_sha256": "2ce5da39193c9803f825eb711ed7ab35011550e552e2f944e2ddef3babfa3cfe",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1097,
+          "source_cell_sha256": "8a5aae32a5e75b76cfa2ae8c533fbedf544b47278088f67d80021554aa08d0fb",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B05.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B05.ipynb",
+      "source_sha256": "4b1739b4864c4191acc37d949ff8cca5c6f642e74610e1042dcddfea3cf8bafe",
+      "target_sha256": "2b9681b453ca6bce2c285d2b6471689b39a18fc96dad60d076ec5afe50e593aa",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "923945f6a6ba3164bc092c0a6cd91540aad5b02377cb6ab2389b8b23687a3af9",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 194,
+          "source_cell_sha256": "65ea601cab1c66607f414fb25f66aae62898dd7fd6ad7b81c6f70138b10d81cc",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 267,
+          "source_cell_sha256": "ecb98fe185f5f8341d2bab095bc2ac4bc9daab4b2dd26ce2aabb8b881ef5b594",
+          "reading_cell_index": 3,
+          "tex_expression_count": 5,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 380,
+          "source_cell_sha256": "314d47f792f7bf220c2e7ff30a343f6e9d43cd64605b9525517defa4feadc2e9",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 433,
+          "source_cell_sha256": "be618fd4f31ee3537b199d3fc07f2e18d08bac4594029e8f4208f12616c60c6b",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 475,
+          "source_cell_sha256": "0b7be7227f7426c8db945699ba8bf42ebd362c3b107bee7429a331dffa84351e",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 543,
+          "source_cell_sha256": "19366aba2b1f919f21f1088cb705fc385a612b017296c8c7cf361aa7a55e28f7",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 592,
+          "source_cell_sha256": "7b1f38be9e704ae5a2102755796d5910d4d7a0616d22f08ba5b0ef8ce5875cb4",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 656,
+          "source_cell_sha256": "510bd82af9c174a750aeb96d5822e213eaf46eb102cc6643adb12472e4aa65b1",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 1302,
+          "source_cell_sha256": "4d395ca0fd037ad9317ab7f7d9b58fbeff751c15e9c685cb5abdb67e8200e6ac",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1353,
+          "source_cell_sha256": "52f7fb7927f03e61b1b8c54acd22848d2c6dc9a5a4d318c7912f837ada2f8652",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B06.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B06.ipynb",
+      "source_sha256": "82772bb564ad6768b59dd16b3ba0c350ee2295e107ffc587d1b7878ffce9a42e",
+      "target_sha256": "c6edb6ae5b3abd4d065cf1094b29827a918a04649f9452ab11aa18bc0719e59e",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "f076619ff5284e3da408cecb18683c82c399a339b0cbd1a83561d364fd35b650",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 252,
+          "source_cell_sha256": "93b823b4eeacdf537e2f31f4d8afd847aa896c5f8d9d19e31b3dcdce87f1f41b",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 380,
+          "source_cell_sha256": "f2b204c4b9902b9483355a4702edd9a744bd62dc4c8b4a7e77efa0185132dd2e",
+          "reading_cell_index": 4,
+          "tex_expression_count": 7,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 562,
+          "source_cell_sha256": "b92924d58e113c89418a539218b15bed40432223ca90ab785d79aa88096d39ee",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 629,
+          "source_cell_sha256": "07edc013a72c6931a8fca7e6f858942a8c6be3ff992a66d1ceba1a75f318d4db",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 681,
+          "source_cell_sha256": "0cfdf7deccb7dd0d38e86bee8c593d846f9c8df73cc3d538fa7654471c971739",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 753,
+          "source_cell_sha256": "fd971119d9f50b736c325de76ecfd9b55568d7aff26e1b431dd23f3f25d6efa1",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 807,
+          "source_cell_sha256": "7cc3cabf63edf32f5cf1db3dcae6dbfb6d55a956bf31d694b06ca855e0fd3db6",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 874,
+          "source_cell_sha256": "de4412ae48d33f0285b72ba63507d834014d3605de1ac63ae0a56291f99dcd72",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 1331,
+          "source_cell_sha256": "7b8673448236b705a04d72c60257878471008bd3cc785d833cd913338e63b96b",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1385,
+          "source_cell_sha256": "1f7c71d0421927421400db361b221b1355146816b931400b3dd14e37e72554b1",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B07.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B07.ipynb",
+      "source_sha256": "3ad4469913f26a5e3ec756c6f9e1bfba9904c242c1756ee260d384fdcdabb14b",
+      "target_sha256": "a5505fdd9d92c07b3f7e00c5050987373c226f41178c481d0732afc8505179ed",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "678b944bf738c3064330c1193fe629ceaba7fd56e7f353d2ba38af2e4de16400",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 230,
+          "source_cell_sha256": "893da6ff15ccf0231cae3a8bef4464958b0e323d4f51bce5f56fb9fc1637a57c",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 337,
+          "source_cell_sha256": "3947b9b7027e1c946dfaa833a63ba9f01b89bcdee3e6244b037e5aae03ca2ecb",
+          "reading_cell_index": 3,
+          "tex_expression_count": 7,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 500,
+          "source_cell_sha256": "88786a6bfa44702784b52de344acfa4b566d15bc481a6925011867a0101b97ff",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 562,
+          "source_cell_sha256": "7fbc58e7177299f3e1dcb61a03a3799309ec0b951f98c6f35757e0e5a9d93f93",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 612,
+          "source_cell_sha256": "42c893c07280775cc0738a03c1ce21f71f3e572262284f8332894ab20653b602",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 684,
+          "source_cell_sha256": "a3446e78d46a7ea5135465c9f4a201d3f59765939a15dba6754486213c027fbb",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 738,
+          "source_cell_sha256": "fa7a517b126c1f89c6a838911fadb63464ff7e2ea34cae282892e76aac9488a2",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 806,
+          "source_cell_sha256": "7dbed2f721ffab60fd9c14f782488c83853e198d4d7eaa7990ab8abeebb7459b",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 1263,
+          "source_cell_sha256": "4fd5eea863c892bf7b0cfe71accb3dff993b9a87d6045fe0aa04f98d7b7ab01a",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1318,
+          "source_cell_sha256": "e5b4ff0fa8ca0c22651c933dab48ed28bbfd7f145133666e870b3e807b536863",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B08.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B08.ipynb",
+      "source_sha256": "22fb1802317ab6317670646e2e1a7f2cc6f85db7856eaae4ea7d9f5091e92043",
+      "target_sha256": "183edd436e92e48a9e272a80852097fc90d7f27a6de0dceefbeec624bcc734f4",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "4bea81a54367bbf37a3d3b515dc0b046d05b76293ccd2d1039c10d7a2d339723",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 220,
+          "source_cell_sha256": "87f211ad05ee05f5b034da0ee6328829bfd5125bddb551afd0a3adc76aa01b48",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 362,
+          "source_cell_sha256": "ee95db8f58551600b04e4a5911932a4f48585b4b3fb3cd691041a982d5be88b8",
+          "reading_cell_index": 3,
+          "tex_expression_count": 8,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 587,
+          "source_cell_sha256": "6bdf6f7193aa65b95ef35af4e457b5dffa63e56c1ce02dba58ff73d02a36c386",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 640,
+          "source_cell_sha256": "215250396e19934b5a1ca90601c3de177f2c814c682f60e6dd6651e445ca8c82",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 684,
+          "source_cell_sha256": "f55c4628dd9317847a236aa4dd27d13d06dcc80bf66ae153157e504c9ff1fe3c",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 733,
+          "source_cell_sha256": "feb8f80c9ac180a76276db272a57674e82b96b43ce821d0defd19e0e8dd2d7b9",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 773,
+          "source_cell_sha256": "f7b2001efa5d3fc625b506dfc5e1d093ab0f7a01afddab284a90f9430967189d",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 824,
+          "source_cell_sha256": "c4ea5a2eeac88807153b3204b9f3be27280fdf93bb685f84fcba9c6bb39bd78d",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 969,
+          "source_cell_sha256": "9c0f2441c08584d3a139c8b977989b4bed4b74f1eabe85e2464cd5200f193252",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1012,
+          "source_cell_sha256": "37857c57523f42ee3380962109711ae380bbb6ad2f4892713df79ace8856ba0b",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B09.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B09.ipynb",
+      "source_sha256": "71f1f44acbc5361e62d10bfea12c2584c6a82ee643d1bd558ff177b01843b6af",
+      "target_sha256": "a12d90726b61727e43b48ee5fd627c480637a3465286d4bd7e87b9ef09ca322e",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "e9374cbc72e9d2bea218e9752c6956e45b3167f9c5d416f85bed682f1344804f",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 213,
+          "source_cell_sha256": "7303f38d5c075d37afc374fe6ab1724877c1722b20918d3057ffe5e937e59593",
+          "reading_cell_index": 3,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 347,
+          "source_cell_sha256": "68e0f7f0a4e8836776de34a92d1986b6f094e8f1485ed43bfdddc5cd6967bbf7",
+          "reading_cell_index": 4,
+          "tex_expression_count": 8,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 555,
+          "source_cell_sha256": "bf9d877a32d1159c4e4e61f3302cc710036d6ce08bba4a153bd8af721257485e",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 619,
+          "source_cell_sha256": "beb8b82f650fbd2d002633f18a0c0c661487e4ba5117d942c90933f2f667da5a",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 673,
+          "source_cell_sha256": "046ae666289c65b3c5d79f9656b31f29aac643f976fe9435400352d60de79c4f",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 722,
+          "source_cell_sha256": "56460a93bba1b53a9b837ba397768991dffcf5343ba5e169e22e7345c84730a8",
+          "reading_cell_index": 8,
+          "tex_expression_count": 1,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 762,
+          "source_cell_sha256": "c261729f0e6e74beb8315a0afeff044e8c0af45bbe0214e209724a21da473b39",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 813,
+          "source_cell_sha256": "77e31551273c2d41c584b12acec18d36bccc058be90ce186a39ac80dd0e401ba",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 24
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 959,
+          "source_cell_sha256": "91df1ee7b3eaa0832188fa1d179b67f5d18f551e5caa5fcb82494a372f64c7b9",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 25
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 1003,
+          "source_cell_sha256": "6b53d94b2cb66f5e486fd2e60d335bbd3828442673d2d855a3a440c887abe02e",
+          "reading_cell_index": 12,
+          "tex_expression_count": 0,
+          "original_cell_index": 26
+        }
+      ]
+    },
+    {
+      "source": "notebooks/derivation/SS/Coefficient_B10.nb",
+      "target": "notebooks/derivation/SS/Coefficient_B10.ipynb",
+      "source_sha256": "a84f2c0ab0e6b9271423845ad7271e025ea11d00ef65a37ddee3bd937959a794",
+      "target_sha256": "de51045316c465817bf9f8065ef89720f654a316eafaa57458809553003bff90",
+      "counts": {
+        "InlineFormula": 7,
+        "Input": 2,
+        "Output": 2
+      },
+      "cells": [
+        {
+          "ordinal": 1,
+          "style": "InlineFormula",
+          "group": [
+            1
+          ],
+          "source_line": 21,
+          "source_cell_sha256": "82b78c0632fb332aef3c00a2115c6e198169722cb4238deeb9a1361466e48a21",
+          "reading_cell_index": 1,
+          "tex_expression_count": 1,
+          "original_cell_index": 13
+        },
+        {
+          "ordinal": 2,
+          "style": "InlineFormula",
+          "group": [
+            2
+          ],
+          "source_line": 155,
+          "source_cell_sha256": "2f5c2deed64ad6096ce91ebeab800b575844703851c699633d82f99273c21865",
+          "reading_cell_index": 2,
+          "tex_expression_count": 1,
+          "original_cell_index": 14
+        },
+        {
+          "ordinal": 3,
+          "style": "InlineFormula",
+          "group": [
+            3
+          ],
+          "source_line": 234,
+          "source_cell_sha256": "a46f20175ebf69559b140f873a6cb1cc1cf05e2e92237fa0291cb1234a324e6c",
+          "reading_cell_index": 3,
+          "tex_expression_count": 6,
+          "original_cell_index": 15
+        },
+        {
+          "ordinal": 4,
+          "style": "InlineFormula",
+          "group": [
+            4
+          ],
+          "source_line": 377,
+          "source_cell_sha256": "92bbe7b76add973ccda92b8ff781f906b6423cc4ac852197588bd400accc80dc",
+          "reading_cell_index": 4,
+          "tex_expression_count": 1,
+          "original_cell_index": 16
+        },
+        {
+          "ordinal": 5,
+          "style": "InlineFormula",
+          "group": [
+            5
+          ],
+          "source_line": 428,
+          "source_cell_sha256": "f8392cb53abffba6fd8c314c961eba650cc372f40f52871b6e4bf5f16b56d72f",
+          "reading_cell_index": 5,
+          "tex_expression_count": 1,
+          "original_cell_index": 17
+        },
+        {
+          "ordinal": 6,
+          "style": "InlineFormula",
+          "group": [
+            6
+          ],
+          "source_line": 472,
+          "source_cell_sha256": "4085ba5d8f716a7dfea90dbc2af2d0006ebb3641287683ef7bdc6db474d92b92",
+          "reading_cell_index": 6,
+          "tex_expression_count": 1,
+          "original_cell_index": 18
+        },
+        {
+          "ordinal": 7,
+          "style": "InlineFormula",
+          "group": [
+            7
+          ],
+          "source_line": 517,
+          "source_cell_sha256": "0d3f1f52d0ca6888badcbb207f1e451d2320d2a4a88ce789b80c8bc7fb338889",
+          "reading_cell_index": 7,
+          "tex_expression_count": 1,
+          "original_cell_index": 19
+        },
+        {
+          "ordinal": 8,
+          "style": "Input",
+          "group": [
+            8,
+            1
+          ],
+          "source_line": 553,
+          "source_cell_sha256": "2f17e3d3ca94df9b38ac7d83490ce6a7aa64861fe7e80e33a1b4e645348e37b5",
+          "reading_cell_index": 8,
+          "tex_expression_count": 0,
+          "original_cell_index": 20
+        },
+        {
+          "ordinal": 9,
+          "style": "Output",
+          "group": [
+            8,
+            2
+          ],
+          "source_line": 601,
+          "source_cell_sha256": "b03720d416b5831c9370752b3203f618562d8968f092b255458675f569efb296",
+          "reading_cell_index": 9,
+          "tex_expression_count": 0,
+          "original_cell_index": 21
+        },
+        {
+          "ordinal": 10,
+          "style": "Input",
+          "group": [
+            9,
+            1
+          ],
+          "source_line": 719,
+          "source_cell_sha256": "265ed88747951be8f33db84dc1bf449f43263d5538754b9e429a5a75d18d37ad",
+          "reading_cell_index": 10,
+          "tex_expression_count": 0,
+          "original_cell_index": 22
+        },
+        {
+          "ordinal": 11,
+          "style": "Output",
+          "group": [
+            9,
+            2
+          ],
+          "source_line": 760,
+          "source_cell_sha256": "5be4aaba1a0c9b5229cef843d4f98c9c3fa0b685ade017c6ee73b3fbd3d51d88",
+          "reading_cell_index": 11,
+          "tex_expression_count": 0,
+          "original_cell_index": 23
+        }
+      ]
+    }
+  ]
+}

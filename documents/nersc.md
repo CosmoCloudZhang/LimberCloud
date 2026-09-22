@@ -78,14 +78,41 @@ Batch scripts resolve `PROJECT_ROOT` from `SLURM_SUBMIT_DIR` or by walking from
 the script path, looking for `scripts/load_config.sh` and `src/limbercloud`
 (never the nested paper Git root).
 
+From the checkout root, load the configuration into the submitting shell so
+the table path expands correctly. These examples assume an existing canonical
+table under `results/spectra/inputs/pilot/`; the second example requires
+sample IDs 0 through 10. The first launch uses the default fiducial-only
+selection:
+
 ```bash
+source scripts/load_config.sh
 mkdir -p logs
-sbatch --chdir="${PWD}" experiments/spectra/NUMBA/Y1/single.sh
+sbatch --chdir="${PWD}" experiments/spectra/NUMBA/Y1/single.sh \
+    --sample-table "${LIMBERCLOUD_RUNTIME_ROOT}/results/spectra/inputs/pilot"
 ```
 
-Spectra runners default to `--sample-count=0`. Do not submit the 1,001-row
-campaign unless you pass `--sample-count=1000` explicitly (plus fiducial when
-that path exists). `--number` is the CPU allocation label.
+Every launcher forwards its own arguments to the driver, with quoting intact, so
+a submitted selection reaches Python:
+
+```bash
+sbatch --chdir="${PWD}" experiments/spectra/NUMBA/Y1/single.sh \
+    --sample-count=10 \
+    --sample-table "${LIMBERCLOUD_RUNTIME_ROOT}/results/spectra/inputs/pilot"
+```
+
+`Run_All.sh` passes the same selection into all six child jobs.
+
+Every spectra run requires `--sample-table` and evaluates its fiducial, sample 0.
+`--sample-count` adds that many further cosmologies, and the default `0` is
+the fiducial alone. Timing files are written in the family/survey directory
+using separate `Time_*_Fiducial.txt` and `Time_*_Cosmology.txt` products. A
+fiducial-only rerun preserves sampled files; a sampled run replaces both
+populations. Sampled files store actual checkpoint counts and cumulative
+seconds, so small pilots use the same interface. Older `*_128*` names do not match
+the new names, so they are left in place. Do not submit the 1,000-sample
+campaign unless you pass `--sample-count=1000` explicitly. CPU count stays in
+`#SBATCH --cpus-per-task` and the thread environment; it is not a driver flag
+or a filename token.
 
 ## Configuration generation order
 
@@ -96,15 +123,31 @@ that path exists). `--number` is the CPU allocation label.
 5. `galaxy_bias.sh`
 6. `intrinsic_alignment.sh`
 
+The generator wrappers also forward their arguments, so `intrinsic_alignment.sh
+--eta-ia 0.0` reaches Python. Omitting `--eta-ia` already adopts the campaign
+value 0.0; any other value is written as an explicitly diagnostic array that the
+accepted-campaign readers refuse.
+
 ## Validation sequence
 
-1. Lightweight path, configuration, syntax, and contract checks (`make check`).
+1. Login-safe path, configuration, syntax, and contract checks (`make check`).
+   This runs `make test-fast`, which imports NumPy and SciPy only. `make`
+   uses `.venv/bin/python3` when that link exists, so it does not pick up
+   `/usr/bin/python3`. Override with `make PYTHON=...` only for a deliberate
+   other prefix.
 2. Dedicated `limbercloud` imports and kernel `--probe` without initializing MPI
    on login nodes.
-3. Tiny allocated CPU checks: CCL+CAMB, Numba, JAX CPU, serial HDF5 round-trip
-   under CFS with `HDF5_USE_FILE_LOCKING=FALSE`, and a two-rank `mpi4py`
-   compatibility `srun` (dependency only; not a science benchmark).
-4. Separate GPU allocation for JAX device visibility.
-5. Bounded science pilots only after sample controls and scientific stages.
+3. Allocated checks, because `make test-science` and `make check-all` import
+   h5py. With the MPI-linked h5py build in this environment they are not
+   login-safe. Run them together with the tiny CCL+CAMB, Numba, JAX CPU and
+   serial HDF5 round-trip checks under CFS with
+   `HDF5_USE_FILE_LOCKING=FALSE`, plus a two-rank `mpi4py` compatibility `srun`
+   (dependency only; not a science benchmark).
+4. Allocated kernel check: `scripts/jupyter/launch_kernel.sh --science` verifies
+   that the editor's kernel inherits the same modules, Conda hooks and
+   interpreter as a batch job, performs an HDF5 round trip and evaluates a CCL
+   background quantity. The login-safe `--probe` reports identity only.
+5. Separate GPU allocation for JAX device visibility.
+6. Bounded science pilots only after sample controls and scientific stages.
 
 All jobs use the canonical runtime tree in [runtime-tree.md](runtime-tree.md).

@@ -50,8 +50,9 @@ export NUMBA_NUM_THREADS=$SLURM_CPUS_PER_TASK
 # Initialize the process
 TAG="Y10"
 LABEL="Triple"
+SCRIPT="triple"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Run applications
-srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${PROJECT_ROOT}/experiments/spectra/NUMBA/${TAG}/${LABEL,,}.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"
+srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${PROJECT_ROOT}/experiments/spectra/NUMBA/${TAG}/${SCRIPT}.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" "$@"

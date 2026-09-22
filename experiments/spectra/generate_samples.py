@@ -33,7 +33,9 @@ def main(folder, run_id, seed, sampled_count):
     paths = ProjectPaths.from_root(folder)
     with paths.config_file("cosmology").open() as handle:
         fiducial = json.load(handle)
-    table = generate_cosmology_table(fiducial, seed=int(seed), sampled_count=int(sampled_count))
+    table = generate_cosmology_table(
+        fiducial, seed=int(seed), sampled_count=int(sampled_count)
+    )
     destination = paths.spectrum_inputs(run_id)
     save_cosmology_table(destination, table)
     print(f"Wrote {destination} content_hash={table.content_hash}")
@@ -42,9 +44,16 @@ def main(folder, run_id, seed, sampled_count):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Canonical cosmology table")
-    parser.add_argument("--folder", required=True, help="Runtime root containing config/cosmology.json")
+    parser.add_argument(
+        "--folder", required=True, help="Runtime root containing config/cosmology.json"
+    )
     parser.add_argument("--run-id", required=True, help="Shared sample-table run ID")
-    parser.add_argument("--seed", required=True, type=int, help="default_rng seed. There is no hidden campaign seed.")
+    parser.add_argument(
+        "--seed",
+        required=True,
+        type=int,
+        help="default_rng seed. There is no hidden campaign seed.",
+    )
     parser.add_argument(
         "--sampled-count",
         type=int,

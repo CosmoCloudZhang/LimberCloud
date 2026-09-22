@@ -62,7 +62,19 @@ def main() -> int:
                     f"{error.msg} at line {error.lineno}"
                 )
 
-        if "ProjectPaths.from_root" not in code:
+        # Reading/symbolic derivations deliberately need no runtime data. This
+        # exemption is limited to the coefficient catalog and explicit metadata;
+        # data-backed validation notebooks retain the normal setup requirement.
+        relative = notebook_path.relative_to(NOTEBOOK_ROOT)
+        symbolic_derivation = (
+            len(relative.parts) == 3
+            and relative.parts[0] == "derivation"
+            and relative.parts[1] in {"NN", "NS", "SS"}
+            and re.fullmatch(r"Coefficient_B\d{2}\.ipynb", relative.name)
+            and notebook.get("metadata", {}).get("limbercloud", {}).get("kind")
+            == "symbolic_derivation"
+        )
+        if not symbolic_derivation and "ProjectPaths.from_root" not in code:
             failures.append(f"{notebook_path}: missing ProjectPaths runtime setup")
 
     if failures:

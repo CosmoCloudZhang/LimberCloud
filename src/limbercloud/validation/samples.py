@@ -4,7 +4,9 @@ Fiducial sample 0 is copied from the supplied parameters and consumes no random
 draw. Sampled IDs ``1..N`` use one ``numpy.random.default_rng`` stream. Draws
 are parameter-major: each sampled column is one vectorised uniform call, in
 ``SAMPLED_PARAMETERS`` order. ``WA`` and ``OMEGA_K`` stay fixed where they are
-currently zero and consume no draw. Restart loads this table by sample ID.
+currently zero, and ``OMEGA_GAMMA`` stays fixed at its nonzero fiducial value
+as the declared radiation convention. None of them consume a draw. Restart
+loads this table by sample ID.
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ import numpy
 from limbercloud.validation.contract import (
     CAMPAIGN_SAMPLED_COUNT,
     FIDUCIAL_SAMPLE_ID,
+    FIXED_NONZERO_PARAMETERS,
     FIXED_ZERO_PARAMETERS,
     PRIMARY_PARAMETERS,
     RELATIVE_HALF_WIDTH,
@@ -26,6 +29,10 @@ from limbercloud.validation.contract import (
     multiplicative_bounds,
 )
 from limbercloud.validation.contract import SCHEMA_VERSION as EVALUATION_SCHEMA_VERSION
+from limbercloud.validation.cosmology import (
+    EffectiveCosmologyKwargs,
+    effective_cosmology_kwargs,
+)
 
 TABLE_SCHEMA_VERSION = "limbercloud.cosmology-table.v1"
 TABLE_FILENAME = "Cosmologies.npz"
@@ -50,6 +57,9 @@ class CosmologyTable:
         bit_generator: Bit-generator class name.
         numpy_version: NumPy version that drew the table.
         content_hash: SHA-256 of the canonical array payload.
+        half_width: Fractional half-width actually used for the sampled bounds.
+        solver_fingerprint: Hash of the effective solver specification that
+            every consumer of this table must reuse.
     """
 
     sample_id: numpy.ndarray
@@ -61,6 +71,8 @@ class CosmologyTable:
     bit_generator: str
     numpy_version: str
     content_hash: str
+    half_width: float = RELATIVE_HALF_WIDTH
+    solver_fingerprint: str = ""
 
     def row_dict(self, sample_id: int) -> dict[str, float]:
         """Return one sample by ID.
@@ -78,10 +90,14 @@ class CosmologyTable:
         if matches.size != 1:
             raise SampleTableError(f"Sample ID {sample_id} is not unique in the table")
         row = self.values[int(matches[0])]
-        return {name: float(row[index]) for index, name in enumerate(self.parameter_names)}
+        return {
+            name: float(row[index]) for index, name in enumerate(self.parameter_names)
+        }
 
 
-def content_hash(sample_id: numpy.ndarray, parameter_names: tuple[str, ...], values: numpy.ndarray) -> str:
+def content_hash(
+    sample_id: numpy.ndarray, parameter_names: tuple[str, ...], values: numpy.ndarray
+) -> str:
     """Hash sample IDs, parameter order and values.
 
     Args:
@@ -143,6 +159,9 @@ def generate_cosmology_table(
     for name in FIXED_ZERO_PARAMETERS:
         _require_fixed_zero(name, float(fiducial[name]))
         bounds[name] = (0.0, 0.0)
+    for name in FIXED_NONZERO_PARAMETERS:
+        value = float(fiducial[name])
+        bounds[name] = (value, value)
     for name in SAMPLED_PARAMETERS:
         value = float(fiducial[name])
         if value == 0.0:
@@ -157,12 +176,14 @@ def generate_cosmology_table(
     values = numpy.empty((row_count, len(PRIMARY_PARAMETERS)), dtype=numpy.float64)
     for column, name in enumerate(PRIMARY_PARAMETERS):
         values[0, column] = float(fiducial[name])
-        if name in FIXED_ZERO_PARAMETERS:
+        if name in FIXED_ZERO_PARAMETERS or name in FIXED_NONZERO_PARAMETERS:
             values[1:, column] = float(fiducial[name])
             continue
         low, high = bounds[name]
         if sampled_count:
             values[1:, column] = rng.uniform(low, high, size=int(sampled_count))
+
+    from limbercloud.validation.cosmology import FIDUCIAL_SOLVER
 
     sample_id = numpy.arange(row_count, dtype=numpy.int64)
     is_fiducial = sample_id == FIDUCIAL_SAMPLE_ID
@@ -177,39 +198,29 @@ def generate_cosmology_table(
         bit_generator=type(rng.bit_generator).__name__,
         numpy_version=numpy.__version__,
         content_hash=content_hash(sample_id, names, values),
+        half_width=float(half_width),
+        solver_fingerprint=FIDUCIAL_SOLVER.fingerprint(),
     )
 
 
-def evaluation_sample_ids(
-    *,
-    sample_count: int | None,
-    fiducial_only: bool,
-    include_fiducial: bool,
-) -> list[int]:
+def evaluation_sample_ids(*, sample_count: int | None) -> list[int]:
     """List sample IDs for one evaluation request.
 
+    Sample 0, the fiducial, is always included. ``sample_count`` adds IDs
+    1..N after it.
+
     Args:
-        sample_count: Non-fiducial row count. ``None`` defaults to 0.
-        fiducial_only: When true, the only ID is 0 and the sampled count is 0.
-        include_fiducial: When true, prepend sample 0 to the sampled IDs.
-            The paper campaign sets this and ``sample_count=1000``.
+        sample_count: Extra rows after the fiducial. ``None`` and ``0`` both
+            mean the fiducial alone.
 
     Returns:
-        list[int]: Sample IDs. An empty list means the safe no-work default.
-
-    Raises:
-        ValueError: When ``include_fiducial`` is combined with ``fiducial_only``
-        in a contradictory way, or the sample-count flags disagree.
+        list[int]: ``[0]`` or ``[0, 1, ..., N]``.
     """
 
     from limbercloud.experiments.sample_controls import resolve_sample_count
 
-    count = resolve_sample_count(sample_count, fiducial_only)
-    if fiducial_only:
-        return [FIDUCIAL_SAMPLE_ID]
-    if include_fiducial:
-        return [FIDUCIAL_SAMPLE_ID, *range(1, count + 1)]
-    return list(range(1, count + 1))
+    count = resolve_sample_count(sample_count)
+    return [FIDUCIAL_SAMPLE_ID, *range(1, count + 1)]
 
 
 def assert_campaign_request(sample_ids: list[int]) -> None:
@@ -244,104 +255,65 @@ def select_rows(table: CosmologyTable, sample_ids: list[int]) -> list[dict[str, 
     return [table.row_dict(sample_id) for sample_id in sample_ids]
 
 
-def ccl_cosmology_kwargs(row: dict[str, float]) -> dict[str, object]:
-    """Build the historical CCL constructor arguments from one table row.
+def ccl_cosmology_kwargs(row: dict[str, float]) -> EffectiveCosmologyKwargs:
+    """Build the CCL constructor arguments from one table row.
+
+    The settings come from :mod:`limbercloud.validation.cosmology`, so the
+    sampled constructor and the fixed nuisance generators share one effective
+    model: explicit ``Omega_g`` and CAMB ``kmax=100``.
 
     Args:
         row: Parameter dictionary from ``CosmologyTable.row_dict``.
 
     Returns:
-        dict[str, object]: Keyword arguments for ``pyccl.Cosmology``, excluding
-        any fresh random draw.
+        EffectiveCosmologyKwargs: Keyword arguments for ``pyccl.Cosmology``,
+        excluding any fresh random draw.
     """
 
-    return {
-        "h": float(row["H"]),
-        "w0": float(row["W0"]),
-        "wa": float(row["WA"]),
-        "n_s": float(row["NS"]),
-        "A_s": float(row["AS"]),
-        "m_nu": float(row["M_NU"]),
-        "Neff": float(row["N_EFF"]),
-        "Omega_b": float(row["OMEGA_B"]),
-        "Omega_k": float(row["OMEGA_K"]),
-        "Omega_c": float(row["OMEGA_CDM"]),
-        "mass_split": "single",
-        "matter_power_spectrum": "halofit",
-        "transfer_function": "boltzmann_camb",
-        "extra_parameters": {
-            "camb": {
-                "kmax": 50,
-                "lmax": 5000,
-                "halofit_version": "mead2020_feedback",
-                "HMCode_logT_AGN": 7.8,
-            }
-        },
-    }
+    return effective_cosmology_kwargs(row)
 
 
 def sampled_parameter_rows(
     *,
     sample_count: int,
     sample_table: str | Path | None,
-    include_fiducial: bool = False,
-    fiducial_only: bool = False,
 ) -> list[dict[str, float]]:
-    """Return non-fiducial parameter rows for an existing timing driver.
+    """Return the fiducial row, then ``sample_count`` sampled rows.
 
     See ``timing_loop_rows``. The name is the driver-facing wrapper.
     """
 
-    return timing_loop_rows(
-        sample_count=sample_count,
-        sample_table=sample_table,
-        include_fiducial=include_fiducial,
-        fiducial_only=fiducial_only,
-    )
+    return timing_loop_rows(sample_count=sample_count, sample_table=sample_table)
 
 
 def timing_loop_rows(
     *,
     sample_count: int,
     sample_table: str | Path | None,
-    include_fiducial: bool = False,
-    fiducial_only: bool = False,
 ) -> list[dict[str, float]]:
-    """Return non-fiducial rows for an existing timing driver.
+    """Return the cosmologies one timing driver evaluates.
 
-    The timing loop counts sampled evaluations only. ``--include-fiducial`` is
-    a shared-evaluator request and is refused here so sample 0 is not hidden
-    inside that loop or replaced by another draw. The safe default of zero
-    sampled rows returns an empty list and does not open a table.
+    Index 0 is the fiducial. The following rows are sample IDs ``1..N``.
+    The cumulative timing file records the sampled rows only; the fiducial is
+    evaluated first and is excluded from those checkpoints.
 
     Args:
-        sample_count (int): Resolved non-fiducial count.
-        sample_table: Directory or ``Cosmologies.npz`` path. Required when
-            ``sample_count`` is positive.
-        include_fiducial (bool): Must be false for this timing helper.
-        fiducial_only (bool): Recorded for the caller; the count is already resolved.
+        sample_count (int): Resolved count of rows after the fiducial.
+        sample_table: Directory or ``Cosmologies.npz`` path. Required for the
+            fiducial as well as for any extra rows.
 
     Returns:
-        list[dict[str, float]]: Rows for sample IDs ``1..sample_count``.
+        list[dict[str, float]]: Row 0, then rows ``1..sample_count``.
     """
 
-    if include_fiducial:
-        raise SampleTableError(
-            "--include-fiducial selects sample ID 0 plus sampled IDs in the shared "
-            "evaluation contract. Timing drivers count non-fiducial rows only and "
-            "do not evaluate the fiducial. Use --fiducial-only for zero sampled rows."
-        )
-    if fiducial_only and int(sample_count) != 0:
-        raise SampleTableError("fiducial_only is inconsistent with a positive sample_count")
-    if int(sample_count) == 0:
-        return []
     if sample_table is None:
         raise SampleTableError(
             "Unseeded cosmology draws are retired. Pass --sample-table pointing at "
-            "a canonical Cosmologies.npz directory. Sample IDs are never re-drawn."
+            "a canonical Cosmologies.npz directory. Sample 0 of that table is the "
+            "fiducial, and sample IDs are never re-drawn."
         )
     table = load_cosmology_table(sample_table)
-    return select_rows(table, list(range(1, int(sample_count) + 1)))
+    return select_rows(table, [0, *range(1, int(sample_count) + 1)])
 
 
 def _table_directory(path: str | Path) -> Path:
@@ -350,7 +322,9 @@ def _table_directory(path: str | Path) -> Path:
         return candidate
     if candidate.name == TABLE_FILENAME:
         return candidate.parent
-    raise SampleTableError(f"Cosmology table path {candidate} is not a directory or {TABLE_FILENAME}")
+    raise SampleTableError(
+        f"Cosmology table path {candidate} is not a directory or {TABLE_FILENAME}"
+    )
 
 
 def save_cosmology_table(directory: str | Path, table: CosmologyTable) -> Path:
@@ -378,9 +352,15 @@ def save_cosmology_table(directory: str | Path, table: CosmologyTable) -> Path:
         values=numpy.ascontiguousarray(table.values, dtype=numpy.float64),
     )
     # numpy.savez appends .npz when the name does not already end with it.
-    written = temporary if temporary.is_file() else temporary.with_suffix(temporary.suffix + ".npz")
+    written = (
+        temporary
+        if temporary.is_file()
+        else temporary.with_suffix(temporary.suffix + ".npz")
+    )
     if not written.is_file():
-        raise SampleTableError(f"Failed to write temporary cosmology table in {destination}")
+        raise SampleTableError(
+            f"Failed to write temporary cosmology table in {destination}"
+        )
     published = publish_file(written, arrays)
     manifest = {
         "schema_version": TABLE_SCHEMA_VERSION,
@@ -393,14 +373,19 @@ def save_cosmology_table(directory: str | Path, table: CosmologyTable) -> Path:
         "draw_policy": (
             "Fiducial sample 0 copies the supplied parameters and consumes no draw. "
             "Each sampled parameter then consumes one vectorised uniform draw, in "
-            "SAMPLED_PARAMETERS order. WA and OMEGA_K are fixed and consume no draw. "
-            "Restart loads sample IDs from this file."
+            "SAMPLED_PARAMETERS order. WA, OMEGA_K and OMEGA_GAMMA are fixed and "
+            "consume no draw. Restart loads sample IDs from this file."
         ),
-        "half_width": RELATIVE_HALF_WIDTH,
+        "half_width": float(table.half_width),
+        "solver_fingerprint": table.solver_fingerprint,
         "parameter_names": list(table.parameter_names),
         "sampled_parameters": list(SAMPLED_PARAMETERS),
         "fixed_zero_parameters": list(FIXED_ZERO_PARAMETERS),
-        "bounds": {name: {"lower": low, "upper": high} for name, (low, high) in table.bounds.items()},
+        "fixed_nonzero_parameters": list(FIXED_NONZERO_PARAMETERS),
+        "bounds": {
+            name: {"lower": low, "upper": high}
+            for name, (low, high) in table.bounds.items()
+        },
         "sample_id_first": int(table.sample_id[0]),
         "sample_id_last": int(table.sample_id[-1]),
         "sampled_count": int(table.sample_id.size - 1),
@@ -434,8 +419,19 @@ def load_cosmology_table(path: str | Path) -> CosmologyTable:
     if not manifest_path.is_file() or not arrays_path.is_file():
         raise SampleTableError(f"Cosmology table in {directory} is incomplete")
     manifest = json.loads(manifest_path.read_text())
+    for key, expected in (
+        ("schema_version", TABLE_SCHEMA_VERSION),
+        ("evaluation_schema_version", EVALUATION_SCHEMA_VERSION),
+    ):
+        if manifest.get(key) != expected:
+            raise SampleTableError(
+                f"Cosmology table {key}={manifest.get(key)!r} is unsupported; "
+                f"expected {expected!r}. Regenerate with generate_samples.py."
+            )
     if manifest.get("status") != "complete":
-        raise SampleTableError(f"Cosmology table manifest in {directory} is not complete")
+        raise SampleTableError(
+            f"Cosmology table manifest in {directory} is not complete"
+        )
     recorded = manifest.get("products", {}).get(TABLE_FILENAME, {}).get("sha256")
     actual = sha256_file(arrays_path)
     if recorded != actual:
@@ -447,7 +443,9 @@ def load_cosmology_table(path: str | Path) -> CosmologyTable:
         values = numpy.asarray(payload["values"], dtype=numpy.float64)
     digest = content_hash(sample_id, parameter_names, values)
     if digest != manifest.get("content_hash"):
-        raise SampleTableError("Cosmology table content hash does not match its manifest")
+        raise SampleTableError(
+            "Cosmology table content hash does not match its manifest"
+        )
     bounds = {
         name: (float(item["lower"]), float(item["upper"]))
         for name, item in manifest["bounds"].items()
@@ -462,4 +460,6 @@ def load_cosmology_table(path: str | Path) -> CosmologyTable:
         bit_generator=str(manifest["bit_generator"]),
         numpy_version=str(manifest["numpy_version"]),
         content_hash=digest,
+        half_width=float(manifest.get("half_width", RELATIVE_HALF_WIDTH)),
+        solver_fingerprint=str(manifest.get("solver_fingerprint", "")),
     )

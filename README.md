@@ -85,23 +85,67 @@ scripts/jupyter/launch_kernel.sh --probe
 scripts/nersc/diagnose_environment.sh
 ```
 
+`--probe` reports the interpreter and checkout identity only and stays
+login-safe. `--science` additionally performs an HDF5 round trip and a small
+CCL background evaluation, so run it under an allocation on a supported host.
+
 ## Verification
 
 ```bash
-make check
+make check       # login-safe: lint, fast tests, shell syntax, notebook parsing
+make check-all   # adds the h5py and compiled-backend suites; run on an allocation
 ```
 
-Spectra runners default to `--sample-count=0`. Pass `--fiducial-only` or an
-explicit `--sample-count` (campaign: `1000`) before science jobs. `--number` is
-the host CPU allocation label, not a sample limit.
+`make` uses `.venv/bin/python3` when that link exists, so it does not pick up
+the system Python. Override with `make PYTHON=...` only for a deliberate other
+prefix.
+
+`make test-fast` imports NumPy and SciPy only. `make test-science` imports h5py
+and the Numba and JAX backends; with an MPI-linked h5py build it is not
+login-safe.
+
+Spectra runners always evaluate the fiducial, sample 0 of `--sample-table`.
+`--sample-count` is how many further cosmologies to evaluate; the default `0`
+is the fiducial alone. Products are written in the family/survey directory,
+for example `results/spectra/NUMBA/Y1/Time_Triple_Fiducial.txt` and
+`Time_Triple_Cosmology.txt`. A fiducial-only rerun replaces only `Fiducial`
+files; a sampled run replaces both populations. Sampled files contain actual
+checkpoint counts and cumulative seconds, excluding sample 0. Older unqualified
+and `*_128*` names are left in place and are not selected by the new reader.
+Host CPU count stays in the Slurm allocation and thread environment; it is
+not a filename token or a sample limit.
+Launchers forward their arguments to the driver, so submitted selections reach
+Python:
+
+```bash
+sbatch experiments/spectra/NUMBA/Y1/triple.sh \
+    --sample-count=10 --sample-table "$LIMBERCLOUD_RUNTIME_ROOT/results/spectra/inputs/pilot"
+```
+
+The benchmark figure reads `Cosmology` timing products from those same directories
+and uses their recorded counts. It does not take a run ID. The legend label is
+`CCL`; in stage panels it repeats the CCL end-to-end reference, as stated in the
+figure footnote. Counts need not be multiples of 100: a small pilot gets one
+checkpoint, and larger runs record each 100 plus the final requested count.
 
 ## Experiments
 
 Backend matrix under `experiments/spectra/`: CCL, Numba CPU, JAX CPU, and JAX
 GPU for Y1/Y10 × Single/Double/Triple. `Single`/`Double`/`Triple` select probe
-configurations (EE / TE+TT / EE+TE+TT), not tiny runs.
+configurations (EE / TE+TT / EE+TE+TT), not tiny runs. Every family evaluates
+the same 21 multipoles, `numpy.geomspace(20, 2000, 21)`; the radial
+interpolation order belongs to the NUMERIC family alone.
 
 ## Notebooks and manuscript
+
+Each original Mathematica coefficient derivation in `notebooks/derivation/`
+has a readable same-basename Jupyter edition. The corrected mathematical text
+uses `p = 1 - P1/P2` for normalized power; preserved Wolfram source cells and
+saved outputs are identified separately from executable Python equivalents.
+The conversion inventory and notation notes live beside these notebooks.
+The four additional NS/SS boundary derivations use the same layout. Reading
+the derivations requires no Mathematica installation; symbolic recomputation
+uses SymPy in the notebook environment.
 
 The manuscript is the separate `LimberCloudPaper` repository, checked out
 locally through the optional `manuscript/` submodule. On NERSC, leave it

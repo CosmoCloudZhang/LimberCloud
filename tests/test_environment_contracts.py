@@ -16,7 +16,10 @@ MODULES = REPOSITORY_ROOT / "scripts" / "nersc" / "modules"
 class EnvironmentLoaderTests(unittest.TestCase):
     def setUp(self):
         self.temporary_directory = tempfile.TemporaryDirectory()
-        self.root = Path(self.temporary_directory.name)
+        # The loader reports physical paths from ``pwd -P``. A temporary
+        # directory under a symlinked prefix such as macOS /var -> /private/var
+        # spells the same directory differently, so normalise before comparing.
+        self.root = Path(self.temporary_directory.name).resolve()
         self.project = self.root / "LimberCloud"
         (self.project / "scripts").mkdir(parents=True)
         (self.project / "src" / "limbercloud").mkdir(parents=True)

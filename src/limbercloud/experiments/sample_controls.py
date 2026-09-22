@@ -1,9 +1,10 @@
 """
 Sample-count controls for spectra runners.
 
-``sample_count`` is the number of non-fiducial sampled rows. ``fiducial_only``
-implies zero sampled rows. The production campaign must request 1,000 sampled
-rows explicitly; safe defaults do not launch that campaign.
+Every run evaluates the fiducial, sample 0. ``sample_count`` is how many
+further cosmologies, IDs 1..N, are evaluated after it. The default is 0, so a
+launch without ``--sample-count`` is the fiducial alone. The production
+campaign passes 1000 explicitly.
 """
 
 from __future__ import annotations
@@ -14,29 +15,21 @@ from typing import Sequence
 import numpy
 
 
-def resolve_sample_count(sample_count, fiducial_only):
+def resolve_sample_count(sample_count):
     """
-    Resolve the number of non-fiducial samples to evaluate.
+    Resolve how many cosmologies to evaluate after the fiducial.
 
     Args:
-        sample_count (int | None): Requested non-fiducial sample rows. When
-            ``None`` and ``fiducial_only`` is false, defaults to ``0`` so that
-            accidental launches do not evaluate the 1,000-row campaign.
-        fiducial_only (bool): When true, forces zero sampled rows.
+        sample_count (int | None): Requested extra rows. ``None`` and ``0``
+            both mean the fiducial alone, so an accidental launch does not
+            evaluate the 1,000-row campaign.
 
     Returns:
-        int: Non-fiducial sample count (``>= 0``).
+        int: Extra sample count (``>= 0``).
 
     Raises:
-        ValueError: If the selection is inconsistent or negative.
+        ValueError: When the count is negative.
     """
-    if fiducial_only:
-        if sample_count is not None and int(sample_count) != 0:
-            raise ValueError(
-                "--fiducial-only requires zero sampled rows; "
-                f"got --sample-count={sample_count}"
-            )
-        return 0
 
     if sample_count is None:
         return 0
@@ -47,41 +40,24 @@ def resolve_sample_count(sample_count, fiducial_only):
     return resolved
 
 
-def build_checkpoint_counts(sample_count, count_size=10):
-    """
-    Build cumulative checkpoint sample counts for timing products.
+def build_checkpoint_counts(sample_count):
+    """Return checkpoints at each 100 samples, including the final count.
 
-    Args:
-        sample_count (int): Number of non-fiducial samples to evaluate.
-        count_size (int): Preferred number of cumulative checkpoints. Reduced
-            automatically when ``sample_count`` is smaller.
-
-    Returns:
-        numpy.ndarray: Strictly positive integer checkpoint counts with dtype
-        ``int32``, empty when ``sample_count`` is zero.
+    Tiny pilots have one checkpoint at their actual count. Zero requests only
+    the fiducial and therefore has no sampled checkpoints.
     """
-    sample_count = int(sample_count)
-    if sample_count <= 0:
+    sample_count = resolve_sample_count(sample_count)
+    if sample_count == 0:
         return numpy.zeros(0, dtype=numpy.int32)
-
-    count_size = max(1, min(int(count_size), sample_count))
-    if count_size == 1:
-        return numpy.asarray([sample_count], dtype=numpy.int32)
-
-    if sample_count < 100:
-        return numpy.unique(
-            numpy.linspace(1, sample_count, count_size, dtype=numpy.int32)
-        )
-
-    count1 = min(100, sample_count)
-    return numpy.unique(
-        numpy.linspace(count1, sample_count, count_size, dtype=numpy.int32)
-    )
+    checkpoints = numpy.arange(100, sample_count + 1, 100, dtype=numpy.int32)
+    if checkpoints.size == 0 or checkpoints[-1] != sample_count:
+        checkpoints = numpy.append(checkpoints, numpy.int32(sample_count))
+    return checkpoints
 
 
 def add_sample_control_arguments(parser):
     """
-    Attach ``--sample-count`` and ``--fiducial-only`` to an argument parser.
+    Attach ``--sample-count`` to an argument parser.
 
     Args:
         parser (argparse.ArgumentParser): Parser to extend in place.
@@ -94,14 +70,9 @@ def add_sample_control_arguments(parser):
         type=int,
         default=None,
         help=(
-            "Number of non-fiducial sampled cosmologies. Defaults to 0. "
-            "The production campaign must pass 1000 explicitly."
+            "Number of cosmologies after the fiducial. Defaults to 0, which "
+            "evaluates sample 0 only. The production campaign must pass 1000."
         ),
-    )
-    parser.add_argument(
-        "--fiducial-only",
-        action="store_true",
-        help="Evaluate no sampled rows (implies --sample-count=0).",
     )
     return parser
 
@@ -112,23 +83,20 @@ def resolve_from_namespace(namespace):
 
     Args:
         namespace (argparse.Namespace): Parsed arguments containing
-            ``sample_count`` and ``fiducial_only``.
+            ``sample_count``.
 
     Returns:
-        int: Non-fiducial sample count.
+        int: Number of cosmologies after the fiducial.
     """
-    return resolve_sample_count(
-        getattr(namespace, "sample_count", None),
-        bool(getattr(namespace, "fiducial_only", False)),
-    )
+    return resolve_sample_count(getattr(namespace, "sample_count", None))
 
 
 def add_evaluation_arguments(parser):
     """Attach shared evaluation flags, including the sample-count controls.
 
-    Existing ``--tag``, ``--label``, ``--folder`` and ``--number`` arguments
-    stay on the individual drivers. ``--sample-count`` still counts non-fiducial
-    rows. ``--fiducial-only`` still implies zero sampled rows.
+    Existing ``--tag``, ``--label`` and ``--folder`` arguments stay on the
+    individual drivers. ``--sample-count`` is the number of cosmologies after
+    the fiducial. The fiducial always runs.
 
     Args:
         parser (argparse.ArgumentParser): Parser to extend in place.
@@ -141,33 +109,10 @@ def add_evaluation_arguments(parser):
     parser.add_argument(
         "--sample-table",
         default=None,
-        help="Directory containing the canonical Cosmologies.npz table.",
-    )
-    parser.add_argument(
-        "--run-id",
-        default=None,
-        help="Run-ID subdirectory under the family/survey results root.",
-    )
-    parser.add_argument(
-        "--run-config",
-        default=None,
-        help="Optional versioned evaluation-configuration JSON.",
-    )
-    parser.add_argument(
-        "--include-fiducial",
-        action="store_true",
-        help="Request sample ID 0 in addition to --sample-count sampled rows.",
-    )
-    parser.add_argument(
-        "--resume",
-        action="store_true",
-        help="Resume by validated sample ID. Does not redraw missing rows.",
-    )
-    parser.add_argument(
-        "--mode",
-        choices=("validation", "benchmark"),
-        default="benchmark",
-        help="validation defaults are applied by the shared evaluator; benchmark keeps timing outputs.",
+        help=(
+            "Directory containing the canonical Cosmologies.npz table. "
+            "Sample 0 is the fiducial."
+        ),
     )
     return parser
 

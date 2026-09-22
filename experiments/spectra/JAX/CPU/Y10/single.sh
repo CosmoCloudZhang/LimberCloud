@@ -51,8 +51,9 @@ export XLA_FLAGS="--xla_cpu_multi_thread_eigen=true intra_op_parallelism_threads
 # Initialize the process
 TAG="Y10"
 LABEL="Single"
+SCRIPT="single"
 RUNTIME_ROOT="${LIMBERCLOUD_RUNTIME_ROOT:?Set LIMBERCLOUD_RUNTIME_ROOT to the external data/results root}"
 export PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 # Run applications
-srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${PROJECT_ROOT}/experiments/spectra/JAX/CPU/${TAG}/${LABEL,,}.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" --number="${SLURM_CPUS_PER_TASK}"
+srun -n 1 -c $SLURM_CPUS_PER_TASK python -u "${PROJECT_ROOT}/experiments/spectra/JAX/CPU/${TAG}/${SCRIPT}.py" --tag="${TAG}" --label="${LABEL}" --folder="${RUNTIME_ROOT}" "$@"

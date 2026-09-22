@@ -3,6 +3,7 @@ import json
 import time
 
 from limbercloud import ProjectPaths
+from limbercloud.validation.contract import NUISANCE_COSMOLOGY_POLICY
 
 
 def main(folder):
@@ -45,6 +46,8 @@ def main(folder):
         ],
         '_quantity': 'magnification_slope_s',
         '_response': 'q=5*s-2',
+        '_policy': NUISANCE_COSMOLOGY_POLICY,
+        '_redshift_convention': 'one constant slope per lens bin; no redshift axis',
     }
 
     # Save

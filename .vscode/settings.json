@@ -24,32 +24,55 @@
     ],
     "editor.guides.indentation": true,
     "editor.guides.highlightActiveIndentation": true,
-    "cSpell.userWords": [
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+    "cSpell.words": [
         "astropy",
+        "bandpower",
+        "bandpowers",
         "camb",
         "ccl",
         "cfs",
+        "conda",
         "cosmoconda",
         "cosmosis",
+        "cray",
         "dotenv",
         "fiducial",
+        "geomspace",
         "h5py",
         "hdf5",
         "ipykernel",
+        "jax",
         "jaxlib",
+        "limber",
         "limbercloud",
+        "lsst",
         "matplotlib",
         "mpi4py",
         "mpich",
         "nersc",
         "nonfiducial",
         "numba",
+        "numexpr",
         "onecovariance",
+        "openblas",
+        "pdflatex",
         "perlmutter",
         "pscratch",
         "pyccl",
+        "sbatch",
         "scipy",
+        "slinear",
         "slurm",
-        "tomographic"
+        "texlive",
+        "tomographic",
+        "xla"
     ]
 }
