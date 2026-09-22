@@ -109,13 +109,20 @@ class ExperimentContractTests(unittest.TestCase):
                 self.assertIn("LIMBERCLOUD_ONECOVARIANCE_ROOT", text)
 
     def test_spectra_runners_expose_sample_controls_without_path(self):
-        runners = sorted((EXPERIMENT_ROOT / "spectra").rglob("*.py"))
+        runners = [
+            path
+            for path in sorted((EXPERIMENT_ROOT / "spectra").rglob("*.py"))
+            if path.name != "generate_samples.py"
+        ]
         self.assertEqual(len(runners), 24)
+        self.assertTrue((EXPERIMENT_ROOT / "spectra" / "generate_samples.py").is_file())
         for path in runners:
             text = path.read_text()
             with self.subTest(path=path.relative_to(REPOSITORY_ROOT)):
-                self.assertIn("add_sample_control_arguments", text)
+                self.assertIn("add_evaluation_arguments", text)
                 self.assertIn("resolve_sample_count", text)
+                self.assertIn("sampled_parameter_rows", text)
+                self.assertNotIn("numpy.random.uniform", text)
                 self.assertNotIn("add_argument('--path'", text)
                 self.assertNotIn("def main(tag, path", text)
 

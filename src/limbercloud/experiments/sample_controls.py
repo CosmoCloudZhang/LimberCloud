@@ -123,6 +123,55 @@ def resolve_from_namespace(namespace):
     )
 
 
+def add_evaluation_arguments(parser):
+    """Attach shared evaluation flags, including the sample-count controls.
+
+    Existing ``--tag``, ``--label``, ``--folder`` and ``--number`` arguments
+    stay on the individual drivers. ``--sample-count`` still counts non-fiducial
+    rows. ``--fiducial-only`` still implies zero sampled rows.
+
+    Args:
+        parser (argparse.ArgumentParser): Parser to extend in place.
+
+    Returns:
+        argparse.ArgumentParser: The same parser for chaining.
+    """
+
+    add_sample_control_arguments(parser)
+    parser.add_argument(
+        "--sample-table",
+        default=None,
+        help="Directory containing the canonical Cosmologies.npz table.",
+    )
+    parser.add_argument(
+        "--run-id",
+        default=None,
+        help="Run-ID subdirectory under the family/survey results root.",
+    )
+    parser.add_argument(
+        "--run-config",
+        default=None,
+        help="Optional versioned evaluation-configuration JSON.",
+    )
+    parser.add_argument(
+        "--include-fiducial",
+        action="store_true",
+        help="Request sample ID 0 in addition to --sample-count sampled rows.",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume by validated sample ID. Does not redraw missing rows.",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=("validation", "benchmark"),
+        default="benchmark",
+        help="validation defaults are applied by the shared evaluator; benchmark keeps timing outputs.",
+    )
+    return parser
+
+
 def parse_sample_controls(argv: Sequence[str] | None = None):
     """
     Parse only the sample-control flags from an argument list.

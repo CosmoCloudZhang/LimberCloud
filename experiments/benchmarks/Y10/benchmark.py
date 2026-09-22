@@ -9,16 +9,44 @@ from limbercloud import Configuration, ProjectPaths
 from limbercloud.plotting import plot_panel
 
 
-def _load_timing(folder, suffix, configuration, number):
-    """Load a canonical timing file."""
+def _load_timing(folder, suffix, configuration, number, interpolation=None):
+    """Load a canonical timing file.
 
-    candidate = folder / f"Time_{configuration.value}_{number}{suffix}.txt"
+    Args:
+        folder: Directory containing the timing product.
+        suffix (str): Stage suffix such as ``_COSMOLOGY``, or empty.
+        configuration: Parsed configuration label.
+        number (int): Host CPU allocation label.
+        interpolation (str | None): NUMERIC order. Historical files omit it.
+    """
+
+    from limbercloud.io.artifacts import timing_basename
+
+    candidate = folder / timing_basename(configuration.value, number, suffix, interpolation)
     if not candidate.is_file():
         raise FileNotFoundError(f"Missing timing file: {candidate}")
     return numpy.loadtxt(candidate)
 
 
-def main(tag, label, folder, number):
+def _family_directory(paths, backend, survey, device=None, *, run_id=None, legacy=False, interpolation=None):
+    """Resolve a timing directory without mixing legacy and run-ID products.
+
+    Omitting ``run_id`` reads the historical family/survey root. ``--legacy``
+    makes that choice explicit. It cannot be combined with ``run_id``.
+    """
+
+    if legacy and run_id:
+        raise ValueError("--legacy cannot be combined with --run-id")
+    return paths.spectrum_results(
+        backend,
+        survey,
+        device,
+        interpolation=interpolation,
+        run_id=run_id,
+    )
+
+
+def main(tag, label, folder, number, run_id=None, legacy=False, interpolation=None):
     """
     Plot benchmark: cumulative time vs number of evaluations.
 
@@ -39,10 +67,10 @@ def main(tag, label, folder, number):
 
     # Runtime paths
     paths = ProjectPaths.from_root(folder)
-    ccl_folder = paths.spectrum_results('CCL', tag)
-    numba_folder = paths.spectrum_results('NUMBA', tag)
-    jax_gpu_folder = paths.spectrum_results('JAX', tag, 'GPU')
-    jax_cpu_folder = paths.spectrum_results('JAX', tag, 'CPU')
+    ccl_folder = _family_directory(paths, 'CCL', tag, run_id=run_id, legacy=legacy)
+    numba_folder = _family_directory(paths, 'NUMBA', tag, run_id=run_id, legacy=legacy)
+    jax_gpu_folder = _family_directory(paths, 'JAX', tag, 'GPU', run_id=run_id, legacy=legacy)
+    jax_cpu_folder = _family_directory(paths, 'JAX', tag, 'CPU', run_id=run_id, legacy=legacy)
     plot_folder = paths.plots / 'benchmarks' / tag
     plot_folder.mkdir(parents=True, exist_ok=True)
 
@@ -71,25 +99,25 @@ def main(tag, label, folder, number):
     marker_numba_cpu = 's'
 
     # Load CCL
-    time_ccl = _load_timing(ccl_folder, '', configuration, number)
+    time_ccl = _load_timing(ccl_folder, '', configuration, number, interpolation)
 
     # Load JAX-GPU
-    time_jax_gpu = _load_timing(jax_gpu_folder, '', configuration, number)
-    time_jax_gpu_cosmology = _load_timing(jax_gpu_folder, '_COSMOLOGY', configuration, number)
-    time_jax_gpu_projection = _load_timing(jax_gpu_folder, '_PROJECTION', configuration, number)
-    time_jax_gpu_coefficient = _load_timing(jax_gpu_folder, '_COEFFICIENT', configuration, number)
+    time_jax_gpu = _load_timing(jax_gpu_folder, '', configuration, number, interpolation)
+    time_jax_gpu_cosmology = _load_timing(jax_gpu_folder, '_COSMOLOGY', configuration, number, interpolation)
+    time_jax_gpu_projection = _load_timing(jax_gpu_folder, '_PROJECTION', configuration, number, interpolation)
+    time_jax_gpu_coefficient = _load_timing(jax_gpu_folder, '_COEFFICIENT', configuration, number, interpolation)
 
     # Load JAX-CPU
-    time_jax_cpu = _load_timing(jax_cpu_folder, '', configuration, number)
-    time_jax_cpu_cosmology = _load_timing(jax_cpu_folder, '_COSMOLOGY', configuration, number)
-    time_jax_cpu_projection = _load_timing(jax_cpu_folder, '_PROJECTION', configuration, number)
-    time_jax_cpu_coefficient = _load_timing(jax_cpu_folder, '_COEFFICIENT', configuration, number)
+    time_jax_cpu = _load_timing(jax_cpu_folder, '', configuration, number, interpolation)
+    time_jax_cpu_cosmology = _load_timing(jax_cpu_folder, '_COSMOLOGY', configuration, number, interpolation)
+    time_jax_cpu_projection = _load_timing(jax_cpu_folder, '_PROJECTION', configuration, number, interpolation)
+    time_jax_cpu_coefficient = _load_timing(jax_cpu_folder, '_COEFFICIENT', configuration, number, interpolation)
 
     # Load Numba-CPU
-    time_numba_cpu = _load_timing(numba_folder, '', configuration, number)
-    time_numba_cpu_cosmology = _load_timing(numba_folder, '_COSMOLOGY', configuration, number)
-    time_numba_cpu_projection = _load_timing(numba_folder, '_PROJECTION', configuration, number)
-    time_numba_cpu_coefficient = _load_timing(numba_folder, '_COEFFICIENT', configuration, number)
+    time_numba_cpu = _load_timing(numba_folder, '', configuration, number, interpolation)
+    time_numba_cpu_cosmology = _load_timing(numba_folder, '_COSMOLOGY', configuration, number, interpolation)
+    time_numba_cpu_projection = _load_timing(numba_folder, '_PROJECTION', configuration, number, interpolation)
+    time_numba_cpu_coefficient = _load_timing(numba_folder, '_COEFFICIENT', configuration, number, interpolation)
 
     # Figure
     texlive_bin = os.environ.get('LIMBERCLOUD_TEXLIVE_BIN')
@@ -142,7 +170,18 @@ if __name__ == '__main__':
     parse.add_argument('--label', type=str, required=True, help='The label of the configuration')
     parse.add_argument('--folder', type=str, required=True, help='The base folder of the dataset')
     parse.add_argument('--number', type=int, required=True, help='The number of cores for parallel computation')
+    parse.add_argument('--run-id', default=None, help='Run-ID subdirectory. Omit only for historical files.')
+    parse.add_argument('--legacy', action='store_true', help='Read historical timing files at the family/survey root.')
+    parse.add_argument('--interpolation', default=None, choices=('linear', 'quadratic', 'cubic'), help='NUMERIC order when reading NUMERIC timing names.')
 
     # Parse
     ARGS = parse.parse_args()
-    OUTPUT = main(ARGS.tag, ARGS.label, ARGS.folder, ARGS.number)
+    OUTPUT = main(
+        ARGS.tag,
+        ARGS.label,
+        ARGS.folder,
+        ARGS.number,
+        run_id=ARGS.run_id,
+        legacy=ARGS.legacy,
+        interpolation=ARGS.interpolation,
+    )

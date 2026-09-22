@@ -10,13 +10,20 @@ import scipy
 
 from limbercloud import Configuration, ProjectPaths
 from limbercloud.experiments import (
-    add_sample_control_arguments,
+    add_evaluation_arguments,
     build_checkpoint_counts,
     resolve_sample_count,
 )
+from limbercloud.validation.assembly import (
+    ccl_magnification_bias,
+)
+from limbercloud.validation.samples import (
+    ccl_cosmology_kwargs,
+    sampled_parameter_rows,
+)
 
 
-def main(tag, label, folder, number, sample_count=None, fiducial_only=False):
+def main(tag, label, folder, number, sample_count=None, fiducial_only=False, sample_table=None, run_id=None, include_fiducial=False, resume=False):
     """
     Calculate the angular power spectra under the double configuration
 
@@ -34,12 +41,18 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False):
     # Start
     start = time.time()
     label = Configuration.parse(label).value
+    if resume:
+        raise ValueError(
+            "Timing entries do not resume HDF5 checkpoints. Resume validated "
+            "sample IDs through the shared artifact writer."
+        )
+
     print(f'Tag: {tag}')
 
     # Runtime paths
     paths = ProjectPaths.from_root(folder)
     data_folder = str(paths.survey_data(tag))
-    result_folder = paths.spectrum_results('CCL', tag)
+    result_folder = paths.spectrum_results('CCL', tag, run_id=run_id)
     result_folder.mkdir(parents=True, exist_ok=True)
 
     # Grid
@@ -76,16 +89,12 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False):
     # Magnification
     with paths.config_file('magnification_bias').open('r') as file:
         magnification_info = json.load(file)
-    magnification_bias = 5 * numpy.array(magnification_info[tag]) - 2
+    magnification_bias = ccl_magnification_bias(magnification_info[tag])
 
     # Alignment
     with paths.config_file('intrinsic_alignment').open('r') as file:
         alignment_info = json.load(file)
     alignment_bias = numpy.array(alignment_info['A'])
-
-    # Cosmology
-    with paths.config_file('cosmology').open('r') as file:
-        cosmology_info = json.load(file)
 
     # Multipole
     ell1 = 20
@@ -100,6 +109,14 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False):
     count_size = int(count_list.size)
     count_targets = {int(count): index for index, count in enumerate(count_list)}
 
+    parameter_rows = sampled_parameter_rows(
+        sample_count=count2,
+        sample_table=sample_table,
+        include_fiducial=include_fiducial,
+        fiducial_only=fiducial_only,
+    )
+
+
     # Time
     time_list = numpy.zeros(count_size)
     time_cell_list = numpy.zeros(count_size)
@@ -110,20 +127,8 @@ def main(tag, label, folder, number, sample_count=None, fiducial_only=False):
     cosmology_duration = 0.0
     for index in range(int(count_list.max()) if count_list.size else 0):
         t0 = time.time()
-        cosmology = pyccl.Cosmology(
-            h=numpy.random.uniform(cosmology_info['H'] * 0.9, cosmology_info['H'] * 1.1),
-            w0=numpy.random.uniform(cosmology_info['W0'] * 0.9, cosmology_info['W0'] * 1.1),
-            wa=numpy.random.uniform(cosmology_info['WA'] * 0.9, cosmology_info['WA'] * 1.1),
-            n_s=numpy.random.uniform(cosmology_info['NS'] * 0.9, cosmology_info['NS'] * 1.1),
-            A_s=numpy.random.uniform(cosmology_info['AS'] * 0.9, cosmology_info['AS'] * 1.1),
-            m_nu=numpy.random.uniform(cosmology_info['M_NU'] * 0.9, cosmology_info['M_NU'] * 1.1),
-            Neff=numpy.random.uniform(cosmology_info['N_EFF'] * 0.9, cosmology_info['N_EFF'] * 1.1),
-            Omega_b=numpy.random.uniform(cosmology_info['OMEGA_B'] * 0.9, cosmology_info['OMEGA_B'] * 1.1),
-            Omega_k=numpy.random.uniform(cosmology_info['OMEGA_K'] * 0.9, cosmology_info['OMEGA_K'] * 1.1),
-            Omega_c=numpy.random.uniform(cosmology_info['OMEGA_CDM'] * 0.9, cosmology_info['OMEGA_CDM'] * 1.1),
-            mass_split='single', matter_power_spectrum='halofit', transfer_function='boltzmann_camb',
-            extra_parameters={'camb': {'kmax': 50, 'lmax': 5000, 'halofit_version': 'mead2020_feedback', 'HMCode_logT_AGN': 7.8}}
-        )
+        row = parameter_rows[index]
+        cosmology = pyccl.Cosmology(**ccl_cosmology_kwargs(row))
 
         pyccl.gsl_params['NZ_NORM_SPLINE_INTEGRATION'] = False
         pyccl.gsl_params['LENSING_KERNEL_SPLINE_INTEGRATION'] = False
@@ -177,7 +182,7 @@ if __name__ == '__main__':
     PARSE.add_argument('--label', type=str, required=True, help='The label of the configuration')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the dataset')
     PARSE.add_argument('--number', type=int, required=True, help='Host CPU allocation label for output filenames')
-    add_sample_control_arguments(PARSE)
+    add_evaluation_arguments(PARSE)
     # Parse
     ARGS = PARSE.parse_args()
     OUTPUT = main(
@@ -187,4 +192,8 @@ if __name__ == '__main__':
         ARGS.number,
         sample_count=ARGS.sample_count,
         fiducial_only=ARGS.fiducial_only,
+        sample_table=ARGS.sample_table,
+        run_id=ARGS.run_id,
+        include_fiducial=ARGS.include_fiducial,
+        resume=ARGS.resume,
     )

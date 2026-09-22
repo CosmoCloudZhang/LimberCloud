@@ -42,7 +42,9 @@ def main(folder):
             0.7950074733615955,
             0.7976443261028644,
             0.6230940665100914
-        ]
+        ],
+        '_quantity': 'magnification_slope_s',
+        '_response': 'q=5*s-2',
     }
 
     # Save

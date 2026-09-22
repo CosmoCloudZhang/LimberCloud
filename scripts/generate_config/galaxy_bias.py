@@ -61,6 +61,9 @@ def main(folder):
         growth_factor = pyccl.background.growth_factor(cosmo=cosmology, a=1.0 / (1 + z_grid))
         galaxy[tag] = list(factor[tag] / growth_factor)
 
+    galaxy['_policy'] = 'fixed_tabulated_at_fiducial'
+    galaxy['_redshift_convention'] = 'factor/D(z) at the fiducial cosmology; not regenerated per sample'
+
     with paths.config_file('galaxy_bias').open('w') as file:
         json.dump(galaxy, file, indent=4)
 

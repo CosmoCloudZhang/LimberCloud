@@ -8,7 +8,7 @@ import pyccl
 from limbercloud import ProjectPaths
 
 
-def main(folder):
+def main(folder, eta_ia=None):
     '''
     Store the fiducial values of intrinsic alignment
 
@@ -51,10 +51,16 @@ def main(folder):
     grid_size = 350
     z_grid = numpy.linspace(z1, z2, grid_size + 1)
 
-    # Define pivot values for redshift, scale factor, and eta
+    # Historical generator value versus the manuscript value. Omitting
+    # --eta-ia keeps the historical array and records the choice as unresolved.
     z_pivot = 0.5
     a_pivot = 0.5
-    eta_pivot = 0.5
+    if eta_ia is None:
+        eta_pivot = 0.5
+        eta_decision = "unresolved"
+    else:
+        eta_pivot = float(eta_ia)
+        eta_decision = "explicit"
 
     constant = 5e-14 / numpy.square(cosmology_info['H'])
     growth = pyccl.background.growth_factor(cosmo=cosmology, a=1.0 / (1.0 + z_grid))
@@ -63,6 +69,16 @@ def main(folder):
 
     alignment_info = {
         'A': a_grid.tolist(),
+        'redshift': z_grid.tolist(),
+        'eta_pivot': eta_pivot,
+        'eta_decision': eta_decision,
+        'eta_generator_value': 0.5,
+        'eta_manuscript_value': 0.0,
+        'z_pivot': z_pivot,
+        'a_pivot': a_pivot,
+        'density_convention': 'rho_x(a=1, species=matter, is_comoving=True); no (1+z)^3 factor',
+        'C1': '5e-14/h**2',
+        'nuisance_cosmology_policy': 'fixed_tabulated_at_fiducial',
     }
 
     with paths.config_file('intrinsic_alignment').open('w') as file:
@@ -81,9 +97,10 @@ if __name__ == '__main__':
     # Input
     PARSE = argparse.ArgumentParser(description='Info Alignment')
     PARSE.add_argument('--folder', type=str, required=True, help='The base folder of the datasets')
+    PARSE.add_argument('--eta-ia', type=float, default=None, help='Explicit eta_IA. Omit to keep the historical 0.5 array and record the manuscript disagreement as unresolved.')
 
     # Parse
-    FOLDER = PARSE.parse_args().folder
+    ARGS = PARSE.parse_args()
 
     # Output
-    OUTPUT = main(FOLDER)
+    OUTPUT = main(ARGS.folder, eta_ia=ARGS.eta_ia)

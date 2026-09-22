@@ -60,6 +60,20 @@ class ProjectPathsTests(unittest.TestCase):
             / "Y10",
         )
         self.assertEqual(
+            paths.spectrum_results("NUMERIC", "Y1", interpolation="linear", run_id="pilot"),
+            self.runtime_root
+            / "results"
+            / "spectra"
+            / "NUMERIC"
+            / "LINEAR"
+            / "Y1"
+            / "pilot",
+        )
+        self.assertEqual(
+            paths.spectrum_inputs("pilot"),
+            self.runtime_root / "results" / "spectra" / "inputs" / "pilot",
+        )
+        self.assertEqual(
             paths.validation_results("Y1"),
             self.runtime_root / "results" / "validation" / "spectra" / "Y1",
         )
