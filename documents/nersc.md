@@ -5,7 +5,16 @@
 Implement code, scripts, notebooks, environment helpers, and tests on NERSC.
 Edit and compile the manuscript locally. The remote `manuscript/` submodule
 stays uninitialized, empty, or absent; retain its Git reference and
-`.gitmodules` entry. Routine remote updates use:
+`.gitmodules` entry. Set these defaults once in the NERSC checkout:
+
+```bash
+git config --local submodule.recurse false
+git config --local fetch.recurseSubmodules false
+```
+
+These settings affect only that checkout. The tracked `.gitmodules` also
+disables automatic manuscript fetching; explicit recursive commands can
+override defaults. Routine remote updates use:
 
 ```bash
 git pull --ff-only --no-recurse-submodules
@@ -18,9 +27,9 @@ validated figures and tables to a CFS bundle with checksums and provenance for
 local integration, rather than writing into a remote manuscript directory.
 See [manuscript-workflow.md](manuscript-workflow.md) for the complete handoff.
 
-Follow Prompts 0A–3 in the
+Follow the revised remote Phases 1–5A in the
 [revision prompts](../revisions/2026-09/CURSOR_IMPLEMENTATION_PROMPTS.md) on
-NERSC after the inventory report. Prompt 4 is for local manuscript work.
+NERSC after reviewing the current implementation audit. Phase 5B is for local manuscript work; the completed environment is retained with targeted repairs.
 
 ## Checkout and environment
 

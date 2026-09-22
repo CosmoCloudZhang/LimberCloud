@@ -1,0 +1,61 @@
+# Phase 5B — Local manuscript and final project explanation
+
+This is the local Codex handoff. Do not send it to remote Cursor as permission to initialize or edit the paper on NERSC. Editorial work can start alongside remote phases; numerical integration waits for accepted evidence.
+
+---
+
+Complete the local LimberCloudPaper revision using `revisions/2026-09/MANUSCRIPT_REVISION_PLAN.md`, the 102-comment inventory, the current code plan, Phase 1–5A reports and the verified publication bundle. Read the paper source in its actual repository; old audit line references are navigation hints, not live edit locations. Preserve author information and unrelated edits. Record actual parent HEAD/index gitlink, paper repository/branch/HEAD/status, and the scientific producing-code identity.
+
+The current audit discovered deletion of the parent gitlink at 13a3c2d. Verify that the restoration from remote Phase 1 is present in the parent index or an authorized committed revision before normal submodule operations. Preserve the existing local paper checkout and working branch; do not recreate it, turn it into ordinary parent files, or overwrite changes. An existing initialized paper .git file/repository is required before using git -C manuscript. Switch to the intended working branch before edits if detached. Local paper implementation does not authorize concurrent edits to remotely owned Python/shell/notebook implementation.
+
+Preserve the paper's own entry/exit source manifests and phase diff so local work remains reviewable without automatic commits. Remote review snapshots exclude paper contents; the local paper review packet uses its actual repository and remains separate from the scientific producing-code identity.
+
+## 1. Finish editorial structure and trace every response
+
+Preserve all 102 source comment IDs, attribution and uncertain handwriting qualifiers. Maintain a response ledger with original request, decision, actual source location, evidence dependence, completion status and concise response. The latest eta/NUMERIC/ell/endpoint choices are author clarifications, not statements newly attributed to coauthors. Do not close a result-dependent comment merely by adding prose before its evidence exists.
+
+Follow the approved compact outline: introduction and early central tensor-contraction equation; observable and physical setup; discretized derivation/basis/endpoints and parameter dependence; numerical validation and fair benchmarks; scoped marginalization/emulation discussion; conclusions. Preserve labels through the initial move, record an old-to-new section/equation crosswalk, define symbols/units before use, and add GitHub/code availability. Use the detailed manuscript plan's per-comment dispositions rather than mechanically rewriting the marked PDF.
+
+## 2. Make the final mathematical and numerical contract explicit
+
+Use eta_IA=0.0 consistently with accepted regenerated inputs, retaining A_IA=0.5 and z_pivot=0.5. Explain comoving rho_m, 0, the signed coefficient and fixed fiducial IA/galaxy-bias tables across sampled cosmologies. Explain CCL slope s versus analytical response q=5s−2 once, with matching physics in every comparison. Verify the actual SRD citation and distinctions from adopted sparse lens densities/survey settings; do not call a mixed configuration an untouched SRD forecast.
+
+Use the accepted effective cosmology/solver and nuisance-reference metadata. Explain any intentionally distinct fixed-reference model only if remotely validated; matching primary parameters alone does not certify the currently different Omega_g/solver settings. For the declared independent-noise model, document per-steradian densities, lens 1/n noise and per-component shape variance sigma_e^2/n without an extra factor 1/2. State overlap/cross-noise assumptions and match accepted survey metadata.
+
+Explain the grid as N intervals with N+1 nodes. Keep the cubic observer power policy and NN factors 1/12,1/12,1/4. Incorporate accepted final-node NN/NS/SN/SS support and truncated source integrals from the remote derivation report. Update summation ranges, ordinary versus endpoint-case catalog, symmetry and mixed transpose/upper-Hessenberg support. Do not claim the final density node is forced to zero or that all lensing basis cases integrate full intervals. If remote coefficients changed the ordinary 3/8/10 catalog or added boundary branches, describe that accurately and link the executable derivations.
+
+Distinguish exact contraction of the adopted discretized/interpolated model from approximation to the physical continuum. Distribution factorization requires a basis linear in nodal coefficients, not uniquely first-degree interpolation. Preserve the modest scope of radial-grid/tolerance validation; do not claim Delta z=0.01 is optimal or mandatory. Alternative power laws and basis families need new validated coefficients.
+
+State one angular recipe for all methods: 21 float64 geometric edges 20..2000, natural cubic interpolation of ell*C_ell against logell, integrated over log-bin and divided by linear deltaell, yielding 20 uniform-dell bandpowers. Means, residuals and covariance use those 20 bands; raw 21 arrays reproduce the interpolation. Geometric centres are plotting positions, not where the CCL reference was evaluated. Remove obsolete 101-grid/current-centre-evaluation descriptions. Explain actual covariance windows/geometry and accepted components; old integer/annulus binning cannot be described as identical without the adapter evidence.
+
+Present NUMERIC as direct numerical quadrature with radial linear/quadratic/cubic settings on phi(chi), a(chi) and effective component power; only that family has the radial-order option. It is separate from the angular natural spline applied to every method. NUMERIC-linear is not an identical-integrand test of the analytical 1+z/cubic-observer model; describe the separate matched-integrand oracle. Cubic is a comparator, not guaranteed truth.
+
+State the distinct radial interpolation boundary rules, accepted quadrature refinement and observer integrability limits. Finite Gauss output does not establish convergence for a 1/chi singularity. Document positive-chi power evaluation, the declared observer power ordinate, physical units and extrapolation support. Keep these observer checks separate from the far-endpoint inclusion decision.
+
+## 3. Integrate only accepted evidence
+
+Obtain the labelled CFS export through the established transfer channel, verify all transferred checksums, and inspect acceptance/producing identities before copying publication files into manuscript/figures. Do not assume this Mac can directly read CFS and do not copy full HDF5 ensembles into the paper repo. If transfer is unavailable, finish independent editorial work and identify the exact missing bundle; do not invent numerical values or silently keep old figures under new captions.
+
+Use a figure/table manifest mapping each final product to producer command/path, file hash, producing code/patch, environment, inputs, sample table, run, angular operator, covariance/selection and accepted counts. Later documentation or paper commits do not change the scientific producing revision. Update stale producer paths such as old matter_power notebooks. Inspect typography, legends, axes, masks and labels at actual page size.
+
+Use fiducial 0 plus 1000 shared sampled cosmologies, with declared bounds/fixed parameters/seed policy. Exclude fiducial from ensemble quantiles and benchmark sample counts. Report attempted/completed/matched counts honestly. Keep absolute/log primary residual panels, accurate near-zero masks and raw zeros, with optional pointwise magnitude bands labelled sampled-domain variation. Include Y1/Y10 tables and tails/worst cases. Mark selected pairs/scales and explain the actual Niko/binny rule and adopted k-cut prescription without claiming universal equivalence.
+
+Describe fixed-fiducial-covariance D, full D primary and optional D/N_data. Ideal deterministic agreement is 0; do not apply noisy-data reduced-chi-square intuition or sum per-probe values as joint D. Match Gaussian-only versus accepted total covariance wording everywhere; unavailable NG/SSC evidence blocks claims that depend on it. Report undesirable residuals accurately and narrow claims when supported, rather than omitting failures.
+
+Do not imply each connected NG correction must be positive definite; component physics/symmetry/convergence and the accepted total establish its role. Use the named spectra/Gaussian/upstream/full-covariance readiness gates to identify exactly which claims have evidence, without treating a fallback as overall completion.
+
+Timing claims use accepted equal-work outputs, one sequential task, actual internal parallelism/resources, synchronized device work and declared transfers/angular estimator. Separate explicit pre-sample cold/fiducial/compile costs, sampled cumulative compute, I/O wall time and segmented versus uninterrupted evidence; lazy work/recompilation inside a timed call remains charged. Include the separate supplied-state and changed-distribution benchmark with its efficient CCL cache boundary, fixed fixtures and repetition statistics. Report isolated contraction separately from complete distribution-update work. Derive abstract/intro/captions/tables/conclusion numbers from the same authoritative summary. Do not imply MPI scaling, ideal thread scaling or speculative compounded speedups.
+
+## 4. Preserve the scientific scope of the discussion
+
+Follow the existing detailed manuscript plan for overlap/marginalization: exact quadratic dependence of the discretized prediction is distinct from Gaussian marginalization of a linearized response. Include Sigma_eff=Sigma+Gamma*Pi*Gamma^T with assumptions and parameter-dependent log determinant; transform priors consistently if moving from p-space to phi-space. Do not claim an exact general nonlinear marginal likelihood.
+
+Present tensor emulation as future work with verified related literature, not measured million-sample training times or guaranteed extra speedups. Verify bibliography metadata and source attribution, including actual SRD and the numerical/reference tools. No new emulator/posterior campaign is needed unless the retained claim actually requires one.
+
+## 5. Verify and hand back a complete project
+
+Compile a fresh manuscript using the local TeX toolchain and inspect every rendered page, equations, references, captions, legends and figure placement. Fix layout/reference problems, compare text/table values against accepted summaries, and audit every closed comment. Missing TeX prerequisites are reported with a concrete local setup handoff; do not initialize a remote manuscript as a workaround.
+
+Return the paper diff, 102-row response ledger, section/label crosswalk, verified figure/table provenance, scientific evidence/claim map, actual code/paper identities, compiled PDF and page-review notes. Update the completion checklist truthfully, separating local paper completion from pending scientific claims or external publication. Provide a concise end-to-end project walkthrough: inputs/configuration -> cosmology sampling -> analytical/NUMERIC/CCL evaluation -> 21-to-20 operator -> artifacts/restart -> covariance/selection -> summaries/figures. Link the actual public entry points so the author can understand and maintain the final design.
+
+Do not automatically commit/push the parent or paper, synchronize Overleaf, submit the paper or send coauthor messages. If Git publication is separately requested, review relevant paths, publish the paper revision first, then update/publish the parent gitlink. Prepare coauthor response text locally for review; external sending is separate.

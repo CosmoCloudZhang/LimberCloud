@@ -7,6 +7,11 @@ and review. Remote Cursor on NERSC handles code, scripts, notebooks,
 environments, tests, and scientific runs. The [revision package](../revisions/2026-09/README.md)
 defines the scientific gates and detailed responsibilities.
 
+The parent tracks the paper through two entries: the URL/path in `.gitmodules`
+and a mode-160000 `manuscript` reference to a paper commit. The shared
+`fetchRecurseSubmodules = false` setting prevents automatic manuscript fetching
+unless overridden; the explicit local update command below remains available.
+
 ## Receive changes and edit the paper locally
 
 First commit or otherwise preserve your work in both repositories. From the
@@ -61,6 +66,14 @@ After deinitialization, an empty placeholder can be removed with
 `rmdir manuscript`. These are checkout-local operations and require no commit.
 Cached paper Git history may remain under the parent's `.git/modules/`.
 
+On NERSC only, set these checkout-local defaults once. They do not change the
+Mac checkout or remove the parent repository's manuscript reference:
+
+```bash
+git config --local submodule.recurse false
+git config --local fetch.recurseSubmodules false
+```
+
 For routine NERSC updates, run from the parent checkout:
 
 ```bash
@@ -75,6 +88,23 @@ empty placeholder: Git can discover the parent repository and report its
 status instead. Do not remove the tracked reference with `git rm`, delete its
 `.gitmodules` entry, or initialize it as a code-setup step. Code checks must
 work with both an absent and an empty `manuscript/` directory.
+
+If a code commit accidentally deletes the gitlink, restore the reviewed paper
+reference rather than adding paper files to the parent or creating another
+submodule. An existing initialized local paper may already have been staged
+correctly by `git add manuscript`, even if Git warned about an embedded
+repository. Verify before committing:
+
+```bash
+git ls-files --stage manuscript
+git diff --cached --submodule=log -- .gitmodules manuscript
+```
+
+The index must show exactly one mode-160000 `manuscript` entry at the intended
+paper commit, with its matching `.gitmodules` URL. This staged restoration
+appears in `git ls-tree HEAD manuscript` only after the parent commit records it.
+Do not run `git rm --cached manuscript` merely to silence the warning; that
+would remove the reference being restored.
 
 ## Transfer accepted figures and tables
 

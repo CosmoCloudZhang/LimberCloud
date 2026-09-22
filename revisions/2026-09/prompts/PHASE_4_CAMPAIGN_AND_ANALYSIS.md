@@ -1,0 +1,77 @@
+# Phase 4 — Execute the matched campaign and produce final scientific evidence
+
+Copy this complete prompt into remote Cursor only after reviewing the Phase 3 report and its named readiness gates and explicitly deciding to launch production. This prompt authorizes the stated campaign when invoked; each computation or analysis still requires its own accepted dependencies.
+
+---
+
+Execute revised Phase 4 in the NERSC LimberCloud checkout. Read `revisions/2026-09/CODE_REVISION_PLAN.md`, `COMPLETION_CHECKLIST.md`, Phase 1–3 reports and accepted required readiness gates, the frozen run config/sample table, covariance/selection reports or explicit pending status and `MANUSCRIPT_REVISION_PLAN.md`. Reconcile actual source/input/environment identities. Preserve the existing environment, completed products and unrelated changes. Record branch/HEAD/dirty patch, modules/interpreter/hardware, paper gitlink and plan hash. Do not initialize/edit manuscript or run `git -C manuscript`. Do not automatically commit/push/merge or begin Phase 5.
+
+## Entry gate and campaign definition
+
+Require spectra_production_ready with accepted evidence for eta 0, complete analytical endpoints, NUMERIC-only radial orders and integrability, the 21-node natural angular operator/20-band vector, functioning sample 0/1..1000 execution, strict artifact transactions/resume and measured resource/cost pilots. Selected covariance-scaled statistics additionally require selected_gaussian_analysis_ready or the accepted full-covariance gate for that claim, including exact windows and fixed selection. Read the evidence, not just a boolean in a report. Pending OneCovariance/NG/SSC/selection checks block their dependent claims while valid spectra production and all-pair diagnostics can proceed. Keep overall partial status visible and do not replace requested full-covariance evidence with Gaussian results labelled as total.
+
+Preserve entry/exit source snapshots and manifests and a phase-only diff under the master review-packet contract. Separate changed producer code, execution records and later reports, even if all phases remain uncommitted.
+
+Freeze a campaign manifest enumerating:
+
+- CCL, NUMBA, JAX CPU, JAX GPU, NUMERIC linear, NUMERIC quadratic, NUMERIC cubic;
+- Y1/Y10;
+- Single=EE, Double=TE+TT, Triple=EE+TE+TT;
+- exactly sample 0 plus the same 1000 sampled rows for each workload;
+- method/device/order, run/workload namespace, expected probes/IDs, physical/estimator/table hashes, producing code or captured patch, allocation and launch command. Covariance/selection references may be explicitly pending in the campaign status record when only spectra production is ready; accepted references are bound in later analysis manifests, never inserted retroactively into the immutable spectrum contract.
+
+This is 42 workloads and 42,042 sample evaluations, before any explicitly documented reruns. It is not 42 distinct sampled cosmology tables. NUMERIC uses six wrappers with three settings; other families have no interpolation-order loops. All families evaluate raw 21 geomspace edges 20..2000 and save the common 20 natural-spline uniform-dell bandpowers. No new 101-node science grid or CCL-centre reference may enter production.
+
+If the producing tree is uncommitted, capture the exact relevant diff plus untracked source/config files, verify reproducibility and record hashes; do not claim only HEAD produced the data. Prefer an explicitly authorized clean producing revision. Later report/docs commits must not rewrite result provenance. Keep runtime inputs versioned outside Git and immutable for the campaign. Run queued jobs from an immutable execution snapshot containing the verified commit plus captured patch/untracked source, with its hash recorded; do not let jobs import a live checkout that later edits can change while queued or running. Verify the execution snapshot at startup and keep it available with provenance. Check the actual resolved limbercloud.__file__ and imported modules against the snapshot: changing cwd alone does not override a shared environment's editable install. Select the snapshot's package without mutating a shared environment used by other jobs, and retain the verified import path in each job record.
+
+## 1. Launch and supervise the accepted workloads
+
+Use the actual approved NERSC account/partition/resources from the pilot, one Slurm task/process with sequential cosmologies per workload, existing internal Numba/JAX threading/device work, and exclusive artifact ownership. Do not introduce sample job arrays, MPI science, multiple competing methods inside a timed process, or unmeasured GPU sharing. Independent workload jobs may run on uncontended allocations. Confirm resources at job start: affinity, physical/logical cores, thread pools, GPU identity/count, precision and environment. Request one GPU for the current JAX GPU process and verify actual execution there.
+
+Use the tested command path, including shell argument forwarding. Print/store selected IDs and output namespace before computation. Keep logs, status, failed IDs and completed sample transactions on CFS. PSCRATCH staging is temporary and cannot be the only accepted copy. No output may overwrite legacy artifacts or another configuration/allocation.
+
+Track submitted/running/failed/completed workloads in a durable campaign index with one coordinator writer, or immutable per-workload status records and atomic aggregation. Per-workload locks alone do not protect concurrent writes to a shared campaign index. When a job fails, preserve verified transactions and diagnostics, determine cause, and resume the same IDs/contract if compatible. Never redraw a failed cosmology, silently drop it, or change requested coverage to publish “complete.” A required source/input fix generates a new identity; analyze which products remain compatible and invalidate affected ones explicitly. Keep failure history and original producing identities.
+
+Respect measured wall limits. Record warm-up per restart segment outside sample timers. Resumed compute sums are segmented accumulation; obtain uninterrupted accepted sequences for every method/configuration supporting a continuous timing claim. If resource limits prevent this, retain valid science results but report the timing gate as unmet. Do not shorten the requested 1000-row ensemble or omit slow NUMERIC orders to produce an apparent success.
+
+## 2. Validate completed production artifacts
+
+Use strict readers against the immutable campaign manifest, not directory file counts. For each workload verify every expected sample/probe transaction, raw 21 and band 20 datasets, cosmology table row, fiducial flag, pair labels, physics/estimator identity, schema/dtype, finite output, stage record and checksums. Consolidate in bounded memory and publish completed manifests only for exact required coverage. Report requested, attempted, completed, failed and matched counts explicitly.
+
+Check raw-to-band reconstruction for selected samples and all method identities. Check overlapping EE/TE/TT outputs across Single/Double/Triple at matched IDs/configuration within declared numerical tolerance; a configuration workload must not change the physical observable. Compare JAX CPU/GPU and NUMBA using the accepted endpoint/formula tolerances, with numerical differences investigated rather than hidden by backend agreement. Ensure eta 0 and endpoint policy metadata follow actual regenerated inputs.
+
+For main covariance-scaled statistics, retain one validated fiducial covariance per survey and the frozen selection. Do not run 1000 covariance jobs or recompute selection at each cosmology. Verify covariance and spectra use the same band definitions/fields/physical configuration. Preserve each producer's identity; the comparison checks the shared scientific contract, not equality of method/source fingerprints. Do not substitute an unmatched historical MATRIX.ascii when the new covariance is unavailable; leave only dependent statistics/claims pending while finishing valid unscaled residuals and spectra/timing outputs.
+
+## 3. Compute residual summaries and joint discrepancy
+
+Implement or finish a bounded-memory summary producer, e.g. `experiments/validation/summarize.py`, with reusable functions under `src/limbercloud/validation/`. Join by sample ID and table hash, verify configuration/pair/operator/physics identities before subtraction, and operate on 20 bandpowers. Use each sample's CCL bandpowers as denominator.
+
+Save signed delta, absolute delta, absolute fractional residual with scale-aware near-zero-reference mask, and absolute residual/sigma using accepted covariance. Preserve signed cross spectra. Undefined ratios are masked and counted, never set to a fictional 100% error. Exact residual zero stays zero in stored arrays/statistics. State a separate log-display rule for zeros and percentile bounds; plotting floors cannot alter quantiles.
+
+For every element compute pointwise median and 16th–84th quantiles of absolute sampled residuals after taking each sample's magnitude, excluding fiducial 0. Save valid counts and the declared quantile algorithm. Keep within-vector summaries (median/95th/max over pair-band entries for one sample) distinct from across-cosmology distributions. Report worst pair/band/sample IDs, near-zero masks, failures and tails; do not present only the central band.
+
+Build the accepted selected joint vector with explicit labels and apply the same mask to both covariance axes. Factor Sigma_fid once per survey. For each matched sample solve for D=delta^T Sigma_fid^-1 delta. Use Triple's full joint vector with cross-probe covariance; optional Single/Double and per-probe values are explicitly separate and are not summed to claim joint D. Report full D primarily, optional D/N_data. Ideal deterministic agreement is 0, not noisy-data reduced-chi-square 1. Do not sum sampled cosmologies as independent surveys or call D an arbitrary observed-data likelihood shift.
+
+Produce machine-readable Y1/Y10 tables for every compared method/order with N_data, attempted/completed/matched counts, fiducial D, sampled median/16th–84th/95th/max and worst IDs. Save covariance/selection/table hashes with all summaries. Missing samples must be visible; a provisional matched subset cannot support a 1000-sample completion claim. Do not tune cuts or tolerances after seeing residuals to improve results. If discrepancies invalidate the intended paper claim, report them and trace the cause; an honest unfavorable result is not an implementation failure to conceal.
+
+## 4. Finalize fair timing summaries
+
+Derive cumulative compute totals at 100,200,...,1000 from nonoverlapping sampled-stage records only. Exclude fiducial, cold initialization, compilation, warm-up and checkpoint I/O. Report these excluded costs and total wall time separately. Only explicit pre-sample compilation/warm-up is excluded: unexpected recompilation or lazy preparation inside a timed sampled call remains charged, is diagnosed and is never retrospectively subtracted. Validate sums and sample/segment membership mechanically; never rerun prefixes merely to populate ten points.
+
+Every full-prediction comparison includes equivalent final probes, component assembly, common angular operator and declared materialization/transfer boundary. Preserve synchronization. CCL lazy setup and NUMERIC quadrature receive honest stage labels; CCL total used in stage panels remains labelled total. Report per-sample timing variation, measured resources, continuous versus segmented status and tested environment. Do not multiply unrelated speedups or claim GPU/MPI scaling from dependency installation. Source abstract/benchmark claims from one authoritative timing table.
+
+Execute the separate bounded Y1/Y10 Triple supplied-state/distribution-update benchmark frozen in Phase 3. Preserve its exact fixture arrays, repetition count/order, cached cosmology/power and tensor identities, and accepted cache-invalidation rules. Cover CCL, NUMBA, JAX CPU/GPU with matched 20-band outputs and uncontended resources. Save individual measurements for coefficient+contraction, isolated fixed-basis contraction and complete distribution-update work. The CCL update baseline reuses cosmology/power and unaffected tracers while rebuilding affected tracers. Verify changed-input results against uncached evaluations, synchronize devices and record cache preparation separately. Report median/spread and cache boundaries; isolated contraction is not an end-to-end prediction. Keep this fixture table separate from the 42 workloads and their 1,000-sample cumulative counts. Include accepted results in the authoritative timing table and manuscript MA43 evidence map; missing evidence leaves the corresponding reuse claim open.
+
+## 5. Produce lightweight plots and paper-ready export
+
+Refactor all six spectra and six error notebooks to read accepted fiducial bandpowers and compact summaries. Select sample 0 by identity, read bounded HDF5 slices, close files/figures, and avoid scientific evaluator imports/calls. Plotting should run in a clean compatible kernel from saved products without CCL/CAMB/Numba/JAX computation. Keep useful explanatory markdown.
+
+Preserve main pair-panel layouts and absolute/log errors. Show fiducial curves; optionally add pointwise sampled magnitude bands with clear labels that they show variation over the chosen cosmology domain. Keep detailed NUMERIC bands/all-pair diagnostics in supplementary panels if necessary. Mark selected/excluded pairs/scales without hiding all-pair behavior. Geometric centres locate 20 bandpower points; curves must not imply these are centre-evaluated CCL spectra. Use bounded publication dimensions/vector output and paginate dense Y10 diagnostics; measure plotting RSS.
+
+Generate the compact ensemble tables, timing plots, Y1/Y10 selected/all-pair evidence, and kernel/power/endpoint diagnostics required by the manuscript plan. Existing obsolete physics figures must be regenerated or explicitly excluded. Choose any ECDF/scatter/violin based on the measured distribution. Do not add speculative results or treat cubic as exact truth.
+
+Export only accepted publication figures, compact tables/summaries, producer/evidence reports and a checksum manifest to a labelled CFS handoff directory. Never write to remote manuscript/. Include file hashes, producing source/patch and commands, environment/input/run/sample/angular/covariance/selection identities, counts and acceptance/claim map. Full spectra/covariances remain on CFS. Verify exported bytes and provide the established transfer instructions to the local owner; do not claim local receipt.
+
+## Exit report
+
+Write `revisions/2026-09/reports/PHASE_4_CAMPAIGN_AND_ANALYSIS_REPORT.md` with the 42-workload status matrix, exact production/sample counts and failures, command/job/resource records, identities, timing semantics, summary/statistical verification, plots/exports, measured discrepancies and unresolved dependent claims. Update `COMPLETION_CHECKLIST.md` with evidence, not asserted completion. Hand off the reviewed diff and CFS bundle for Phase 5A. Do not automatically publish code, edit the paper, send coauthor messages or start the next phase.

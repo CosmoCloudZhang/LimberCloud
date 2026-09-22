@@ -1,3 +1,4 @@
 [submodule "manuscript"]
 	path = manuscript
 	url = ../LimberCloudPaper.git
+	fetchRecurseSubmodules = false

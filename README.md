@@ -4,8 +4,8 @@ LimberCloud is an analytic framework for fast, scalable computation of angular
 power spectra for weak gravitational lensing and large-scale structure.
 
 The [September revision package](revisions/2026-09/README.md) contains the
-author-comment inventory, finalized code and manuscript plans, and staged
-implementation prompts. Code, scripts, and notebook implementation take place
+author-comment inventory, the updated 22 September code/manuscript completion
+plans, the Phase 0/1 implementation audit, and detailed new Phase 1–5 prompts. Code, scripts, and notebook implementation take place
 on NERSC; manuscript editing and publication-figure integration take place
 locally.
 
@@ -105,9 +105,13 @@ configurations (EE / TE+TT / EE+TE+TT), not tiny runs.
 
 The manuscript is the separate `LimberCloudPaper` repository, checked out
 locally through the optional `manuscript/` submodule. On NERSC, leave it
-uninitialized or absent and update the parent with:
+uninitialized or absent. Automatic manuscript fetching is disabled in
+`.gitmodules`; explicit local paper updates remain available. On NERSC only,
+set these checkout-local defaults once, then update the parent with:
 
 ```bash
+git config --local submodule.recurse false
+git config --local fetch.recurseSubmodules false
 git pull --ff-only --no-recurse-submodules
 git ls-tree HEAD manuscript
 ```
